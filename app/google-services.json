@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1040130917520",
+    "project_id": "zov-android",
+    "storage_bucket": "zov-android.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1040130917520:android:1b5962741fcebd31ba8415",
+        "android_client_info": {
+          "package_name": "com.example.zov_android"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAWywkBUxuWIQWBu22X2QIr1F-eI97q1rI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
