@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace = "good.damn.ui"
+    namespace = "good.flopp.ui"
     compileSdk = 34
 
     defaultConfig {

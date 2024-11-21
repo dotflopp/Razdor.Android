@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.zov_android"
+    namespace = "com.flopp.razdor"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.example.zov_android"
+        applicationId = "com.flopp.razdor"
         minSdk = 21
         targetSdk = 34
         versionCode = 1
