@@ -6,4 +6,7 @@
     <string name="errorSomething">Произошла ошибка</string>
     <string name="errorUserNotFound">Пользователь не найден</string>
     <string name="errorUserAlreadExists">Такой пользователь уже существует</string>
+    <string name="username">Email</string>
+    <string name="password">Пароль</string>
+    <string name="login">Войти</string>
 </resources>

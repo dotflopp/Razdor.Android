@@ -8,6 +8,7 @@ import android.graphics.Typeface
 import android.view.MotionEvent
 import android.view.View
 import androidx.annotation.ColorInt
+import androidx.annotation.StringRes
 import good.damn.ui.components.UICanvasText
 import good.damn.ui.theme.UITheme
 
@@ -45,6 +46,12 @@ class UIButton(
     private val mRect = RectF()
 
     private val mCanvasText = UICanvasText()
+
+    fun setTextId(
+        @StringRes id: Int
+    ) {
+        mCanvasText.text = context.getString(id)
+    }
 
     override fun setBackgroundColor(
         color: Int
@@ -98,11 +105,5 @@ class UIButton(
     ) {
         mPaintBackground.color = theme.colorButton
         mCanvasText.color = theme.colorButtonText
-    }
-
-    override fun onTouchEvent(
-        event: MotionEvent?
-    ): Boolean {
-        return true
     }
 }

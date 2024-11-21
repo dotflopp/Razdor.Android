@@ -28,7 +28,9 @@ class EZViewLogin(
             context
         ).apply {
 
-            hint = "Username"
+            setHint(
+                R.string.username
+            )
 
             applyTheme()
 
@@ -45,7 +47,9 @@ class EZViewLogin(
             context
         ).apply {
 
-            hint = "Password"
+            setHint(
+                R.string.password
+            )
 
             boundsLinear(
                 width = -1f
@@ -62,7 +66,9 @@ class EZViewLogin(
             context
         ).apply {
 
-            text = "Login"
+            setTextId(
+                R.string.login
+            )
 
             setOnClickListener {
                 onClickBtnLogin(
