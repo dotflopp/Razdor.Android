@@ -1,7 +1,8 @@
 package com.example.zov_android
 
 import android.app.Application
-import java.net.URL
+import com.example.zov_android.themes.UIThemeDark
+import good.damn.ui.theme.UITheme
 
 class EZApp
 : Application() {
@@ -9,7 +10,7 @@ class EZApp
     companion object {
         var width = 0f
         var height = 0f
-
+        var theme: UITheme = UIThemeDark()
         const val rootUrl = "https://github.com"
     }
 

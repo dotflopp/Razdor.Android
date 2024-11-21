@@ -7,7 +7,6 @@ import androidx.core.view.ViewCompat
 import androidx.fragment.app.Fragment
 import com.example.zov_android.fragments.EZFragmentLogin
 import com.example.zov_android.navigation.EZNavigationFragment
-import com.example.zov_android.views.EZViewLogin
 
 class EZActivityMain
 : AppCompatActivity() {
@@ -20,6 +19,7 @@ class EZActivityMain
         super.onCreate(
             savedInstanceState
         )
+
         val context = this
 
         window.setBackgroundDrawable(null)
@@ -28,6 +28,10 @@ class EZActivityMain
             context
         ).apply {
             id = ViewCompat.generateViewId()
+
+            setContentView(
+                this
+            )
             mFragmentNavigation = EZNavigationFragment(
                 supportFragmentManager,
                 this

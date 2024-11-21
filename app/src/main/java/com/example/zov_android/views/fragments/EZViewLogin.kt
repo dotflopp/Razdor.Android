@@ -1,19 +1,15 @@
-package com.example.zov_android.views
+package com.example.zov_android.views.fragments
 
 import android.content.Context
-import android.content.Intent
-import android.view.Gravity
-import android.view.View
-import android.widget.FrameLayout
 import android.widget.LinearLayout
-import android.widget.Toast
 import androidx.appcompat.widget.AppCompatButton
 import androidx.appcompat.widget.AppCompatEditText
 import com.example.zov_android.EZApp
 import com.example.zov_android.R
 import com.example.zov_android.extensions.toast
-import com.example.zov_android.extensions.view.boundsFrame
+import com.example.zov_android.extensions.view.applyTheme
 import com.example.zov_android.extensions.view.boundsLinear
+import good.damn.ui.UIButton
 
 class EZViewLogin(
     context: Context
@@ -23,7 +19,7 @@ class EZViewLogin(
 
     init {
         setBackgroundColor(
-            0xffffffff.toInt()
+            EZApp.theme.colorBackground
         )
 
         orientation = VERTICAL
@@ -33,6 +29,8 @@ class EZViewLogin(
         ).apply {
 
             hint = "Username"
+
+            applyTheme()
 
             boundsLinear(
                 width = -1f
@@ -53,14 +51,17 @@ class EZViewLogin(
                 width = -1f
             )
 
+            applyTheme()
+
             addView(
                 this
             )
         }
 
-        AppCompatButton(
+        UIButton(
             context
         ).apply {
+
             text = "Login"
 
             setOnClickListener {
@@ -69,6 +70,12 @@ class EZViewLogin(
                     editTextPassword.text.toString()
                 )
             }
+
+            textSizeFactor = 0.25f
+
+            applyTheme(
+                EZApp.theme
+            )
 
             boundsLinear(
                 width = -1f,

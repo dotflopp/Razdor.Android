@@ -21,4 +21,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "RazdorAndroid"
 include(":app")
- 
+include(":ui")

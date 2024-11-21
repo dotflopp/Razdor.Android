@@ -1,9 +1,8 @@
 package com.example.zov_android.fragments
 
 import android.content.Context
-import android.view.View
 import com.example.zov_android.fragments.navigation.EZFragmentNavigation
-import com.example.zov_android.views.EZViewLogin
+import com.example.zov_android.views.fragments.EZViewLogin
 
 class EZFragmentLogin
 : EZFragmentNavigation() {
