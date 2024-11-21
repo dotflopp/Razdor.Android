@@ -1,12 +1,11 @@
 package com.example.zov_android.network.clients.http.listeners
 
 import com.example.zov_android.enums.EZEnumStateAuth
+import com.example.zov_android.model.EZModelUser
 
-interface EZIListenerHttpOnAuthObserver {
+interface EZIObserverHttpOnAuth {
     fun onAuthSuccess(
-        username: String,
-        id: String,
-        token: String
+        user: EZModelUser
     )
 
     fun onAuthFailed(

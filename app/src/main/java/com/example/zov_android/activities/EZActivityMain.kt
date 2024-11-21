@@ -1,11 +1,18 @@
 package com.example.zov_android.activities
 
 import android.os.Bundle
+import android.widget.FrameLayout
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.fragment.app.Fragment
+import com.example.zov_android.fragments.EZFragmentLogin
+import com.example.zov_android.navigation.EZNavigationFragment
 import com.example.zov_android.views.EZViewLogin
 
 class EZActivityMain
 : AppCompatActivity() {
+
+    private var mFragmentNavigation: EZNavigationFragment<Fragment>? = null
 
     override fun onCreate(
         savedInstanceState: Bundle?
@@ -13,13 +20,22 @@ class EZActivityMain
         super.onCreate(
             savedInstanceState
         )
+        val context = this
 
         window.setBackgroundDrawable(null)
 
-        setContentView(
-            EZViewLogin(
+        FrameLayout(
+            context
+        ).apply {
+            id = ViewCompat.generateViewId()
+            mFragmentNavigation = EZNavigationFragment(
+                supportFragmentManager,
                 this
             )
+        }
+
+        mFragmentNavigation?.push(
+            EZFragmentLogin()
         )
     }
 
