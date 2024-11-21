@@ -19,6 +19,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "ZoV_Android"
+rootProject.name = "RazdorAndroid"
 include(":app")
  

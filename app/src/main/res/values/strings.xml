@@ -1,3 +1,9 @@
 <resources>
-    <string name="app_name">ZoV_Android</string>
+    <string name="app_name">Razdor</string>
+    <string name="credentialsBlank">Не все данные заполнены</string>
+    <string name="сredentialsInvalid">Некорректные данные аутентификации</string>
+
+    <string name="errorSomething">Произошла ошибка</string>
+    <string name="errorUserNotFound">Пользователь не найден</string>
+    <string name="errorUserAlreadExists">Такой пользователь уже существует</string>
 </resources>
