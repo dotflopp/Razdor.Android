@@ -6,9 +6,9 @@ import androidx.appcompat.widget.AppCompatEditText
 import com.flopp.razdor.EZApp
 import com.flopp.razdor.R
 import com.flopp.razdor.extensions.toast
-import com.flopp.razdor.extensions.view.applyTheme
 import com.flopp.razdor.extensions.view.boundsLinear
 import good.damn.ui.UIButton
+import good.damn.ui.extensions.applyTheme
 
 class EZViewLogin(
     context: Context
@@ -31,7 +31,9 @@ class EZViewLogin(
                 R.string.username
             )
 
-            applyTheme()
+            applyTheme(
+                EZApp.theme
+            )
 
             boundsLinear(
                 width = -1f
@@ -54,7 +56,9 @@ class EZViewLogin(
                 width = -1f
             )
 
-            applyTheme()
+            applyTheme(
+                EZApp.theme
+            )
 
             addView(
                 this

@@ -88,6 +88,13 @@ class UIButton(
         canvas: Canvas
     ) = canvas.run {
 
+        scale(
+            scale,
+            scale,
+            width * 0.5f,
+            height * 0.5f
+        )
+
         drawRoundRect(
             mRect,
             cornerRadius,
