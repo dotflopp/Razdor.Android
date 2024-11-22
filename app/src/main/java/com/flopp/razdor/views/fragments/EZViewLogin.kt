@@ -6,7 +6,9 @@ import androidx.appcompat.widget.AppCompatEditText
 import com.flopp.razdor.EZApp
 import com.flopp.razdor.R
 import com.flopp.razdor.extensions.toast
+import com.flopp.razdor.extensions.toastRoot
 import com.flopp.razdor.extensions.view.boundsLinear
+import com.flopp.razdor.fragments.navigation.EZFragmentNavigation
 import good.damn.ui.UIButton
 import good.damn.ui.extensions.applyTheme
 
@@ -81,6 +83,7 @@ class EZViewLogin(
             }
 
             textSizeFactor = 0.25f
+            cornerRadiusFactor = 0.25f
 
             applyTheme(
                 EZApp.theme
@@ -88,7 +91,7 @@ class EZViewLogin(
 
             boundsLinear(
                 width = -1f,
-                height = EZApp.height * 0.25f
+                height = EZApp.height * 0.1f
             )
 
             addView(
@@ -104,7 +107,7 @@ class EZViewLogin(
         password: String
     ) {
         if (username.isBlank() || password.isBlank()) {
-            context.toast(
+            context.toastRoot(
                 R.string.credentialsBlank
             )
             return

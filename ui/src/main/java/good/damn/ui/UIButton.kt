@@ -18,7 +18,7 @@ class UIButton(
     context
 ) {
 
-    var cornerRadius = 15f
+    var cornerRadiusFactor = 0.2f
 
     @setparam:ColorInt
     @get:ColorInt
@@ -47,6 +47,8 @@ class UIButton(
 
     private val mCanvasText = UICanvasText()
 
+    private var mCornerRadius = 0f
+
     fun setTextId(
         @StringRes id: Int
     ) {
@@ -70,6 +72,8 @@ class UIButton(
             changed, left,
             top, right, bottom
         )
+
+        mCornerRadius = height * cornerRadiusFactor
 
         mRect.left = 0f
         mRect.top = 0f
@@ -97,8 +101,8 @@ class UIButton(
 
         drawRoundRect(
             mRect,
-            cornerRadius,
-            cornerRadius,
+            mCornerRadius,
+            mCornerRadius,
             mPaintBackground
         )
 

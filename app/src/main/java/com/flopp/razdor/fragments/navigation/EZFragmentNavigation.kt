@@ -5,7 +5,10 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.StringRes
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import com.flopp.razdor.activities.EZActivityMain
 
 abstract class EZFragmentNavigation
 : Fragment() {
@@ -22,7 +25,6 @@ abstract class EZFragmentNavigation
             context
         )
     }
-
 
     protected abstract fun onCreateView(
         context: Context
