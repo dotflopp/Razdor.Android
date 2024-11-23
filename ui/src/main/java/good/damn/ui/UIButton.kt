@@ -5,20 +5,16 @@ import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.RectF
 import android.graphics.Typeface
-import android.view.MotionEvent
-import android.view.View
 import androidx.annotation.ColorInt
 import androidx.annotation.StringRes
 import good.damn.ui.components.UICanvasText
 import good.damn.ui.theme.UITheme
 
-class UIButton(
+open class UIButton(
     context: Context
 ): UIView(
     context
 ) {
-
-    var cornerRadiusFactor = 0.2f
 
     @setparam:ColorInt
     @get:ColorInt
@@ -42,23 +38,13 @@ class UIButton(
             mCanvasText.text = v
         }
 
-    private val mPaintBackground = Paint()
-    private val mRect = RectF()
 
     private val mCanvasText = UICanvasText()
-
-    private var mCornerRadius = 0f
 
     fun setTextId(
         @StringRes id: Int
     ) {
         mCanvasText.text = context.getString(id)
-    }
-
-    override fun setBackgroundColor(
-        color: Int
-    ) {
-        mPaintBackground.color = color
     }
 
     override fun onLayout(
@@ -73,13 +59,6 @@ class UIButton(
             top, right, bottom
         )
 
-        mCornerRadius = height * cornerRadiusFactor
-
-        mRect.left = 0f
-        mRect.top = 0f
-        mRect.right = width.toFloat()
-        mRect.bottom = height.toFloat()
-
         mCanvasText.textSize = height * textSizeFactor
 
         mCanvasText.layout(
@@ -91,19 +70,8 @@ class UIButton(
     override fun onDraw(
         canvas: Canvas
     ) = canvas.run {
-
-        scale(
-            scale,
-            scale,
-            width * 0.5f,
-            height * 0.5f
-        )
-
-        drawRoundRect(
-            mRect,
-            mCornerRadius,
-            mCornerRadius,
-            mPaintBackground
+        super.onDraw(
+            canvas
         )
 
         mCanvasText.draw(
@@ -114,7 +82,7 @@ class UIButton(
     override fun applyTheme(
         theme: UITheme
     ) {
-        mPaintBackground.color = theme.colorButton
-        mCanvasText.color = theme.colorButtonText
+        mPaintBackground.color = theme.colorBackgroundButton
+        mCanvasText.color = theme.colorTextButton
     }
 }

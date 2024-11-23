@@ -8,7 +8,7 @@ import androidx.annotation.ColorInt
 import good.damn.ui.components.UICanvasText
 import good.damn.ui.theme.UITheme
 
-open class UIToastText(
+class UIToastText(
     context: Context
 ): UIToast(
     context
@@ -21,13 +21,9 @@ open class UIToastText(
 
     private val mTextView = TextView(
         context
-    )
-
-    init {
-
-        addView(
-            mTextView
-        )
+    ).apply {
+        background = null
+        addView(this)
     }
 
     override fun applyTheme(

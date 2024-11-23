@@ -107,9 +107,9 @@ class EZViewLogin(
         password: String
     ) {
         if (username.isBlank() || password.isBlank()) {
-            context.toastRoot(
-                R.string.credentialsBlank
-            )
+
+
+
             return
         }
 
