@@ -30,8 +30,8 @@ class UICanvasText
 
     var text: String? = null
 
-    private var mx = 0f
-    private var my = 0f
+    var x = 0f
+    var y = 0f
 
     private val mPaintText = Paint()
 
@@ -41,20 +41,20 @@ class UICanvasText
         text?.apply {
             canvas.drawText(
                 this,
-                mx,
-                my,
+                x,
+                y,
                 mPaintText
             )
         }
     }
 
-    override fun layout(
+    fun center(
         width: Float,
         height: Float
     ) {
         text?.apply {
-            mx = (width - mPaintText.measureText(this)) * 0.5f
-            my = (height + mPaintText.textSize) * 0.5f
+            x = (width - mPaintText.measureText(this)) * 0.5f
+            y = (height + mPaintText.textSize) * 0.5f
         }
     }
 }

@@ -6,9 +6,4 @@ interface UICanvas {
     fun draw(
         canvas: Canvas
     )
-
-    fun layout(
-        width: Float,
-        height: Float
-    )
 }

@@ -61,7 +61,7 @@ open class UIButton(
 
         mCanvasText.textSize = height * textSizeFactor
 
-        mCanvasText.layout(
+        mCanvasText.center(
             mRect.right,
             mRect.bottom
         )

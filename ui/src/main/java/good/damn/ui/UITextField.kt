@@ -8,7 +8,9 @@ import android.util.Log
 import android.view.KeyEvent
 import android.view.MotionEvent
 import android.view.View
+import androidx.annotation.ColorInt
 import androidx.appcompat.widget.AppCompatEditText
+import good.damn.ui.components.UICanvasText
 import good.damn.ui.theme.UITheme
 
 class UITextField(
@@ -21,26 +23,81 @@ class UITextField(
         private val TAG = UITextField::class.simpleName
     }
 
-    private val mPaintStroke = Paint().apply {
-        style = Paint.Style.STROKE
-    }
+    var hint: String?
+        get() = mCanvasHint.text
+        set(v) {
+            mCanvasHint.text = v
+        }
+
+    @setparam:ColorInt
+    @get:ColorInt
+    var textColor: Int
+        get() = mCanvasHint.color
+        set(v) {
+            mCanvasHint.color = v
+        }
+
+    private val mCanvasHint = UICanvasText()
 
     init {
         background = null
         animationTouchDown = null
         animationTouchUp = null
+
+        mPaintBackground.apply {
+            style = Paint.Style.STROKE
+            strokeCap = Paint.Cap.ROUND
+        }
+
+    }
+
+    override fun onLayout(
+        changed: Boolean,
+        left: Int, top: Int,
+        right: Int, bottom: Int
+    ) {
+        super.onLayout(
+            changed,
+            left, top,
+            right, bottom
+        )
+
+        val rootWidth = width.toFloat()
+        val rootHeight = height.toFloat()
+
+        mCanvasHint.textSize = 0.2f * rootHeight
+
+        (0.03f * rootHeight).let { strokeWidth ->
+            mPaintBackground.strokeWidth = strokeWidth
+
+            mRect.left += strokeWidth
+            mRect.top += strokeWidth + mCanvasHint.textSize
+            mRect.right -= strokeWidth
+            mRect.bottom -= strokeWidth
+        }
+
+        mCanvasHint.apply {
+            x = rootWidth * 0.1f
+            y = (rootHeight +
+                mRect.top +
+                mCanvasHint.textSize * 0.5f
+            ) * 0.5f
+        }
     }
 
     override fun onDraw(
         canvas: Canvas
     ) = canvas.run {
+        drawRoundRect(
+            mRect,
+            mCornerRadius,
+            mCornerRadius,
+            mPaintBackground
+        )
 
-    }
-
-    override fun applyTheme(
-        theme: UITheme
-    ) {
-
+        mCanvasHint.draw(
+            canvas
+        )
     }
 
     override fun onTouchEvent(
@@ -52,10 +109,6 @@ class UITextField(
         }
 
         when (event.action) {
-            MotionEvent.ACTION_DOWN -> {
-
-            }
-
             MotionEvent.ACTION_UP -> {
 
             }
@@ -64,17 +117,11 @@ class UITextField(
         return true
     }
 
-    override fun onKeyDown(
-        keyCode: Int,
-        event: KeyEvent?
-    ): Boolean {
-
-        Log.d(TAG, "onKeyDown ${event?.action} $keyCode->${keyCode.toChar()}")
-        
-        return super.onKeyDown(
-            keyCode,
-            event
-        )
+    override fun applyTheme(
+        theme: UITheme
+    ) {
+        mCanvasHint.color = theme.colorText
+        mPaintBackground.color = theme.colorText
     }
 
 }

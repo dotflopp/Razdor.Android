@@ -12,6 +12,7 @@ import com.flopp.razdor.extensions.toastRoot
 import com.flopp.razdor.extensions.view.boundsLinear
 import com.flopp.razdor.fragments.navigation.EZFragmentNavigation
 import good.damn.ui.UIButton
+import good.damn.ui.UITextField
 import good.damn.ui.extensions.applyTheme
 
 class EZViewLogin(
@@ -27,20 +28,23 @@ class EZViewLogin(
 
         orientation = VERTICAL
 
-        val editTextUsername = AppCompatEditText(
+        val editTextUsername = UITextField(
             context
         ).apply {
 
-            setHint(
+            hint = context.getString(
                 R.string.username
             )
+
+            cornerRadiusFactor = 0.25f
 
             applyTheme(
                 EZApp.theme
             )
 
             boundsLinear(
-                width = -1f
+                width = -1f,
+                height = EZApp.height * 0.1f
             )
 
             addView(
@@ -79,7 +83,7 @@ class EZViewLogin(
 
             setOnClickListener {
                 onClickBtnLogin(
-                    editTextUsername.text.toString(),
+                    "Username",//editTextUsername.text.toString(),
                     editTextPassword.text.toString()
                 )
             }

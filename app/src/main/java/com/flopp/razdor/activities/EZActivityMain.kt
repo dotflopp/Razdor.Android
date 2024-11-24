@@ -1,6 +1,8 @@
 package com.flopp.razdor.activities
 
 import android.os.Bundle
+import android.util.Log
+import android.view.KeyEvent
 import android.widget.FrameLayout
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
@@ -12,6 +14,10 @@ import com.flopp.razdor.services.EZServiceToast
 
 class EZActivityMain
 : AppCompatActivity() {
+
+    companion object {
+        private val TAG = EZActivityMain::class.simpleName
+    }
 
     private var mFragmentNavigation: EZNavigationFragment<Fragment>? = null
 
@@ -75,6 +81,14 @@ class EZActivityMain
             this,
             msg
         )
+    }
+
+    override fun onKeyLongPress(
+        keyCode: Int,
+        event: KeyEvent?
+    ): Boolean {
+        Log.d(TAG, "onKeyDown ${event?.action} $keyCode->${keyCode.toChar()}")
+        return super.onKeyLongPress(keyCode, event)
     }
 
 }
