@@ -7,10 +7,7 @@ import android.widget.LinearLayout
 import androidx.appcompat.widget.AppCompatEditText
 import com.flopp.razdor.EZApp
 import com.flopp.razdor.R
-import com.flopp.razdor.extensions.toast
-import com.flopp.razdor.extensions.toastRoot
 import com.flopp.razdor.extensions.view.boundsLinear
-import com.flopp.razdor.fragments.navigation.EZFragmentNavigation
 import good.damn.ui.UIButton
 import good.damn.ui.UITextField
 import good.damn.ui.extensions.applyTheme
@@ -36,36 +33,37 @@ class EZViewLogin(
                 R.string.username
             )
 
-            cornerRadiusFactor = 0.25f
+            tintColor = EZApp.theme.colorText
+
+            /*cornerRadiusFactor = 0.25f
 
             applyTheme(
                 EZApp.theme
-            )
+            )*/
 
             boundsLinear(
                 width = -1f,
                 height = EZApp.height * 0.1f
             )
 
-            addView(
+            this@EZViewLogin.addView(
                 this
             )
         }
 
-        val editTextPassword = AppCompatEditText(
+        val editTextPassword = UITextField(
             context
         ).apply {
 
-            setHint(
+            hint = context.getString(
                 R.string.password
             )
 
-            boundsLinear(
-                width = -1f
-            )
+            tintColor = EZApp.theme.colorText
 
-            applyTheme(
-                EZApp.theme
+            boundsLinear(
+                width = -1f,
+                height = EZApp.height * 0.1f
             )
 
             addView(

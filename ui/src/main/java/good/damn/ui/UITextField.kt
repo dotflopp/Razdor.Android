@@ -3,16 +3,19 @@ package good.damn.ui
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Paint
+import android.graphics.Rect
 import android.graphics.RectF
+import android.util.TypedValue
 import android.view.MotionEvent
+import android.widget.FrameLayout
 import androidx.annotation.ColorInt
+import androidx.appcompat.widget.AppCompatEditText
 import good.damn.ui.components.UICanvasText
 import good.damn.ui.extensions.isOutsideView
-import good.damn.ui.theme.UITheme
 
 class UITextField(
     context: Context
-): UIView(
+): AppCompatEditText(
     context
 ) {
 
@@ -28,33 +31,36 @@ class UITextField(
 
     @setparam:ColorInt
     @get:ColorInt
-    var textColor: Int
+    var tintColor: Int
         get() = mCanvasHint.color
         set(v) {
             mCanvasHint.color = v
+            setTextColor(v)
+            setLinkTextColor(v)
+            mPaintStroke.color = v
         }
 
-    private val mCanvasHint = UICanvasText()
+    private val mPaintStroke = Paint().apply {
+        style = Paint.Style.STROKE
+        strokeCap = Paint.Cap.ROUND
+    }
 
+    private val mCanvasHint = UICanvasText()
     private val mRectHint = RectF()
 
     private var mHintSizeInitial = 0f
     private var mHintYInitial = 0f
 
+    private var mCornerRadius = 60f
+
     private val mPaintBackText = Paint().apply {
         color = 0xff000315.toInt()
     }
 
+    private val mRect = RectF()
+
     init {
         background = null
-        animationTouchDown = null
-        animationTouchUp = null
-
-        mPaintBackground.apply {
-            style = Paint.Style.STROKE
-            strokeCap = Paint.Cap.ROUND
-        }
-
     }
 
     override fun onLayout(
@@ -74,13 +80,18 @@ class UITextField(
         mHintSizeInitial = 0.2f * rootHeight
         mCanvasHint.textSize = mHintSizeInitial
 
-        (0.03f * rootHeight).let { strokeWidth ->
-            mPaintBackground.strokeWidth = strokeWidth
+        setTextSize(
+            TypedValue.COMPLEX_UNIT_PX,
+            mHintSizeInitial
+        )
 
-            mRect.left += strokeWidth
-            mRect.top += strokeWidth + mCanvasHint.textSize
-            mRect.right -= strokeWidth
-            mRect.bottom -= strokeWidth
+        (0.03f * rootHeight).let { strokeWidth ->
+            mPaintStroke.strokeWidth = strokeWidth
+
+            mRect.left = strokeWidth
+            mRect.top = strokeWidth + mCanvasHint.textSize
+            mRect.right = rootWidth - strokeWidth
+            mRect.bottom = rootHeight - strokeWidth
         }
 
         mCanvasHint.apply {
@@ -91,17 +102,26 @@ class UITextField(
             ) * 0.5f
 
             mHintYInitial = y
+
+            setPadding(
+                x.toInt(),
+                mRect.top.toInt(),
+                0,0
+            )
         }
     }
 
     override fun onDraw(
         canvas: Canvas
     ) = canvas.run {
+        super.onDraw(
+            this
+        )
         drawRoundRect(
             mRect,
             mCornerRadius,
             mCornerRadius,
-            mPaintBackground
+            mPaintStroke
         )
 
         if (mCanvasHint.textSize != mHintSizeInitial) {
@@ -116,55 +136,47 @@ class UITextField(
         )
     }
 
-    override fun onTouchEvent(
-        event: MotionEvent?
-    ): Boolean {
+    override fun onFocusChanged(
+        focused: Boolean,
+        direction: Int,
+        previouslyFocusedRect: Rect?
+    ) {
 
-        if (event == null) {
-            return false
-        }
+        mCanvasHint.apply {
 
-        when (event.action) {
+            if (focused) {
 
-            MotionEvent.ACTION_CANCEL,
-            MotionEvent.ACTION_UP -> {
-                if (isOutsideView(
-                    event.x,
-                    event.y
-                )) {
-                    return true
-                }
+                textSize = mHintSizeInitial * 0.85f
+                y = mRect.top + textSize * 0.5f
 
-                mCanvasHint.apply {
-                    if (textSize == mHintSizeInitial) {
-                        textSize = mHintSizeInitial * 0.6f
-                        y = mRect.top + textSize * 0.5f
+                val margin = width * 0.02f
 
-                        val margin = width * 0.02f
+                mRectHint.left = x - margin
+                mRectHint.top = 0f
 
-                        mRectHint.left = x - margin
-                        mRectHint.top = 0f
+                mRectHint.right = x + measureText() + margin
+                mRectHint.bottom = y + textSize
+                return@apply
+            }
 
-                        mRectHint.right = x + measureText() + margin
-                        mRectHint.bottom = y + textSize
-                    } else {
-                        textSize = mHintSizeInitial
-                        y = mHintYInitial
-                    }
-                }
-
-                invalidate()
+            if (this@UITextField.text?.isBlank() != false) {
+                textSize = mHintSizeInitial
+                y = mHintYInitial
             }
         }
 
-        return true
+        super.onFocusChanged(
+            focused,
+            direction,
+            previouslyFocusedRect
+        )
     }
 
-    override fun applyTheme(
+    /*override fun applyTheme(
         theme: UITheme
     ) {
         mCanvasHint.color = theme.colorText
         mPaintBackground.color = theme.colorText
-    }
+    }*/
 
 }
