@@ -9,9 +9,10 @@ import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import android.view.animation.AccelerateDecelerateInterpolator
+import android.view.animation.LinearInterpolator
+import android.view.animation.OvershootInterpolator
 import good.damn.ui.animation.UIAnimationScale
 import good.damn.ui.animation.misc.UIAnimation
-import good.damn.ui.animation.misc.UIAnimationUpdate
 import good.damn.ui.extensions.isOutsideView
 import good.damn.ui.theme.UITheme
 
@@ -30,13 +31,17 @@ abstract class UIView(
 
     var animationTouchDown: UIAnimation? = UIAnimationScale(
         1.0f,
-        0.85f,
+        0.9f,
+        100,
+        AccelerateDecelerateInterpolator(),
         this
     )
 
     var animationTouchUp: UIAnimation? = UIAnimationScale(
-        0.85f,
+        0.9f,
         1.0f,
+        200,
+        OvershootInterpolator(3.0f),
         this
     )
 
@@ -48,13 +53,9 @@ abstract class UIView(
 
     private var mOnClick: OnClickListener? = null
 
-    private val mAnimator = ValueAnimator().apply {
-        duration = 250
-        interpolator = AccelerateDecelerateInterpolator()
-        setFloatValues(
-            0.0f, 1.0f
-        )
+    private var mCurrentValueAnimation = 0.0f
 
+    private val mAnimator = ValueAnimator().apply {
         addUpdateListener(
             this@UIView
         )
@@ -127,24 +128,27 @@ abstract class UIView(
         when (event.action) {
 
             MotionEvent.ACTION_DOWN -> {
-                animationTouchDown?.apply {
-                    mCurrentAnimation = this
-                    mAnimator.start()
-                }
+                startTouchAnimation(
+                    animationTouchDown,
+                    0.0f,
+                    1.0f
+                )
             }
 
             MotionEvent.ACTION_CANCEL -> {
-                animationTouchUp?.apply {
-                    mCurrentAnimation = this
-                    mAnimator.start()
-                }
+                startTouchAnimation(
+                    animationTouchUp,
+                    0.0f,
+                    1.0f
+                )
             }
 
             MotionEvent.ACTION_UP -> {
-                animationTouchUp?.apply {
-                    mCurrentAnimation = this
-                    mAnimator.start()
-                }
+                startTouchAnimation(
+                    animationTouchUp,
+                    1.0f-mCurrentValueAnimation,
+                    1.0f
+                )
                 if (isOutsideView(
                     event.x,
                     event.y
@@ -163,17 +167,38 @@ abstract class UIView(
         return true
     }
 
-
-    abstract fun applyTheme(
-        theme: UITheme
-    )
-
     override fun onAnimationUpdate(
         animation: ValueAnimator
     ) {
+        mCurrentValueAnimation = animation.animatedFraction
         mCurrentAnimation?.updateAnimation(
             animation.animatedValue as Float
         )
         invalidate()
     }
+
+    private inline fun startTouchAnimation(
+        animation: UIAnimation?,
+        startValue: Float,
+        endValue: Float
+    ) = mAnimator.run {
+
+        animation ?: return@run
+
+        mCurrentAnimation = animation
+
+        interpolator = animation.interpolator
+        duration = animation.duration
+
+        setFloatValues(
+            startValue,
+            endValue
+        )
+        start()
+    }
+
+
+    abstract fun applyTheme(
+        theme: UITheme
+    )
 }

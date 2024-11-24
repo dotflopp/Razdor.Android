@@ -1,6 +1,8 @@
 package com.flopp.razdor.views.fragments
 
 import android.content.Context
+import android.graphics.Typeface
+import android.view.Gravity
 import android.widget.LinearLayout
 import androidx.appcompat.widget.AppCompatEditText
 import com.flopp.razdor.EZApp
@@ -82,16 +84,19 @@ class EZViewLogin(
                 )
             }
 
-            textSizeFactor = 0.25f
-            cornerRadiusFactor = 0.25f
+            textSizeFactor = 0.35f
+            cornerRadiusFactor = 0.35f
+
+            typeface = Typeface.DEFAULT_BOLD
 
             applyTheme(
                 EZApp.theme
             )
 
             boundsLinear(
-                width = -1f,
-                height = EZApp.height * 0.1f
+                gravity = Gravity.CENTER_HORIZONTAL,
+                width = EZApp.width * 0.75f,
+                height = EZApp.height * 0.08f
             )
 
             addView(
@@ -107,8 +112,6 @@ class EZViewLogin(
         password: String
     ) {
         if (username.isBlank() || password.isBlank()) {
-
-
 
             return
         }

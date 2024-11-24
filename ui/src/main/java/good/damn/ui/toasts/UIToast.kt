@@ -14,15 +14,17 @@ abstract class UIToast(
 
     private val mAnimator = ValueAnimator().apply {
         interpolator = AccelerateDecelerateInterpolator()
-        duration = 450
+        duration = 250
         addUpdateListener(
             this@UIToast
         )
     }
 
+    private var mStartValue = 0.0f
+
     open fun show() = mAnimator.run {
         setFloatValues(
-            0.0f, 1.0f
+            mStartValue, 1.0f
         )
 
         start()
@@ -30,7 +32,7 @@ abstract class UIToast(
 
     open fun hide() = mAnimator.run {
         setFloatValues(
-            1.0f, 0.0f
+            mStartValue, 0.0f
         )
 
         start()
@@ -43,7 +45,8 @@ abstract class UIToast(
     override fun onAnimationUpdate(
         animation: ValueAnimator
     ) {
-        alpha = animation.animatedValue as Float
+        mStartValue = animation.animatedValue as Float
+        alpha = mStartValue
     }
 
 }

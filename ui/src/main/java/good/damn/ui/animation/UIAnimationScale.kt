@@ -8,8 +8,12 @@ import good.damn.ui.animation.misc.UIAnimation
 class UIAnimationScale(
     private val from: Float,
     private val to: Float,
+    duration: Long,
+    interpolator: Interpolator,
     view: UIView
 ): UIAnimation(
+    duration,
+    interpolator,
     view
 ) {
 
