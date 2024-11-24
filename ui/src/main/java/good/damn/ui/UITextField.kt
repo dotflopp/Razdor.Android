@@ -3,14 +3,10 @@ package good.damn.ui
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Paint
-import android.graphics.RectF
-import android.util.Log
-import android.view.KeyEvent
 import android.view.MotionEvent
-import android.view.View
 import androidx.annotation.ColorInt
-import androidx.appcompat.widget.AppCompatEditText
 import good.damn.ui.components.UICanvasText
+import good.damn.ui.extensions.isOutsideView
 import good.damn.ui.theme.UITheme
 
 class UITextField(
@@ -39,6 +35,9 @@ class UITextField(
 
     private val mCanvasHint = UICanvasText()
 
+    private var mHintSizeInitial = 0f
+    private var mHintYInitial = 0f
+
     init {
         background = null
         animationTouchDown = null
@@ -65,7 +64,8 @@ class UITextField(
         val rootWidth = width.toFloat()
         val rootHeight = height.toFloat()
 
-        mCanvasHint.textSize = 0.2f * rootHeight
+        mHintSizeInitial = 0.2f * rootHeight
+        mCanvasHint.textSize = mHintSizeInitial
 
         (0.03f * rootHeight).let { strokeWidth ->
             mPaintBackground.strokeWidth = strokeWidth
@@ -82,6 +82,8 @@ class UITextField(
                 mRect.top +
                 mCanvasHint.textSize * 0.5f
             ) * 0.5f
+
+            mHintYInitial = y
         }
     }
 
@@ -109,8 +111,27 @@ class UITextField(
         }
 
         when (event.action) {
-            MotionEvent.ACTION_UP -> {
 
+            MotionEvent.ACTION_CANCEL,
+            MotionEvent.ACTION_UP -> {
+                if (isOutsideView(
+                    event.x,
+                    event.y
+                )) {
+                    return true
+                }
+
+                mCanvasHint.apply {
+                    if (textSize == mHintSizeInitial) {
+                        textSize = mHintSizeInitial * 0.4f
+                        y = mRect.top + textSize * 0.5f
+                    } else {
+                        textSize = mHintSizeInitial
+                        y = mHintYInitial
+                    }
+                }
+
+                invalidate()
             }
         }
 
