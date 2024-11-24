@@ -48,6 +48,10 @@ class UICanvasText
         }
     }
 
+    fun measureText() = text?.run {
+        mPaintText.measureText(this)
+    } ?: 0.0f
+
     fun center(
         width: Float,
         height: Float

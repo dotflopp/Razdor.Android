@@ -3,6 +3,7 @@ package good.damn.ui
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Paint
+import android.graphics.RectF
 import android.view.MotionEvent
 import androidx.annotation.ColorInt
 import good.damn.ui.components.UICanvasText
@@ -35,8 +36,14 @@ class UITextField(
 
     private val mCanvasHint = UICanvasText()
 
+    private val mRectHint = RectF()
+
     private var mHintSizeInitial = 0f
     private var mHintYInitial = 0f
+
+    private val mPaintBackText = Paint().apply {
+        color = 0xff000315.toInt()
+    }
 
     init {
         background = null
@@ -97,6 +104,13 @@ class UITextField(
             mPaintBackground
         )
 
+        if (mCanvasHint.textSize != mHintSizeInitial) {
+            drawRect(
+                mRectHint,
+                mPaintBackText
+            )
+        }
+
         mCanvasHint.draw(
             canvas
         )
@@ -123,8 +137,16 @@ class UITextField(
 
                 mCanvasHint.apply {
                     if (textSize == mHintSizeInitial) {
-                        textSize = mHintSizeInitial * 0.4f
+                        textSize = mHintSizeInitial * 0.6f
                         y = mRect.top + textSize * 0.5f
+
+                        val margin = width * 0.02f
+
+                        mRectHint.left = x - margin
+                        mRectHint.top = 0f
+
+                        mRectHint.right = x + measureText() + margin
+                        mRectHint.bottom = y + textSize
                     } else {
                         textSize = mHintSizeInitial
                         y = mHintYInitial
