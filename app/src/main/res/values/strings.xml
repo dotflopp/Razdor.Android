@@ -9,4 +9,6 @@
     <string name="username">Email</string>
     <string name="password">Пароль</string>
     <string name="login">Войти</string>
+    <string name="warningUsername">К примеру, example@gmail.com</string>
+    <string name="warningPassword">Больше 8 символов и содержать $/][</string>
 </resources>

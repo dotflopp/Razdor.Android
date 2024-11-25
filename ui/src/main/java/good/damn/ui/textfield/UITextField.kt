@@ -30,6 +30,14 @@ class UITextField(
             mCanvasHint.text = v
         }
 
+    var subhint: String?
+        get() = mCanvasSubhint.text
+        set(v) {
+            mCanvasSubhint.text = if (v?.isBlank() == false)
+                "• $v"
+            else null
+        }
+
     var strokeWidth: Float
         get() = mPaintStroke.strokeWidth
         set(v) {
@@ -48,6 +56,8 @@ class UITextField(
     }
 
     private val mCanvasHint = UICanvasText()
+    private val mCanvasSubhint = UICanvasText()
+
     private val mRectHint = RectF()
     private val mRect = RectF()
 
@@ -60,6 +70,7 @@ class UITextField(
         this,
         mCanvasHint,
         mRectHint,
+        mCanvasSubhint,
         mRect
     )
 
@@ -120,6 +131,18 @@ class UITextField(
         mCanvasHint.draw(
             canvas
         )
+
+        save()
+
+        clipRect(
+            mRectHint
+        )
+
+        mCanvasSubhint.draw(
+            canvas
+        )
+
+        restore()
     }
 
     override fun onFocusChanged(
@@ -129,10 +152,12 @@ class UITextField(
     ) = mCanvasHint.run {
 
         if (focused) {
-            focusColor()
-            mAnimator.focus(
-                width.toFloat()
-            )
+            if (this@UITextField.text?.isBlank() != false) {
+                focusColor()
+                mAnimator.focus(
+                    width.toFloat()
+                )
+            }
         } else if (this@UITextField.text?.isBlank() != false) {
             mAnimator.focusNo()
             focusNoColor()
@@ -168,11 +193,13 @@ class UITextField(
     private inline fun focusNoColor() {
         mCanvasHint.color = mColorTintFocusNo
         mPaintStroke.color = mColorTintFocusNo
+        mCanvasSubhint.color = mColorTintFocusNo
     }
 
 
     private inline fun focusColor() {
         mCanvasHint.color = mColorTintFocus
         mPaintStroke.color = mColorTintFocus
+        mCanvasSubhint.color = mColorTintFocus
     }
 }

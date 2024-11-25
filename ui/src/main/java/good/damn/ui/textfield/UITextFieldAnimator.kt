@@ -4,7 +4,6 @@ import android.animation.ValueAnimator
 import android.graphics.RectF
 import android.util.TypedValue
 import android.view.animation.AccelerateDecelerateInterpolator
-import android.view.animation.AccelerateInterpolator
 import android.view.animation.OvershootInterpolator
 import good.damn.ui.components.UICanvasText
 
@@ -12,11 +11,12 @@ class UITextFieldAnimator(
     private val textField: UITextField,
     private val canvasHint: UICanvasText,
     private val mRectHint: RectF,
+    private val canvasSubhint: UICanvasText,
     private val mRect: RectF
 ): ValueAnimator.AnimatorUpdateListener {
 
     private val mAnimator = ValueAnimator().apply {
-        duration = 150
+        duration = 350
         interpolator = OvershootInterpolator()
 
         addUpdateListener(
@@ -30,8 +30,9 @@ class UITextFieldAnimator(
     private var mFromTextSize = 0f
     private var mToTextSize = 0f
 
-    private var mWidthText = 0f
-    private var marginText = 0f
+    private var mWidthHint = 0f
+    private var mWidthSubhint = 0f
+    private var marginHint = 0f
 
     private var mHintSizeInitial = 0f
     private var mHintSizeSmall = 0f
@@ -48,6 +49,8 @@ class UITextFieldAnimator(
 
         mHintYSmall = mRect.top + mHintSizeSmall * 0.5f
 
+        canvasSubhint.textSize = mHintSizeSmall
+
         canvasHint.textSize = mHintSizeInitial
 
         textField.setTextSize(
@@ -55,7 +58,7 @@ class UITextFieldAnimator(
             mHintSizeInitial
         )
 
-        marginText = width * 0.02f
+        marginHint = width * 0.02f
 
         canvasHint.apply {
             x = width * 0.1f
@@ -72,6 +75,8 @@ class UITextFieldAnimator(
                 0,0
             )
         }
+
+        canvasSubhint.y = mHintYSmall
     }
 
     fun focus(
@@ -84,13 +89,18 @@ class UITextFieldAnimator(
         mFromY = mHintYInitial
         mToY = mHintYSmall
 
-        mWidthText = measureText() + marginText
+        mWidthHint = measureText() + marginHint
+        canvasSubhint.x = x + mWidthHint
 
-        mRectHint.left = x - marginText
+        mWidthSubhint = canvasSubhint.measureText() + marginHint
+
+        mRectHint.left = x - marginHint
         mRectHint.top = 0f
 
-        mRectHint.right = x + mWidthText
+        mRectHint.right = x + mWidthHint
         mRectHint.bottom = mRect.top + mHintSizeSmall
+
+        mWidthHint += mWidthSubhint
 
         mAnimator.apply {
             setFloatValues(
@@ -113,8 +123,8 @@ class UITextFieldAnimator(
         val f = animation.animatedValue as Float
 
         canvasHint.apply {
-            mRectHint.left = x - marginText * f
-            mRectHint.right = x + mWidthText * f
+            mRectHint.left = x - marginHint * f
+            mRectHint.right = x + mWidthHint * f
             textSize = mFromTextSize + (mToTextSize - mFromTextSize) * f
             y = mFromY + (mToY - mFromY) * f
         }

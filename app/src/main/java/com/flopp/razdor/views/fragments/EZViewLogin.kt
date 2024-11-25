@@ -34,6 +34,10 @@ class EZViewLogin(
 
             val h = EZApp.height * 0.1f
 
+            subhint = context.getString(
+                R.string.warningUsername
+            )
+
             hint = context.getString(
                 R.string.username
             )
@@ -64,6 +68,10 @@ class EZViewLogin(
 
             hint = context.getString(
                 R.string.password
+            )
+
+            subhint = context.getString(
+                R.string.warningPassword
             )
 
             cornerRadiusFactor = 0.3f
