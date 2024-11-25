@@ -116,6 +116,12 @@ class UITextField(
         super.onDraw(
             this
         )
+
+        translate(
+            scrollX.toFloat(),
+            scrollY.toFloat()
+        )
+
         drawRoundRect(
             mRect,
             mCornerRadius,

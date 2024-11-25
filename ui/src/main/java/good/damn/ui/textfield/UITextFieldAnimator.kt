@@ -17,12 +17,13 @@ class UITextFieldAnimator(
 
     private val mAnimator = ValueAnimator().apply {
         duration = 350
-        interpolator = OvershootInterpolator()
-
         addUpdateListener(
             this@UITextFieldAnimator
         )
     }
+
+    private val mInterpolatorStart = OvershootInterpolator()
+    private val mInterpolatorEnd = AccelerateDecelerateInterpolator()
 
     private var mFromY = 0f
     private var mToY = 0f
@@ -103,6 +104,7 @@ class UITextFieldAnimator(
         mWidthHint += mWidthSubhint
 
         mAnimator.apply {
+            interpolator = mInterpolatorStart
             setFloatValues(
                 0.0f, 1.0f
             )
@@ -111,6 +113,7 @@ class UITextFieldAnimator(
     }
 
     fun focusNo() = mAnimator.run {
+        interpolator = mInterpolatorEnd
         setFloatValues(
             1.0f, 0.0f
         )
