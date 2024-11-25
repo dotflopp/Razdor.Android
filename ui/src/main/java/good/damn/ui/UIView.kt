@@ -5,14 +5,9 @@ import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.RectF
-import android.util.Log
 import android.view.MotionEvent
 import android.view.View
-import android.view.animation.AccelerateDecelerateInterpolator
-import android.view.animation.LinearInterpolator
-import android.view.animation.OvershootInterpolator
-import good.damn.ui.animation.UIAnimationScale
-import good.damn.ui.animation.misc.UIAnimation
+import good.damn.ui.animation.UIAnimationGroup
 import good.damn.ui.extensions.isOutsideView
 import good.damn.ui.theme.UITheme
 
@@ -27,29 +22,20 @@ abstract class UIView(
     }
 
     var cornerRadiusFactor = 0.2f
+        set(v) {
+            field = v
+            mCornerRadius = height * v
+        }
     var scale = 1.0f
 
-    var animationTouchDown: UIAnimation? = UIAnimationScale(
-        1.0f,
-        0.9f,
-        100,
-        AccelerateDecelerateInterpolator(),
-        this
-    )
-
-    var animationTouchUp: UIAnimation? = UIAnimationScale(
-        0.9f,
-        1.0f,
-        200,
-        OvershootInterpolator(3.0f),
-        this
-    )
+    var animationGroupTouchDown: UIAnimationGroup? = null
+    var animationGroupTouchUp: UIAnimationGroup? = null
 
     protected val mPaintBackground = Paint()
     protected val mRect = RectF()
     protected var mCornerRadius = 0f
 
-    private var mCurrentAnimation: UIAnimation? = null
+    private var mCurrentAnimationGroup: UIAnimationGroup? = null
 
     private var mOnClick: OnClickListener? = null
 
@@ -129,7 +115,7 @@ abstract class UIView(
 
             MotionEvent.ACTION_DOWN -> {
                 startTouchAnimation(
-                    animationTouchDown,
+                    animationGroupTouchDown,
                     0.0f,
                     1.0f
                 )
@@ -137,7 +123,7 @@ abstract class UIView(
 
             MotionEvent.ACTION_CANCEL -> {
                 startTouchAnimation(
-                    animationTouchUp,
+                    animationGroupTouchUp,
                     0.0f,
                     1.0f
                 )
@@ -145,7 +131,7 @@ abstract class UIView(
 
             MotionEvent.ACTION_UP -> {
                 startTouchAnimation(
-                    animationTouchUp,
+                    animationGroupTouchUp,
                     1.0f-mCurrentValueAnimation,
                     1.0f
                 )
@@ -171,24 +157,28 @@ abstract class UIView(
         animation: ValueAnimator
     ) {
         mCurrentValueAnimation = animation.animatedFraction
-        mCurrentAnimation?.updateAnimation(
-            animation.animatedValue as Float
-        )
+        val f = animation.animatedValue as Float
+        mCurrentAnimationGroup?.animations?.forEach {
+            it.updateAnimationView(
+                this,
+                f
+            )
+        }
         invalidate()
     }
 
     private inline fun startTouchAnimation(
-        animation: UIAnimation?,
+        group: UIAnimationGroup?,
         startValue: Float,
         endValue: Float
     ) = mAnimator.run {
 
-        animation ?: return@run
+        group ?: return@run
 
-        mCurrentAnimation = animation
+        mCurrentAnimationGroup = group
 
-        interpolator = animation.interpolator
-        duration = animation.duration
+        interpolator = group.interpolator
+        duration = group.duration
 
         setFloatValues(
             startValue,
