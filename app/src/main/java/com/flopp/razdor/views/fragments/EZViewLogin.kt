@@ -4,13 +4,11 @@ import android.content.Context
 import android.graphics.Typeface
 import android.view.Gravity
 import android.widget.LinearLayout
-import androidx.appcompat.widget.AppCompatEditText
 import com.flopp.razdor.EZApp
 import com.flopp.razdor.R
 import com.flopp.razdor.extensions.view.boundsLinear
 import good.damn.ui.UIButton
-import good.damn.ui.UITextField
-import good.damn.ui.extensions.applyTheme
+import good.damn.ui.textfield.UITextField
 
 class EZViewLogin(
     context: Context
@@ -29,21 +27,23 @@ class EZViewLogin(
             context
         ).apply {
 
+            val h = EZApp.height * 0.1f
+
             hint = context.getString(
                 R.string.username
             )
 
-            tintColor = EZApp.theme.colorText
+            cornerRadiusFactor = 0.3f
 
-            /*cornerRadiusFactor = 0.25f
+            strokeWidth = h * 0.013f
 
             applyTheme(
                 EZApp.theme
-            )*/
+            )
 
             boundsLinear(
                 width = -1f,
-                height = EZApp.height * 0.1f
+                height = h
             )
 
             this@EZViewLogin.addView(
@@ -55,15 +55,22 @@ class EZViewLogin(
             context
         ).apply {
 
+            val h = EZApp.height * 0.1f
+
             hint = context.getString(
                 R.string.password
             )
 
-            tintColor = EZApp.theme.colorText
+            cornerRadiusFactor = 0.3f
+            strokeWidth = h * 0.013f
+
+            applyTheme(
+                EZApp.theme
+            )
 
             boundsLinear(
                 width = -1f,
-                height = EZApp.height * 0.1f
+                height = h
             )
 
             addView(
@@ -81,7 +88,7 @@ class EZViewLogin(
 
             setOnClickListener {
                 onClickBtnLogin(
-                    "Username",//editTextUsername.text.toString(),
+                    editTextUsername.text.toString(),
                     editTextPassword.text.toString()
                 )
             }

@@ -1,0 +1,178 @@
+package good.damn.ui.textfield
+
+import android.animation.ValueAnimator
+import android.content.Context
+import android.graphics.Canvas
+import android.graphics.Paint
+import android.graphics.Rect
+import android.graphics.RectF
+import android.text.InputType
+import android.util.TypedValue
+import android.view.animation.AccelerateDecelerateInterpolator
+import androidx.appcompat.widget.AppCompatEditText
+import good.damn.ui.components.UICanvasText
+import good.damn.ui.interfaces.UIThemable
+import good.damn.ui.theme.UITheme
+
+class UITextField(
+    context: Context
+): AppCompatEditText(
+    context
+), UIThemable {
+
+    companion object {
+        private val TAG = UITextField::class.simpleName
+    }
+
+    var hint: String?
+        get() = mCanvasHint.text
+        set(v) {
+            mCanvasHint.text = v
+        }
+
+    var strokeWidth: Float
+        get() = mPaintStroke.strokeWidth
+        set(v) {
+            mPaintStroke.strokeWidth = v
+        }
+
+    var cornerRadiusFactor = 0.25f
+
+    private val mPaintStroke = Paint().apply {
+        style = Paint.Style.STROKE
+        strokeCap = Paint.Cap.ROUND
+    }
+
+    private val mPaintBackText = Paint().apply {
+        color = 0xff000315.toInt()
+    }
+
+    private val mCanvasHint = UICanvasText()
+    private val mRectHint = RectF()
+    private val mRect = RectF()
+
+    private var mCornerRadius = 0f
+
+    private var mColorTintFocus = 0
+    private var mColorTintFocusNo = 0
+
+    private val mAnimator = UITextFieldAnimator(
+        this,
+        mCanvasHint,
+        mRectHint,
+        mRect
+    )
+
+    init {
+        background = null
+        maxLines = 1
+
+        inputType = InputType.TYPE_CLASS_TEXT
+    }
+
+    override fun onLayout(
+        changed: Boolean,
+        left: Int, top: Int,
+        right: Int, bottom: Int
+    ) {
+        super.onLayout(
+            changed,
+            left, top,
+            right, bottom
+        )
+
+        val rootWidth = width.toFloat()
+        val rootHeight = height.toFloat()
+
+        mPaintStroke.strokeWidth = strokeWidth
+
+        mRect.left = strokeWidth
+        mRect.top = strokeWidth * 1.5f + mCanvasHint.textSize
+        mRect.right = rootWidth - strokeWidth
+        mRect.bottom = rootHeight - strokeWidth
+
+        mCornerRadius = height * cornerRadiusFactor
+
+        mAnimator.layout(
+            rootWidth,
+            rootHeight
+        )
+    }
+
+    override fun onDraw(
+        canvas: Canvas
+    ) = canvas.run {
+        super.onDraw(
+            this
+        )
+        drawRoundRect(
+            mRect,
+            mCornerRadius,
+            mCornerRadius,
+            mPaintStroke
+        )
+
+        drawRect(
+            mRectHint,
+            mPaintBackText
+        )
+
+        mCanvasHint.draw(
+            canvas
+        )
+    }
+
+    override fun onFocusChanged(
+        focused: Boolean,
+        direction: Int,
+        previouslyFocusedRect: Rect?
+    ) = mCanvasHint.run {
+
+        if (focused) {
+            focusColor()
+            mAnimator.focus(
+                width.toFloat()
+            )
+        } else if (this@UITextField.text?.isBlank() != false) {
+            mAnimator.focusNo()
+            focusNoColor()
+        }
+
+        super.onFocusChanged(
+            focused,
+            direction,
+            previouslyFocusedRect
+        )
+    }
+
+    override fun applyTheme(
+        theme: UITheme
+    ) {
+        mColorTintFocus = theme.colorText
+        mColorTintFocusNo = theme.colorTextEditUnfocused
+
+        if (this@UITextField.text?.isBlank() != false) {
+            focusNoColor()
+        } else {
+            focusColor()
+        }
+
+        setTextColor(
+            mColorTintFocus
+        )
+
+        mPaintBackText.color = theme.colorBackground
+    }
+
+
+    private inline fun focusNoColor() {
+        mCanvasHint.color = mColorTintFocusNo
+        mPaintStroke.color = mColorTintFocusNo
+    }
+
+
+    private inline fun focusColor() {
+        mCanvasHint.color = mColorTintFocus
+        mPaintStroke.color = mColorTintFocus
+    }
+}

@@ -13,6 +13,7 @@ extends UITheme {
         colorText = 0xffffffff;
         colorTextButton = 0xff000315;
         colorTextToast = 0xff000315;
+        colorTextEditUnfocused = 0xf9545252;
 
         colorHint = 0xffffffff;
 
