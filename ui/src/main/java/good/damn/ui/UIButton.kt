@@ -121,12 +121,6 @@ open class UIButton(
         mCanvasText.color = theme.colorTextButton
     }
 
-    fun setTextId(
-        @StringRes id: Int
-    ) {
-        mCanvasText.text = context.getString(id)
-        mCanvasText2.text = mCanvasText.text
-    }
 
     fun changeTextAnimated(
         text: String

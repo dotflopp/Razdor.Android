@@ -16,4 +16,5 @@ public abstract class UITheme {
     @ColorInt public int colorBackgroundToast;
     @ColorInt public int colorBackgroundButton;
 
+    @ColorInt public int colorError;
 }

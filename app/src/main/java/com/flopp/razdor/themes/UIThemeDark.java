@@ -17,5 +17,6 @@ extends UITheme {
 
         colorHint = 0xffffffff;
 
+        colorError = 0xffd32f2f;
     }
 }

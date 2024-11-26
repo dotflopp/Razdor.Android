@@ -100,15 +100,15 @@ class EZViewLogin(
             context
         ).apply {
 
-            setTextId(
+            text = context.getString(
                 R.string.login
             )
 
             setOnClickListener {
                 onClickBtnLogin(
                     this,
-                    editTextUsername.text.toString(),
-                    editTextPassword.text.toString()
+                    editTextUsername,
+                    editTextPassword
                 )
             }
 
@@ -167,12 +167,29 @@ class EZViewLogin(
 
     private inline fun onClickBtnLogin(
         btn: UIButton,
-        username: String,
-        password: String
+        username: UITextField,
+        password: UITextField
     ) {
-        if (username.isBlank() || password.isBlank()) {
+        var hasError = false
+
+        if (username.text?.toString()?.isBlank() != false) {
+            username.error(
+                EZApp.theme
+            )
+            hasError = true
+        }
+
+        if (password.text?.toString()?.isBlank() != false) {
+            password.error(
+                EZApp.theme
+            )
+            hasError = true
+        }
+
+        if (hasError) {
             return
         }
+
 
         Handler(
             Looper.getMainLooper()

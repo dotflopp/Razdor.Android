@@ -195,6 +195,14 @@ class UITextField(
         mPaintBackText.color = theme.colorBackground
     }
 
+    fun error(
+        theme: UITheme
+    ) {
+        mCanvasHint.color = theme.colorError
+        mPaintStroke.color = theme.colorError
+        mCanvasSubhint.color = theme.colorError
+        invalidate()
+    }
 
     private inline fun focusNoColor() {
         mCanvasHint.color = mColorTintFocusNo
