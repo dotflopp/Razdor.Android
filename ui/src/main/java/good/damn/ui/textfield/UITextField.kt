@@ -74,6 +74,8 @@ class UITextField(
     private val mRectHint = RectF()
     private val mRect = RectF()
 
+    private var mHasError = false
+
     private var mCornerRadius = 0f
 
     private var mColorTintFocus = 0
@@ -170,6 +172,15 @@ class UITextField(
         previouslyFocusedRect: Rect?
     ) = mCanvasHint.run {
 
+        if (mHasError) {
+            if (focused) {
+                focusColor()
+            } else {
+                focusNoColor()
+            }
+            mHasError = false
+        }
+
         if (isEnabled) {
             if (focused) {
                 if (this@UITextField.text?.isBlank() != false) {
@@ -231,6 +242,8 @@ class UITextField(
         mCanvasHint.color = theme.colorError
         mPaintStroke.color = theme.colorError
         mCanvasSubhint.color = theme.colorError
+
+        mHasError = true
         invalidate()
     }
 

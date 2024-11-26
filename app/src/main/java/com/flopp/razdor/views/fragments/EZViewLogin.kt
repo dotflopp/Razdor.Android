@@ -3,12 +3,15 @@ package com.flopp.razdor.views.fragments
 import android.content.Context
 import android.os.Handler
 import android.os.Looper
+import android.text.InputType
+import android.text.method.PasswordTransformationMethod
 import android.view.Gravity
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.animation.OvershootInterpolator
 import android.widget.LinearLayout
 import com.flopp.razdor.EZApp
 import com.flopp.razdor.R
+import com.flopp.razdor.extensions.view.boundsFrame
 import com.flopp.razdor.extensions.view.boundsLinear
 import good.damn.ui.UIButton
 import good.damn.ui.UITextView
@@ -64,7 +67,8 @@ class EZViewLogin(
             )
 
             boundsLinear(
-                gravity = Gravity.CENTER_HORIZONTAL
+                gravity = Gravity.CENTER_HORIZONTAL,
+                top = margin * 2.25f
             )
 
             addView(
@@ -79,6 +83,8 @@ class EZViewLogin(
             setText(
                 R.string.letCallsSomeDudes
             )
+
+            alpha = 0.6f
 
             setTypefaceId(
                 R.font.open_sans_semi_bold
@@ -95,6 +101,38 @@ class EZViewLogin(
             boundsLinear(
                 gravity = Gravity.CENTER_HORIZONTAL,
                 top = margin * 0.7f
+            )
+
+            addView(
+                this
+            )
+        }
+
+        UITextViewSemi(
+            context
+        ).apply {
+
+            setText(
+                R.string.accountInformation
+            )
+
+            setTextSizePx(
+                fieldHeight * 0.2f
+            )
+
+            setTypefaceId(
+                R.font.open_sans_extra_bold
+            )
+
+            isAllCaps = true
+
+            applyTheme(
+                EZApp.theme
+            )
+
+            boundsFrame(
+                start = (EZApp.width - fieldWidth) * 0.5f,
+                top = margin * 2.25f
             )
 
             addView(
@@ -162,6 +200,8 @@ class EZViewLogin(
 
             cornerRadiusFactor = 0.3f
             strokeWidth = strokeWidthh
+
+            transformationMethod = PasswordTransformationMethod()
 
             applyTheme(
                 EZApp.theme
@@ -240,7 +280,7 @@ class EZViewLogin(
                 gravity = Gravity.CENTER_HORIZONTAL,
                 width = fieldWidth,
                 height = EZApp.height * 0.07f,
-                top = margin
+                top = margin * 1.5f
             )
 
             addView(
