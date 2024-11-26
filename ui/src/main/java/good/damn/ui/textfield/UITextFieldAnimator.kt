@@ -4,6 +4,8 @@ import android.animation.ValueAnimator
 import android.graphics.RectF
 import android.util.TypedValue
 import android.view.animation.AccelerateDecelerateInterpolator
+import android.view.animation.DecelerateInterpolator
+import android.view.animation.Interpolator
 import android.view.animation.OvershootInterpolator
 import good.damn.ui.components.UICanvasText
 
@@ -22,7 +24,7 @@ class UITextFieldAnimator(
         )
     }
 
-    private val mInterpolatorStart = OvershootInterpolator()
+    private val mInterpolatorStart = OvershootInterpolator(0.9f)
     private val mInterpolatorEnd = AccelerateDecelerateInterpolator()
 
     private var mFromY = 0f
@@ -62,7 +64,7 @@ class UITextFieldAnimator(
         marginHint = width * 0.02f
 
         canvasHint.apply {
-            x = width * 0.1f
+            x = width * 0.06f
             y = (height +
                 mRect.top +
                 canvasHint.textSize * 0.5f
@@ -73,7 +75,8 @@ class UITextFieldAnimator(
             textField.setPadding(
                 x.toInt(),
                 mRect.top.toInt(),
-                0,0
+                x.toInt(),
+                0
             )
         }
 

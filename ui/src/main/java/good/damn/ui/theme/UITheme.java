@@ -4,6 +4,8 @@ import androidx.annotation.ColorInt;
 
 public abstract class UITheme {
 
+    @ColorInt public int colorAccentTextField;
+
     @ColorInt public int colorTextButton;
     @ColorInt public int colorText;
     @ColorInt public int colorTextToast;

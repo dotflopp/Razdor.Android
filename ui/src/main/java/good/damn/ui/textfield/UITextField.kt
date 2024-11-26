@@ -6,6 +6,7 @@ import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.Rect
 import android.graphics.RectF
+import android.graphics.Typeface
 import android.text.InputType
 import android.util.TypedValue
 import android.view.animation.AccelerateDecelerateInterpolator
@@ -45,6 +46,18 @@ class UITextField(
         }
 
     var cornerRadiusFactor = 0.25f
+
+    var typefaceSubhint: Typeface?
+        get() = mCanvasSubhint.typeface
+        set(v) {
+            mCanvasSubhint.typeface = v
+        }
+
+    var typefaceHint: Typeface?
+        get() = mCanvasHint.typeface
+        set(v) {
+            mCanvasHint.typeface = v
+        }
 
     private val mPaintStroke = Paint().apply {
         style = Paint.Style.STROKE
@@ -157,16 +170,18 @@ class UITextField(
         previouslyFocusedRect: Rect?
     ) = mCanvasHint.run {
 
-        if (focused) {
-            if (this@UITextField.text?.isBlank() != false) {
-                focusColor()
-                mAnimator.focus(
-                    width.toFloat()
-                )
+        if (isEnabled) {
+            if (focused) {
+                if (this@UITextField.text?.isBlank() != false) {
+                    focusColor()
+                    mAnimator.focus(
+                        width.toFloat()
+                    )
+                }
+            } else if (this@UITextField.text?.isBlank() != false) {
+                mAnimator.focusNo()
+                focusNoColor()
             }
-        } else if (this@UITextField.text?.isBlank() != false) {
-            mAnimator.focusNo()
-            focusNoColor()
         }
 
         super.onFocusChanged(
@@ -179,7 +194,7 @@ class UITextField(
     override fun applyTheme(
         theme: UITheme
     ) {
-        mColorTintFocus = theme.colorText
+        mColorTintFocus = theme.colorAccentTextField
         mColorTintFocusNo = theme.colorTextEditUnfocused
 
         if (this@UITextField.text?.isBlank() != false) {
@@ -189,10 +204,25 @@ class UITextField(
         }
 
         setTextColor(
-            mColorTintFocus
+            theme.colorText
         )
 
         mPaintBackText.color = theme.colorBackground
+    }
+
+    final override fun setTypeface(
+        tf: Typeface?
+    ) {
+        // This shit calls inside AppCompatEditText constructor
+        // so mCanvasHint is null and IDE is bitching with warning
+        // check mCanvasHint == null
+        tf ?: return
+        if (mCanvasHint == null) {
+            return
+        }
+        mCanvasHint.typeface = tf
+        mCanvasSubhint.typeface = tf
+        super.setTypeface(tf)
     }
 
     fun error(

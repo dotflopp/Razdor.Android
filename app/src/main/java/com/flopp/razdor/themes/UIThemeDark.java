@@ -6,13 +6,17 @@ public final class UIThemeDark
 extends UITheme {
     public UIThemeDark() {
 
-        colorBackground = 0xff000315;
+        colorAccentTextField = 0xff5865F2;
+
+        colorBackground = 0xff191919;
         colorBackgroundToast = 0xffffffff;
-        colorBackgroundButton = 0xffffffff;
+        colorBackgroundButton = 0xff5865F2;
 
         colorText = 0xffffffff;
-        colorTextButton = 0xff000315;
+
+        colorTextButton = 0xffffffff;
         colorTextToast = 0xff000315;
+
         colorTextEditUnfocused = 0xf9545252;
 
         colorHint = 0xffffffff;

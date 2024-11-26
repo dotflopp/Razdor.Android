@@ -11,8 +11,14 @@ class EZFragmentLogin
     override fun onCreateView(
         context: Context
     ) = EZViewLogin(
-        context,
-        EZApp.insetTop
-    )
+        context
+    ).apply {
+        setPadding(
+            0,
+            EZApp.insetTop.toInt(),
+            0,
+            0
+        )
+    }
 
 }

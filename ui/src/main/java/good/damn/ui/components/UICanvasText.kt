@@ -16,7 +16,7 @@ class UICanvasText
             mPaintText.color = v
         }
 
-    var typeface: Typeface
+    var typeface: Typeface?
         get() = mPaintText.typeface
         set(v) {
             mPaintText.typeface = v

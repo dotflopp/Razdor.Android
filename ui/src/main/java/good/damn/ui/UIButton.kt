@@ -29,7 +29,7 @@ open class UIButton(
             mCanvasText2.color = v
         }
 
-    var typeface: Typeface
+    var typeface: Typeface?
         get() = mCanvasText.typeface
         set(v) {
             mCanvasText.typeface = v
@@ -119,6 +119,7 @@ open class UIButton(
     ) {
         mPaintBackground.color = theme.colorBackgroundButton
         mCanvasText.color = theme.colorTextButton
+        mCanvasText2.color = theme.colorTextButton
     }
 
 

@@ -9,13 +9,15 @@ import android.view.MotionEvent
 import android.view.View
 import good.damn.ui.animation.UIAnimationGroup
 import good.damn.ui.extensions.isOutsideView
+import good.damn.ui.interfaces.UIThemable
 import good.damn.ui.theme.UITheme
 
 abstract class UIView(
     context: Context
 ): View(
     context
-), ValueAnimator.AnimatorUpdateListener {
+), ValueAnimator.AnimatorUpdateListener,
+UIThemable {
     
     companion object {
         private val TAG = UIView::class.simpleName
@@ -195,9 +197,4 @@ abstract class UIView(
         )
         start()
     }
-
-
-    abstract fun applyTheme(
-        theme: UITheme
-    )
 }

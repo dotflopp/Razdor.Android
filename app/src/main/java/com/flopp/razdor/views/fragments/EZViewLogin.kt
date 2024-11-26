@@ -9,18 +9,23 @@ import android.view.Gravity
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.animation.OvershootInterpolator
 import android.widget.LinearLayout
+import androidx.appcompat.widget.AppCompatTextView
+import androidx.core.content.res.ResourcesCompat
 import com.flopp.razdor.EZApp
 import com.flopp.razdor.R
 import com.flopp.razdor.extensions.view.boundsLinear
 import good.damn.ui.UIButton
+import good.damn.ui.UITextView
 import good.damn.ui.animation.UIAnimationCornerRadius
 import good.damn.ui.animation.UIAnimationGroup
 import good.damn.ui.animation.UIAnimationScale
+import good.damn.ui.extensions.getFont
+import good.damn.ui.extensions.setTextSizePx
+import good.damn.ui.extensions.setTypefaceId
 import good.damn.ui.textfield.UITextField
 
 class EZViewLogin(
-    context: Context,
-    topInset: Float,
+    context: Context
 ): LinearLayout(
     context
 ) {
@@ -32,11 +37,47 @@ class EZViewLogin(
 
         orientation = VERTICAL
 
-        val editTextUsername = UITextField(
+        val margin = EZApp.height * 0.02f
+        val fieldHeight = EZApp.height * 0.09f
+        val fieldWidth = EZApp.width * 0.85f
+        val strokeWidthh = fieldHeight * 0.04f
+
+        val typefaceFieldHint = context.getFont(
+            R.font.open_sans_bold
+        )
+
+        UITextView(
             context
         ).apply {
 
-            val h = EZApp.height * 0.1f
+            setText(
+                R.string.welcome_back
+            )
+
+            setTypefaceId(
+                R.font.open_sans_extra_bold
+            )
+
+            setTextSizePx(
+                fieldHeight * 0.4f
+            )
+
+            applyTheme(
+                EZApp.theme
+            )
+
+            boundsLinear(
+                gravity = Gravity.CENTER_HORIZONTAL
+            )
+
+            addView(
+                this
+            )
+        }
+
+        val editTextUsername = UITextField(
+            context
+        ).apply {
 
             subhint = context.getString(
                 R.string.warningUsername
@@ -46,18 +87,26 @@ class EZViewLogin(
                 R.string.username
             )
 
+            setTypefaceId(
+                R.font.open_sans_regular
+            )
+
+            typefaceSubhint = typefaceFieldHint
+            typefaceHint = typefaceFieldHint
+
             cornerRadiusFactor = 0.3f
 
-            strokeWidth = h * 0.013f
+            strokeWidth = strokeWidthh
 
             applyTheme(
                 EZApp.theme
             )
 
             boundsLinear(
-                width = -1f,
-                height = h,
-                top = topInset
+                gravity = Gravity.CENTER_HORIZONTAL,
+                width = fieldWidth,
+                height = fieldHeight,
+                top = margin
             )
 
             this@EZViewLogin.addView(
@@ -69,8 +118,6 @@ class EZViewLogin(
             context
         ).apply {
 
-            val h = EZApp.height * 0.1f
-
             hint = context.getString(
                 R.string.password
             )
@@ -79,16 +126,25 @@ class EZViewLogin(
                 R.string.warningPassword
             )
 
+            setTypefaceId(
+                R.font.open_sans_regular
+            )
+
+            typefaceSubhint = typefaceFieldHint
+            typefaceHint = typefaceFieldHint
+
             cornerRadiusFactor = 0.3f
-            strokeWidth = h * 0.013f
+            strokeWidth = strokeWidthh
 
             applyTheme(
                 EZApp.theme
             )
 
             boundsLinear(
-                width = -1f,
-                height = h
+                gravity = Gravity.CENTER_HORIZONTAL,
+                width = fieldWidth,
+                height = fieldHeight,
+                top = margin
             )
 
             addView(
@@ -102,6 +158,10 @@ class EZViewLogin(
 
             text = context.getString(
                 R.string.login
+            )
+
+            typeface = context.getFont(
+                R.font.open_sans_bold
             )
 
             setOnClickListener {
@@ -145,16 +205,15 @@ class EZViewLogin(
             textSizeFactor = 0.32f
             cornerRadiusFactor = 0.35f
 
-            typeface = Typeface.DEFAULT_BOLD
-
             applyTheme(
                 EZApp.theme
             )
 
             boundsLinear(
                 gravity = Gravity.CENTER_HORIZONTAL,
-                width = EZApp.width * 0.75f,
-                height = EZApp.height * 0.08f
+                width = fieldWidth,
+                height = EZApp.height * 0.07f,
+                top = margin
             )
 
             addView(
