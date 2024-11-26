@@ -13,4 +13,7 @@
     <string name="warningPassword">Больше 8 символов и содержать $/][</string>
     <string name="welcomeBack">С возвращением!</string>
     <string name="letCallsSomeDudes">Пора созвониться с товарищами\nи устроить пару игровых сессий</string>
+    <string name="connectToServer">Соединяемся с сервером</string>
+    <string name="gettingData">Получаем данные...</string>
+    <string name="loginToAccount">Готово 👌</string>
 </resources>

@@ -282,13 +282,24 @@ class EZViewLogin(
         ).apply {
 
             btn.changeTextAnimated(
-                "Waiting..."
+                context.getString(
+                    R.string.connectToServer
+                )
             )
 
             postDelayed({
                 btn.changeTextAnimated(
-                    "Ready :)"
+                    context.getString(
+                        R.string.gettingData
+                    )
                 )
+                postDelayed({
+                    btn.changeTextAnimated(
+                        context.getString(
+                            R.string.loginToAccount
+                        )
+                    )
+                }, 2500)
             }, 2500)
 
         }
