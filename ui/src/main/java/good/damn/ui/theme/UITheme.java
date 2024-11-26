@@ -21,4 +21,6 @@ public abstract class UITheme {
     @ColorInt public int colorBackgroundButton;
 
     @ColorInt public int colorError;
+
+    @ColorInt public int colorShape;
 }

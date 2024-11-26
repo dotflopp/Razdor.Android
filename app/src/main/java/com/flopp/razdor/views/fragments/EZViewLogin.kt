@@ -8,6 +8,7 @@ import android.text.method.PasswordTransformationMethod
 import android.view.Gravity
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.animation.OvershootInterpolator
+import android.widget.FrameLayout
 import android.widget.LinearLayout
 import com.flopp.razdor.EZApp
 import com.flopp.razdor.R
@@ -16,9 +17,11 @@ import com.flopp.razdor.extensions.view.boundsLinear
 import good.damn.ui.UIButton
 import good.damn.ui.UITextView
 import good.damn.ui.UITextViewSemi
+import good.damn.ui.UIViewShaper
 import good.damn.ui.animation.UIAnimationCornerRadius
 import good.damn.ui.animation.UIAnimationGroup
 import good.damn.ui.animation.UIAnimationScale
+import good.damn.ui.components.shapes.UICanvasCircle
 import good.damn.ui.extensions.getFont
 import good.damn.ui.extensions.setTextSizePx
 import good.damn.ui.extensions.setTypefaceId
@@ -26,7 +29,7 @@ import good.damn.ui.textfield.UITextField
 
 class EZViewLogin(
     context: Context
-): LinearLayout(
+): FrameLayout(
     context
 ) {
 
@@ -35,7 +38,41 @@ class EZViewLogin(
             EZApp.theme.colorBackground
         )
 
-        orientation = VERTICAL
+        addView(
+            UIViewShaper(
+                context
+            ).apply {
+                shapes = arrayOf(
+                    UICanvasCircle(
+                        0.0f,
+                        0.25f,
+                        EZApp.width * 0.2f
+                    )
+                )
+
+                applyTheme(
+                    EZApp.theme
+                )
+            }
+        )
+
+        addView(
+            initContentView(
+                context
+            )
+        )
+
+    }
+
+    private inline fun initContentView(
+        context: Context
+    ) = LinearLayout(
+        context
+    ).apply {
+
+        background = null
+
+        orientation = LinearLayout.VERTICAL
 
         val margin = EZApp.height * 0.02f
         val fieldHeight = EZApp.height * 0.09f
@@ -174,7 +211,7 @@ class EZViewLogin(
                 top = margin
             )
 
-            this@EZViewLogin.addView(
+            addView(
                 this
             )
         }
@@ -287,7 +324,6 @@ class EZViewLogin(
                 this
             )
         }
-
     }
 
 
@@ -343,6 +379,5 @@ class EZViewLogin(
             }, 2500)
 
         }
-
     }
 }
