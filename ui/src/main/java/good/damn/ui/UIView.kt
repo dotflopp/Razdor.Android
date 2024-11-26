@@ -47,6 +47,8 @@ abstract class UIView(
         )
     }
 
+    protected var mOnClickDisabled: OnClickListener? = null
+
     final override fun setBackgroundColor(
         color: Int
     ) {
@@ -139,6 +141,13 @@ abstract class UIView(
                     event.x,
                     event.y
                 )) {
+                    return true
+                }
+
+                if (!isEnabled) {
+                    mOnClickDisabled?.onClick(
+                        this
+                    )
                     return true
                 }
 

@@ -28,6 +28,12 @@ class UICanvasText
             mPaintText.textSize = v
         }
 
+    var alpha: Float
+        get() = mPaintText.alpha / 255.toFloat()
+        set(v) {
+            mPaintText.alpha = (v * 255).toInt()
+        }
+
     var text: String? = null
 
     var x = 0f

@@ -2,6 +2,8 @@ package com.flopp.razdor.views.fragments
 
 import android.content.Context
 import android.graphics.Typeface
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.Gravity
 import android.view.animation.AccelerateDecelerateInterpolator
@@ -104,6 +106,7 @@ class EZViewLogin(
 
             setOnClickListener {
                 onClickBtnLogin(
+                    this,
                     editTextUsername.text.toString(),
                     editTextPassword.text.toString()
                 )
@@ -163,15 +166,29 @@ class EZViewLogin(
 
 
     private inline fun onClickBtnLogin(
+        btn: UIButton,
         username: String,
         password: String
     ) {
         if (username.isBlank() || password.isBlank()) {
-
             return
         }
 
+        Handler(
+            Looper.getMainLooper()
+        ).apply {
 
+            btn.changeTextAnimated(
+                "Waiting..."
+            )
+
+            postDelayed({
+                btn.changeTextAnimated(
+                    "Ready :)"
+                )
+            }, 2500)
+
+        }
 
     }
 }
