@@ -1,21 +1,18 @@
 package com.flopp.razdor.views.fragments
 
 import android.content.Context
-import android.graphics.Typeface
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
 import android.view.Gravity
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.animation.OvershootInterpolator
 import android.widget.LinearLayout
-import androidx.appcompat.widget.AppCompatTextView
-import androidx.core.content.res.ResourcesCompat
 import com.flopp.razdor.EZApp
 import com.flopp.razdor.R
 import com.flopp.razdor.extensions.view.boundsLinear
 import good.damn.ui.UIButton
 import good.damn.ui.UITextView
+import good.damn.ui.UITextViewSemi
 import good.damn.ui.animation.UIAnimationCornerRadius
 import good.damn.ui.animation.UIAnimationGroup
 import good.damn.ui.animation.UIAnimationScale
@@ -51,7 +48,7 @@ class EZViewLogin(
         ).apply {
 
             setText(
-                R.string.welcome_back
+                R.string.welcomeBack
             )
 
             setTypefaceId(
@@ -59,7 +56,7 @@ class EZViewLogin(
             )
 
             setTextSizePx(
-                fieldHeight * 0.4f
+                fieldHeight * 0.35f
             )
 
             applyTheme(
@@ -68,6 +65,36 @@ class EZViewLogin(
 
             boundsLinear(
                 gravity = Gravity.CENTER_HORIZONTAL
+            )
+
+            addView(
+                this
+            )
+        }
+
+        UITextViewSemi(
+            context
+        ).apply {
+
+            setText(
+                R.string.letCallsSomeDudes
+            )
+
+            setTypefaceId(
+                R.font.open_sans_semi_bold
+            )
+
+            setTextSizePx(
+                fieldHeight * 0.2f
+            )
+
+            applyTheme(
+                EZApp.theme
+            )
+
+            boundsLinear(
+                gravity = Gravity.CENTER_HORIZONTAL,
+                top = margin * 0.7f
             )
 
             addView(

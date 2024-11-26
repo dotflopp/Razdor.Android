@@ -11,5 +11,6 @@
     <string name="login">Войти</string>
     <string name="warningUsername">К примеру, example@gmail.com</string>
     <string name="warningPassword">Больше 8 символов и содержать $/][</string>
-    <string name="welcome_back">С возвращением!</string>
+    <string name="welcomeBack">С возвращением!</string>
+    <string name="letCallsSomeDudes">Пора созвониться с товарищами\nи устроить пару игровых сессий</string>
 </resources>

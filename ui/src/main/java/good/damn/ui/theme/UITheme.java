@@ -10,6 +10,8 @@ public abstract class UITheme {
     @ColorInt public int colorText;
     @ColorInt public int colorTextToast;
 
+    @ColorInt public int colorTextSemi;
+
     @ColorInt public int colorTextEditUnfocused;
 
     @ColorInt public int colorHint;
