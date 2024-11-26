@@ -2,6 +2,7 @@ package com.flopp.razdor.views.fragments
 
 import android.content.Context
 import android.graphics.Typeface
+import android.util.Log
 import android.view.Gravity
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.animation.OvershootInterpolator
@@ -16,7 +17,8 @@ import good.damn.ui.animation.UIAnimationScale
 import good.damn.ui.textfield.UITextField
 
 class EZViewLogin(
-    context: Context
+    context: Context,
+    topInset: Float,
 ): LinearLayout(
     context
 ) {
@@ -52,7 +54,8 @@ class EZViewLogin(
 
             boundsLinear(
                 width = -1f,
-                height = h
+                height = h,
+                top = topInset
             )
 
             this@EZViewLogin.addView(

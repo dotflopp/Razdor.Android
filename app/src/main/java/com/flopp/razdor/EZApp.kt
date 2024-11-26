@@ -10,7 +10,11 @@ class EZApp
     companion object {
         var width = 0f
         var height = 0f
+        var insetTop = 0f
+        var insetBottom = 0f
+
         var theme: UITheme = UIThemeDark()
+
         const val rootUrl = "https://github.com"
     }
 
