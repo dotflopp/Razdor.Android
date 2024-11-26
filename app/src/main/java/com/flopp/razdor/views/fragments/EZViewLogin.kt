@@ -1,6 +1,7 @@
 package com.flopp.razdor.views.fragments
 
 import android.content.Context
+import android.graphics.RectF
 import android.os.Handler
 import android.os.Looper
 import android.text.InputType
@@ -22,6 +23,7 @@ import good.damn.ui.animation.UIAnimationCornerRadius
 import good.damn.ui.animation.UIAnimationGroup
 import good.damn.ui.animation.UIAnimationScale
 import good.damn.ui.components.shapes.UICanvasCircle
+import good.damn.ui.components.shapes.UICanvasRectRound
 import good.damn.ui.extensions.getFont
 import good.damn.ui.extensions.setTextSizePx
 import good.damn.ui.extensions.setTypefaceId
@@ -42,11 +44,39 @@ class EZViewLogin(
             UIViewShaper(
                 context
             ).apply {
+                val h = EZApp.height
+                val w = EZApp.width
+
                 shapes = arrayOf(
                     UICanvasCircle(
-                        0.0f,
-                        0.25f,
-                        EZApp.width * 0.2f
+                        x = 0.0f,
+                        y = h * 0.25f,
+                        radius = w * 0.2f
+                    ),
+                    UICanvasCircle(
+                        x = w * 0.3f,
+                        y = h * 0.95f,
+                        radius = w * 0.4f
+                    ),
+                    UICanvasRectRound(
+                        RectF(
+                            w * 0.1f,
+                            h * 0.42f,
+                            w * 0.8f,
+                            h * 0.59f
+                        ),
+                        radius = w * 0.12f,
+                        rotation = -25f
+                    ),
+                    UICanvasRectRound(
+                        RectF(
+                            w * 0.9f,
+                            h * 0.1f,
+                            w * 1.05f,
+                            h * 0.49f
+                        ),
+                        radius = w * 0.12f,
+                        rotation = -25f
                     )
                 )
 

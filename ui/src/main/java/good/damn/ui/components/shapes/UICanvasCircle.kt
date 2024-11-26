@@ -16,8 +16,8 @@ class UICanvasCircle(
         canvas: Canvas
     ) {
         canvas.drawCircle(
-            x * canvas.width,
-            y * canvas.height,
+            x,
+            y,
             radius,
             paint
         )
