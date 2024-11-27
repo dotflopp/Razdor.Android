@@ -35,6 +35,8 @@ UIThemable {
 
     var onClickDisabled: OnClickListener? = null
 
+    var isClippedBounds = false
+
     protected val mPaintBackground = Paint()
     protected val mRect = RectF()
     protected var mCornerRadius = 0f
@@ -66,6 +68,11 @@ UIThemable {
     override fun onDraw(
         canvas: Canvas
     ) = canvas.run {
+        if (isClippedBounds) {
+            clipRect(
+                mRect
+            )
+        }
 
         scale(
             scale,

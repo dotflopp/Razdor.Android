@@ -15,6 +15,7 @@ import android.util.Log
 import android.util.TypedValue
 import android.view.View
 import android.view.animation.AccelerateDecelerateInterpolator
+import androidx.annotation.ColorInt
 import androidx.appcompat.widget.AppCompatEditText
 import good.damn.ui.components.UICanvasText
 import good.damn.ui.interfaces.UIThemable
@@ -62,6 +63,16 @@ class UITextField(
         get() = mCanvasHint.typeface
         set(v) {
             mCanvasHint.typeface = v
+        }
+
+    @get:ColorInt
+    @setparam:ColorInt
+    var tintColor: Int
+        get() = mCanvasHint.color
+        set(v) {
+            mCanvasHint.color = v
+            mCanvasSubhint.color = v
+            mPaintStroke.color = v
         }
 
     private val mPaintStroke = Paint().apply {
@@ -196,15 +207,15 @@ class UITextField(
 
         if (isEnabled) {
             if (focused) {
-                if (this@UITextField.text?.isBlank() != false) {
-                    focusColor()
+                focusColor()
+                if (this@UITextField.text.isNullOrBlank()) {
                     mAnimator.focus(
                         width.toFloat()
                     )
                 }
-            } else if (this@UITextField.text?.isBlank() != false) {
-                mAnimator.focusNo()
+            } else if (this@UITextField.text.isNullOrBlank()) {
                 focusNoColor()
+                mAnimator.focusNo()
             }
         }
 

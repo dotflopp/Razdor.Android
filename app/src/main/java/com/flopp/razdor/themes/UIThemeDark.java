@@ -25,5 +25,8 @@ extends UITheme {
         colorError = 0xffd32f2f;
 
         colorShape = 0xff222329;
+
+        colorCorrect = 0xff66BB6A;
+
     }
 }

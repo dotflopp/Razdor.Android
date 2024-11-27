@@ -280,6 +280,8 @@ class EZViewLogin(
             context
         ).apply {
 
+            isClippedBounds = true
+
             text = context.getString(
                 R.string.login
             )
@@ -368,11 +370,16 @@ class EZViewLogin(
             return
         }
 
+        fieldEmail.tintColor = EZApp.theme.colorCorrect
+        fieldPassword.tintColor = fieldEmail.tintColor
 
         Handler(
             Looper.getMainLooper()
         ).apply {
             btn.isEnabled = false
+            fieldEmail.isEnabled = false
+            fieldPassword.isEnabled = false
+
             btn.changeTextAnimated(
                 context.getString(
                     R.string.connectToServer
@@ -392,6 +399,8 @@ class EZViewLogin(
                         )
                     )
                     btn.isEnabled = true
+                    fieldEmail.isEnabled = true
+                    fieldPassword.isEnabled = true
                 }, 2500)
             }, 2500)
 
@@ -417,6 +426,7 @@ class EZViewLogin(
 
         return false
     }
+
 
     private data class Datable(
         var b: Boolean = false

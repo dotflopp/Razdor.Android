@@ -23,4 +23,6 @@ public abstract class UITheme {
     @ColorInt public int colorError;
 
     @ColorInt public int colorShape;
+
+    @ColorInt public int colorCorrect;
 }
