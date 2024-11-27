@@ -10,6 +10,7 @@ import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.animation.OvershootInterpolator
 import com.flopp.razdor.EZApp
 import com.flopp.razdor.R
+import com.flopp.razdor.extensions.ui.setupVibration
 import com.flopp.razdor.extensions.view.boundsFrame
 import good.damn.ui.UIButton
 import good.damn.ui.UITextView
@@ -330,6 +331,8 @@ class EZViewLogin(
             applyTheme(
                 EZApp.theme
             )
+
+            setupVibration()
 
             boundsFrame(
                 gravity = Gravity.CENTER_HORIZONTAL,

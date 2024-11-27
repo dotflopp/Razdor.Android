@@ -3,20 +3,14 @@ package good.damn.ui
 import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.Canvas
-import android.graphics.Paint
-import android.graphics.RectF
 import android.graphics.Typeface
-import android.view.View
 import android.view.animation.AccelerateDecelerateInterpolator
-import android.view.animation.OvershootInterpolator
 import androidx.annotation.ColorInt
-import androidx.annotation.StringRes
-import good.damn.ui.components.UICanvas
 import good.damn.ui.components.UICanvasText
 import good.damn.ui.interpolators.UIInterpolatorShake
 import good.damn.ui.theme.UITheme
 
-open class UIButton(
+class UIButton(
     context: Context
 ): UIView(
     context
@@ -84,12 +78,6 @@ open class UIButton(
     private var mCurrentFractionInverse = 0f
 
 
-    init {
-        onClickDisabled = OnClickListener {
-            mAnimatorShake.start()
-        }
-    }
-
     override fun onLayout(
         changed: Boolean,
         left: Int,
@@ -146,7 +134,7 @@ open class UIButton(
         mCanvasText2.color = theme.colorTextButton
     }
 
-    fun shakeAnimation() {
+    fun startShakeAnimation() {
         mAnimatorShake.start()
     }
 
@@ -171,6 +159,12 @@ open class UIButton(
         }
 
         mAnimator.start()
+    }
+
+    inline fun setupShakingAnimation() {
+        onClickDisabled = OnClickListener {
+            startShakeAnimation()
+        }
     }
 
     private inline fun onAnimateText(
