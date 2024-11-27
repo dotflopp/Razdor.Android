@@ -1,17 +1,18 @@
 package com.flopp.razdor.activities
 
 import android.os.Bundle
-import android.util.Log
-import android.view.KeyEvent
 import android.view.WindowManager
 import android.widget.FrameLayout
+import androidx.activity.OnBackPressedCallback
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import com.flopp.razdor.EZApp
-import com.flopp.razdor.fragments.EZFragmentLogin
+import com.flopp.razdor.activities.callbacks.EZCallbackBackPressedNavigation
+import com.flopp.razdor.fragments.EZFragmentIntro
+import com.flopp.razdor.fragments.navigation.EZFragmentNavigation
 import com.flopp.razdor.navigation.EZNavigationFragment
 import com.flopp.razdor.services.EZServiceToast
 
@@ -22,7 +23,9 @@ class EZActivityMain
         private val TAG = EZActivityMain::class.simpleName
     }
 
-    private var mFragmentNavigation: EZNavigationFragment<Fragment>? = null
+    var fragmentNavigation: EZNavigationFragment<
+        EZFragmentNavigation
+    >? = null
 
     private val mServiceToast = EZServiceToast()
 
@@ -97,7 +100,7 @@ class EZActivityMain
                     this
                 )
 
-                mFragmentNavigation = EZNavigationFragment(
+                fragmentNavigation = EZNavigationFragment(
                     supportFragmentManager,
                     this
                 )
@@ -108,9 +111,21 @@ class EZActivityMain
             )
         }
 
-        mFragmentNavigation?.push(
-            EZFragmentLogin()
-        )
+        fragmentNavigation?.let {
+            onBackPressedDispatcher.addCallback(
+                this,
+                EZCallbackBackPressedNavigation(
+                    it,
+                    this
+                )
+            )
+
+            it.push(
+                EZFragmentIntro()
+            )
+        }
+
+
     }
 
 }

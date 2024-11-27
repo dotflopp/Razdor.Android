@@ -9,9 +9,18 @@ import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.flopp.razdor.activities.EZActivityMain
+import com.flopp.razdor.extensions.mainActivity
+import com.flopp.razdor.navigation.EZNavigationFragment
+import good.damn.ui.interfaces.UIThemable
+import good.damn.ui.theme.UITheme
 
 abstract class EZFragmentNavigation
-: Fragment() {
+: Fragment(),
+UIThemable {
+
+    var navigation: EZNavigationFragment<
+        EZFragmentNavigation
+    >? = null
 
     final override fun onCreateView(
         inflater: LayoutInflater,
@@ -21,9 +30,19 @@ abstract class EZFragmentNavigation
         val context = context
             ?: return null
 
+        navigation = context.mainActivity()
+            .fragmentNavigation
+
+
         return onCreateView(
             context
         )
+    }
+
+    override fun applyTheme(
+        theme: UITheme
+    ) {
+        TODO()
     }
 
     protected abstract fun onCreateView(

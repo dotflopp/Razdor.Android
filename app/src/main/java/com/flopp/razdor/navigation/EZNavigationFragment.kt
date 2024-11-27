@@ -9,6 +9,11 @@ class EZNavigationFragment<FRAGMENT: Fragment>(
     private val container: FrameLayout
 ) {
 
+    val size: Int
+        get() = fragmentManager
+            .fragments
+            .size
+
     fun push(
         fragment: FRAGMENT
     ) = fragmentManager.beginTransaction()
