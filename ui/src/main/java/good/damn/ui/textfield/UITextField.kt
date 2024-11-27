@@ -109,17 +109,6 @@ class UITextField(
 
         inputType = InputType.TYPE_CLASS_TEXT
     }
-
-    override fun onMeasure(
-        widthMeasureSpec: Int,
-        heightMeasureSpec: Int
-    ) {
-        Log.d(TAG, "onMeasure: ")
-        super.onMeasure(
-            widthMeasureSpec,
-            heightMeasureSpec
-        )
-    }
     
     override fun onLayout(
         changed: Boolean,

@@ -33,6 +33,8 @@ UIThemable {
     var animationGroupTouchDown: UIAnimationGroup? = null
     var animationGroupTouchUp: UIAnimationGroup? = null
 
+    var onClickDisabled: OnClickListener? = null
+
     protected val mPaintBackground = Paint()
     protected val mRect = RectF()
     protected var mCornerRadius = 0f
@@ -48,8 +50,6 @@ UIThemable {
             this@UIView
         )
     }
-
-    protected var mOnClickDisabled: OnClickListener? = null
 
     final override fun setBackgroundColor(
         color: Int
@@ -115,7 +115,16 @@ UIThemable {
             return false
         }
 
-        when (event.action) {
+        if (!isEnabled) {
+            onClickDisabled?.onClick(
+                this
+            )
+            return false
+        }
+
+        when (
+            event.action
+        ) {
 
             MotionEvent.ACTION_DOWN -> {
                 startTouchAnimation(
@@ -143,13 +152,6 @@ UIThemable {
                     event.x,
                     event.y
                 )) {
-                    return true
-                }
-
-                if (!isEnabled) {
-                    mOnClickDisabled?.onClick(
-                        this
-                    )
                     return true
                 }
 

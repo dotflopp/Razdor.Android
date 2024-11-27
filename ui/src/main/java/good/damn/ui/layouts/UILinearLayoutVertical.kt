@@ -22,6 +22,10 @@ open class UILinearLayoutVertical(
         private val TAG = UILinearLayoutVertical::class.simpleName
     }
 
+    init {
+        clipChildren = false
+    }
+
     private var mLastY = 0
 
     override fun applyTheme(

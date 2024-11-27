@@ -6,12 +6,14 @@ import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.RectF
 import android.graphics.Typeface
+import android.view.View
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.animation.OvershootInterpolator
 import androidx.annotation.ColorInt
 import androidx.annotation.StringRes
 import good.damn.ui.components.UICanvas
 import good.damn.ui.components.UICanvasText
+import good.damn.ui.interpolators.UIInterpolatorShake
 import good.damn.ui.theme.UITheme
 
 open class UIButton(
@@ -58,6 +60,21 @@ open class UIButton(
         }
     }
 
+    private val mAnimatorShake = ValueAnimator().apply {
+        duration = 280
+        interpolator = UIInterpolatorShake(
+            4f
+        )
+        setFloatValues(
+            0.0f, 1.0f
+        )
+
+        addUpdateListener {
+            val f = it.animatedValue as Float
+            translationX = f * 125
+        }
+    }
+
     private val mCanvasText = UICanvasText()
     private val mCanvasText2 = UICanvasText()
 
@@ -65,6 +82,13 @@ open class UIButton(
 
     private var mCurrentFraction = 0f
     private var mCurrentFractionInverse = 0f
+
+
+    init {
+        onClickDisabled = OnClickListener {
+            mAnimatorShake.start()
+        }
+    }
 
     override fun onLayout(
         changed: Boolean,
@@ -122,6 +146,9 @@ open class UIButton(
         mCanvasText2.color = theme.colorTextButton
     }
 
+    fun shakeAnimation() {
+        mAnimatorShake.start()
+    }
 
     fun changeTextAnimated(
         text: String

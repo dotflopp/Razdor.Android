@@ -352,6 +352,7 @@ class EZViewLogin(
         username: UITextField,
         password: UITextField
     ) {
+
         var hasError = false
 
         if (username.text?.toString()?.isBlank() != false) {
@@ -395,6 +396,7 @@ class EZViewLogin(
                             R.string.loginToAccount
                         )
                     )
+                    btn.isEnabled = true
                 }, 2500)
             }, 2500)
 
