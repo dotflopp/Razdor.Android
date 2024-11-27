@@ -12,6 +12,7 @@ import com.flopp.razdor.EZApp
 import com.flopp.razdor.R
 import com.flopp.razdor.extensions.ui.setupVibration
 import com.flopp.razdor.extensions.view.boundsFrame
+import com.flopp.razdor.patterns.EZPattern
 import good.damn.ui.UIButton
 import good.damn.ui.UITextView
 import good.damn.ui.UITextViewSemi
@@ -348,31 +349,22 @@ class EZViewLogin(
 
     }
 
-
-
     private inline fun onClickBtnLogin(
         btn: UIButton,
-        username: UITextField,
-        password: UITextField
+        fieldEmail: UITextField,
+        fieldPassword: UITextField
     ) {
+        val hasError = Datable()
 
-        var hasError = false
-
-        if (username.text?.toString()?.isBlank() != false) {
-            username.error(
-                EZApp.theme
-            )
-            hasError = true
-        }
-
-        if (password.text?.toString()?.isBlank() != false) {
-            password.error(
-                EZApp.theme
-            )
-            hasError = true
-        }
-
-        if (hasError) {
+        if (checkFieldPattern(
+            fieldEmail,
+            EZApp.patternEmail,
+            hasError
+        ) || checkFieldPattern(
+            fieldPassword,
+            EZApp.patternPassword,
+            hasError
+        ) || hasError.b) {
             return
         }
 
@@ -405,4 +397,29 @@ class EZViewLogin(
 
         }
     }
+
+    private fun checkFieldPattern(
+        field: UITextField,
+        pattern: EZPattern,
+        d: Datable
+    ): Boolean {
+        field.clearFocus()
+        field.text?.toString()?.apply {
+            if (pattern.matchesPattern(this)) {
+                return false
+            }
+        }
+
+        field.error(
+            EZApp.theme
+        )
+        d.b = true
+
+        return false
+    }
+
+    private data class Datable(
+        var b: Boolean = false
+    )
+
 }

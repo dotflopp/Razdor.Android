@@ -1,9 +1,12 @@
 package com.flopp.razdor
 
 import android.app.Application
+import com.flopp.razdor.patterns.EZPatternEmail
+import com.flopp.razdor.patterns.EZPatternPassword
 import com.flopp.razdor.services.EZServicesSystem
 import com.flopp.razdor.themes.UIThemeDark
 import good.damn.ui.theme.UITheme
+import java.util.regex.Pattern
 
 class EZApp
 : Application() {
@@ -18,6 +21,9 @@ class EZApp
         var insetBottom = 0f
 
         var theme: UITheme = UIThemeDark()
+
+        val patternPassword = EZPatternPassword()
+        val patternEmail = EZPatternEmail()
 
         const val rootUrl = "https://github.com"
     }
