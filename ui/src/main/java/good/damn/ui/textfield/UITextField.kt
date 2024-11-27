@@ -11,6 +11,7 @@ import android.graphics.Rect
 import android.graphics.RectF
 import android.graphics.Typeface
 import android.text.InputType
+import android.util.Log
 import android.util.TypedValue
 import android.view.View
 import android.view.animation.AccelerateDecelerateInterpolator
@@ -109,6 +110,17 @@ class UITextField(
         inputType = InputType.TYPE_CLASS_TEXT
     }
 
+    override fun onMeasure(
+        widthMeasureSpec: Int,
+        heightMeasureSpec: Int
+    ) {
+        Log.d(TAG, "onMeasure: ")
+        super.onMeasure(
+            widthMeasureSpec,
+            heightMeasureSpec
+        )
+    }
+    
     override fun onLayout(
         changed: Boolean,
         left: Int, top: Int,

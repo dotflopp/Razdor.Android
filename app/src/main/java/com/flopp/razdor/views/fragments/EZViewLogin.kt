@@ -4,17 +4,13 @@ import android.content.Context
 import android.graphics.RectF
 import android.os.Handler
 import android.os.Looper
-import android.text.InputType
 import android.text.method.PasswordTransformationMethod
 import android.view.Gravity
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.animation.OvershootInterpolator
-import android.widget.FrameLayout
-import android.widget.LinearLayout
 import com.flopp.razdor.EZApp
 import com.flopp.razdor.R
 import com.flopp.razdor.extensions.view.boundsFrame
-import com.flopp.razdor.extensions.view.boundsLinear
 import good.damn.ui.UIButton
 import good.damn.ui.UITextView
 import good.damn.ui.UITextViewSemi
@@ -27,83 +23,25 @@ import good.damn.ui.components.shapes.UICanvasRectRound
 import good.damn.ui.extensions.getFont
 import good.damn.ui.extensions.setTextSizePx
 import good.damn.ui.extensions.setTypefaceId
+import good.damn.ui.layouts.UILinearLayoutVertical
 import good.damn.ui.textfield.UITextField
+import good.damn.ui.theme.UITheme
 
 class EZViewLogin(
     context: Context
-): FrameLayout(
+): UILinearLayoutVertical(
     context
 ) {
 
-    init {
+    override fun applyTheme(
+        theme: UITheme
+    ) {
         setBackgroundColor(
-            EZApp.theme.colorBackground
+            theme.colorBackground
         )
-
-        addView(
-            UIViewShaper(
-                context
-            ).apply {
-                val h = EZApp.height
-                val w = EZApp.width
-
-                shapes = arrayOf(
-                    UICanvasCircle(
-                        x = 0.0f,
-                        y = h * 0.25f,
-                        radius = w * 0.2f
-                    ),
-                    UICanvasCircle(
-                        x = w * 0.3f,
-                        y = h * 0.95f,
-                        radius = w * 0.4f
-                    ),
-                    UICanvasRectRound(
-                        RectF(
-                            w * 0.1f,
-                            h * 0.42f,
-                            w * 0.8f,
-                            h * 0.59f
-                        ),
-                        radius = w * 0.12f,
-                        rotation = -25f
-                    ),
-                    UICanvasRectRound(
-                        RectF(
-                            w * 0.9f,
-                            h * 0.1f,
-                            w * 1.05f,
-                            h * 0.49f
-                        ),
-                        radius = w * 0.12f,
-                        rotation = -25f
-                    )
-                )
-
-                applyTheme(
-                    EZApp.theme
-                )
-            }
-        )
-
-        addView(
-            initContentView(
-                context
-            )
-        )
-
     }
 
-    private inline fun initContentView(
-        context: Context
-    ) = LinearLayout(
-        context
-    ).apply {
-
-        background = null
-
-        orientation = LinearLayout.VERTICAL
-
+    init {
         val margin = EZApp.height * 0.02f
         val fieldHeight = EZApp.height * 0.09f
         val fieldWidth = EZApp.width * 0.85f
@@ -112,6 +50,56 @@ class EZViewLogin(
         val typefaceFieldHint = context.getFont(
             R.font.open_sans_bold
         )
+
+        UIViewShaper(
+            context
+        ).apply {
+            val h = EZApp.height
+            val w = EZApp.width
+
+            shapes = arrayOf(
+                UICanvasCircle(
+                    x = 0.0f,
+                    y = h * 0.25f,
+                    radius = w * 0.2f
+                ),
+                UICanvasCircle(
+                    x = w * 0.3f,
+                    y = h * 0.95f,
+                    radius = w * 0.4f
+                ),
+                UICanvasRectRound(
+                    RectF(
+                        w * 0.1f,
+                        h * 0.42f,
+                        w * 0.8f,
+                        h * 0.59f
+                    ),
+                    radius = w * 0.12f,
+                    rotation = -25f
+                ),
+                UICanvasRectRound(
+                    RectF(
+                        w * 0.9f,
+                        h * 0.1f,
+                        w * 1.05f,
+                        h * 0.49f
+                    ),
+                    radius = w * 0.12f,
+                    rotation = -25f
+                )
+            )
+
+            applyTheme(
+                EZApp.theme
+            )
+
+            addView(
+                this,
+                -1,
+                -1
+            )
+        }
 
         UITextView(
             context
@@ -133,7 +121,7 @@ class EZViewLogin(
                 EZApp.theme
             )
 
-            boundsLinear(
+            boundsFrame(
                 gravity = Gravity.CENTER_HORIZONTAL,
                 top = margin * 2.25f
             )
@@ -148,7 +136,7 @@ class EZViewLogin(
         ).apply {
 
             setText(
-                R.string.letCallsSomeDudes
+                R.string.letCallSomeDudes
             )
 
             alpha = 0.6f
@@ -165,7 +153,7 @@ class EZViewLogin(
                 EZApp.theme
             )
 
-            boundsLinear(
+            boundsFrame(
                 gravity = Gravity.CENTER_HORIZONTAL,
                 top = margin * 0.7f
             )
@@ -234,7 +222,7 @@ class EZViewLogin(
                 EZApp.theme
             )
 
-            boundsLinear(
+            boundsFrame(
                 gravity = Gravity.CENTER_HORIZONTAL,
                 width = fieldWidth,
                 height = fieldHeight,
@@ -274,7 +262,7 @@ class EZViewLogin(
                 EZApp.theme
             )
 
-            boundsLinear(
+            boundsFrame(
                 gravity = Gravity.CENTER_HORIZONTAL,
                 width = fieldWidth,
                 height = fieldHeight,
@@ -343,7 +331,7 @@ class EZViewLogin(
                 EZApp.theme
             )
 
-            boundsLinear(
+            boundsFrame(
                 gravity = Gravity.CENTER_HORIZONTAL,
                 width = fieldWidth,
                 height = EZApp.height * 0.07f,
@@ -354,7 +342,9 @@ class EZViewLogin(
                 this
             )
         }
+
     }
+
 
 
     private inline fun onClickBtnLogin(
@@ -386,7 +376,7 @@ class EZViewLogin(
         Handler(
             Looper.getMainLooper()
         ).apply {
-
+            btn.isEnabled = false
             btn.changeTextAnimated(
                 context.getString(
                     R.string.connectToServer

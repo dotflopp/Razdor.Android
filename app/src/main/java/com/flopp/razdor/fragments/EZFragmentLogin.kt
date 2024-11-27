@@ -19,6 +19,10 @@ class EZFragmentLogin
             0,
             0
         )
+
+        applyTheme(
+            EZApp.theme
+        )
     }
 
 }

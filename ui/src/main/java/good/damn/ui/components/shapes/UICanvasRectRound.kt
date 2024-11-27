@@ -6,7 +6,7 @@ import android.graphics.RectF
 import good.damn.ui.components.UICanvas
 
 class UICanvasRectRound(
-    val rect: RectF,
+    private val rect: RectF,
     var radius: Float,
     val rotation: Float = 0.0f
 ): UICanvasShape {
