@@ -3,12 +3,16 @@ package good.damn.ui.textfield
 import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.Canvas
+import android.graphics.Color
 import android.graphics.Paint
+import android.graphics.PorterDuff
+import android.graphics.PorterDuffXfermode
 import android.graphics.Rect
 import android.graphics.RectF
 import android.graphics.Typeface
 import android.text.InputType
 import android.util.TypedValue
+import android.view.View
 import android.view.animation.AccelerateDecelerateInterpolator
 import androidx.appcompat.widget.AppCompatEditText
 import good.damn.ui.components.UICanvasText
@@ -65,7 +69,9 @@ class UITextField(
     }
 
     private val mPaintBackText = Paint().apply {
-        color = 0xff000315.toInt()
+        xfermode = PorterDuffXfermode(
+            PorterDuff.Mode.CLEAR
+        )
     }
 
     private val mCanvasHint = UICanvasText()
@@ -92,6 +98,13 @@ class UITextField(
     init {
         background = null
         maxLines = 1
+
+        // It needs to work with transparent color drawing
+        // see drawRect(mRectHint)
+        setLayerType(
+            View.LAYER_TYPE_HARDWARE,
+            null
+        )
 
         inputType = InputType.TYPE_CLASS_TEXT
     }
@@ -154,7 +167,6 @@ class UITextField(
         )
 
         save()
-
         clipRect(
             mRectHint
         )
@@ -217,8 +229,6 @@ class UITextField(
         setTextColor(
             theme.colorText
         )
-
-        mPaintBackText.color = theme.colorBackground
     }
 
     final override fun setTypeface(
