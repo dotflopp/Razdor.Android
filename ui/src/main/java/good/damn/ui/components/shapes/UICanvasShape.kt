@@ -5,4 +5,14 @@ import good.damn.ui.components.UICanvas
 
 interface UICanvasShape: UICanvas {
     val paint: Paint
+
+    fun prepareAnimation(
+        start: Any,
+        end: Any
+    )
+
+    fun tickAnimation(
+        t: Float
+    )
+
 }

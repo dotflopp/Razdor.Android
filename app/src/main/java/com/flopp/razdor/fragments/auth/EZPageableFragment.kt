@@ -6,11 +6,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.viewpager2.widget.ViewPager2
+import com.flopp.razdor.pagers.EZViewPagerShaper
 
 abstract class EZPageableFragment
 : Fragment() {
-    var pager: ViewPager2? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,

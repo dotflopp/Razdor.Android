@@ -2,16 +2,20 @@ package com.flopp.razdor.fragments.auth
 
 import android.content.Context
 import android.view.Gravity
+import android.view.View
 import com.flopp.razdor.EZApp
 import com.flopp.razdor.R
 import com.flopp.razdor.extensions.view.boundsFrame
 import com.flopp.razdor.fragments.navigation.EZFragmentNavigation
 import good.damn.ui.UIButton
+import good.damn.ui.components.shapes.animation.data.UICanvasShapeAnimationCircle
 import good.damn.ui.extensions.getFont
 import good.damn.ui.layouts.UIFrameLayout
 
 class EZFragmentIntro
 : EZPageableFragment() {
+
+    var onClickLogin: View.OnClickListener? = null
 
     override fun onCreateView(
         context: Context
@@ -35,9 +39,9 @@ class EZFragmentIntro
             context
         ).apply {
 
-            setOnClickListener {
-                onClickBtnLogin(this)
-            }
+            setOnClickListener(
+                onClickLogin
+            )
 
             text = context.getString(
                 R.string.login
@@ -66,13 +70,6 @@ class EZFragmentIntro
             )
         }
 
-    }
-
-
-    private inline fun onClickBtnLogin(
-        btn: UIButton
-    ) {
-        pager?.currentItem = 2
     }
 
 }
