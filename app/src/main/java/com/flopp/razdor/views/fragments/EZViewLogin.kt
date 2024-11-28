@@ -1,7 +1,6 @@
 package com.flopp.razdor.views.fragments
 
 import android.content.Context
-import android.graphics.RectF
 import android.os.Handler
 import android.os.Looper
 import android.text.method.PasswordTransformationMethod
@@ -13,15 +12,12 @@ import com.flopp.razdor.R
 import com.flopp.razdor.extensions.ui.setupVibration
 import com.flopp.razdor.extensions.view.boundsFrame
 import com.flopp.razdor.patterns.EZPattern
-import good.damn.ui.UIButton
+import good.damn.ui.buttons.UIButton
 import good.damn.ui.UITextView
 import good.damn.ui.UITextViewSemi
-import good.damn.ui.UIViewShaper
 import good.damn.ui.animation.UIAnimationCornerRadius
 import good.damn.ui.animation.UIAnimationGroup
 import good.damn.ui.animation.UIAnimationScale
-import good.damn.ui.components.shapes.UICanvasCircle
-import good.damn.ui.components.shapes.UICanvasRectRound
 import good.damn.ui.extensions.getFont
 import good.damn.ui.extensions.setTextSizePx
 import good.damn.ui.extensions.setTypefaceId

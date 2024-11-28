@@ -116,6 +116,9 @@ class EZFragmentAuth
                     onClickLogin = View.OnClickListener {
                         onClickBtnLogin(it)
                     }
+                    onClickSignIn = View.OnClickListener {
+                        onClickBtnSignIn(it)
+                    }
                 },
                 EZFragmentSignIn(),
                 EZFragmentLogin()
@@ -138,6 +141,18 @@ class EZFragmentAuth
         }
 
         return@let root
+    }
+
+    private inline fun onClickBtnSignIn(
+        btn: View
+    ) {
+        mViewPagerShaper?.apply {
+            pathAnimationDefault()
+            prepareAnimation(
+                mShapeAnimationLogin
+            )
+            currentItem = 1
+        }
     }
 
     private inline fun onClickBtnLogin(

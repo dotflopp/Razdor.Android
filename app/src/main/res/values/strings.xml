@@ -17,4 +17,5 @@
     <string name="gettingData">Получаем данные...</string>
     <string name="loginToAccount">Готово 👌</string>
     <string name="accountInformation">Информация об аккаунте</string>
+    <string name="signin">Зарегистрироваться</string>
 </resources>

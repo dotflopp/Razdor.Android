@@ -1,4 +1,4 @@
-package good.damn.ui
+package good.damn.ui.buttons
 
 import android.animation.ValueAnimator
 import android.content.Context
@@ -6,11 +6,12 @@ import android.graphics.Canvas
 import android.graphics.Typeface
 import android.view.animation.AccelerateDecelerateInterpolator
 import androidx.annotation.ColorInt
+import good.damn.ui.UIView
 import good.damn.ui.components.UICanvasText
 import good.damn.ui.interpolators.UIInterpolatorShake
 import good.damn.ui.theme.UITheme
 
-class UIButton(
+open class UIButton(
     context: Context
 ): UIView(
     context
@@ -69,8 +70,8 @@ class UIButton(
         }
     }
 
-    private val mCanvasText = UICanvasText()
-    private val mCanvasText2 = UICanvasText()
+    protected val mCanvasText = UICanvasText()
+    protected val mCanvasText2 = UICanvasText()
 
     private var mTextY = 0f
 

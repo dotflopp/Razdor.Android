@@ -6,9 +6,8 @@ import android.view.View
 import com.flopp.razdor.EZApp
 import com.flopp.razdor.R
 import com.flopp.razdor.extensions.view.boundsFrame
-import com.flopp.razdor.fragments.navigation.EZFragmentNavigation
-import good.damn.ui.UIButton
-import good.damn.ui.components.shapes.animation.data.UICanvasShapeAnimationCircle
+import good.damn.ui.buttons.UIButton
+import good.damn.ui.buttons.UIButtonSemi
 import good.damn.ui.extensions.getFont
 import good.damn.ui.layouts.UIFrameLayout
 
@@ -16,6 +15,7 @@ class EZFragmentIntro
 : EZPageableFragment() {
 
     var onClickLogin: View.OnClickListener? = null
+    var onClickSignIn: View.OnClickListener? = null
 
     override fun onCreateView(
         context: Context
@@ -34,11 +34,11 @@ class EZFragmentIntro
 
         val btnWidth = EZApp.width * 0.85f
         val btnHeight = EZApp.height * 0.08f
+        val marginBottom = EZApp.height * 0.05f
 
-        UIButton(
+        UIButtonSemi(
             context
         ).apply {
-
             setOnClickListener(
                 onClickLogin
             )
@@ -62,7 +62,45 @@ class EZFragmentIntro
             boundsFrame(
                 gravity = Gravity.CENTER_HORIZONTAL or Gravity.BOTTOM,
                 width = btnWidth,
-                height = btnHeight
+                height = btnHeight,
+                bottom = marginBottom
+            )
+
+            addView(
+                this
+            )
+
+        }
+
+        UIButton(
+            context
+        ).apply {
+
+            setOnClickListener(
+                onClickSignIn
+            )
+
+            text = context.getString(
+                R.string.signin
+            )
+
+            cornerRadiusFactor = 0.2f
+
+            textSizeFactor = 0.3f
+
+            typeface = context.getFont(
+                R.font.open_sans_bold
+            )
+
+            applyTheme(
+                EZApp.theme
+            )
+
+            boundsFrame(
+                gravity = Gravity.CENTER_HORIZONTAL or Gravity.BOTTOM,
+                width = btnWidth,
+                height = btnHeight,
+                bottom = marginBottom * 1.5f + btnHeight
             )
 
             addView(

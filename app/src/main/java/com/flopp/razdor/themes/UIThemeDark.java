@@ -11,11 +11,14 @@ extends UITheme {
         colorBackground = 0xff191919;
         colorBackgroundToast = 0xffffffff;
         colorBackgroundButton = 0xff5865F2;
+        colorBackgroundButtonSemi = 0xff252835;
 
         colorText = 0xffffffff;
         colorTextSemi = 0xffB5B8BF;
 
         colorTextButton = 0xffffffff;
+        colorTextButtonSemi = 0xffffffff;
+
         colorTextToast = 0xff000315;
 
         colorTextEditUnfocused = 0xff707070;
