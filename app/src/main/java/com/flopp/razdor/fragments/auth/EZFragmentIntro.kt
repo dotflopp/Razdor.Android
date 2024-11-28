@@ -1,21 +1,17 @@
-package com.flopp.razdor.fragments
+package com.flopp.razdor.fragments.auth
 
 import android.content.Context
 import android.view.Gravity
-import android.view.View
 import com.flopp.razdor.EZApp
 import com.flopp.razdor.R
 import com.flopp.razdor.extensions.view.boundsFrame
 import com.flopp.razdor.fragments.navigation.EZFragmentNavigation
 import good.damn.ui.UIButton
 import good.damn.ui.extensions.getFont
-import good.damn.ui.interfaces.UIThemable
 import good.damn.ui.layouts.UIFrameLayout
-import good.damn.ui.layouts.UILinearLayoutVertical
-import good.damn.ui.theme.UITheme
 
 class EZFragmentIntro
-: EZFragmentNavigation() {
+: EZPageableFragment() {
 
     override fun onCreateView(
         context: Context
@@ -23,15 +19,13 @@ class EZFragmentIntro
         context
     ).apply {
 
+        background = null
+
         setPadding(
             0,
             EZApp.insetTop.toInt(),
             0,
             EZApp.insetBottom.toInt()
-        )
-
-        applyTheme(
-            EZApp.theme
         )
 
         val btnWidth = EZApp.width * 0.85f
@@ -78,9 +72,7 @@ class EZFragmentIntro
     private inline fun onClickBtnLogin(
         btn: UIButton
     ) {
-        navigation?.push(
-            EZFragmentLogin()
-        )
+        pager?.currentItem = 2
     }
 
 }

@@ -3,15 +3,14 @@ package com.flopp.razdor.activities
 import android.os.Bundle
 import android.view.WindowManager
 import android.widget.FrameLayout
-import androidx.activity.OnBackPressedCallback
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.fragment.app.Fragment
 import com.flopp.razdor.EZApp
 import com.flopp.razdor.activities.callbacks.EZCallbackBackPressedNavigation
-import com.flopp.razdor.fragments.EZFragmentIntro
+import com.flopp.razdor.fragments.auth.EZFragmentAuth
+import com.flopp.razdor.fragments.auth.EZFragmentIntro
 import com.flopp.razdor.fragments.navigation.EZFragmentNavigation
 import com.flopp.razdor.navigation.EZNavigationFragment
 import com.flopp.razdor.services.EZServiceToast
@@ -89,12 +88,16 @@ class EZActivityMain
             context
         ).let { root ->
 
+            root.background = null
+
             mServiceToast.container = root
 
             FrameLayout(
                 context
             ).apply {
                 id = ViewCompat.generateViewId()
+
+                background = null
 
                 root.addView(
                     this
@@ -121,7 +124,9 @@ class EZActivityMain
             )
 
             it.push(
-                EZFragmentIntro()
+                EZFragmentAuth().apply {
+                    navigation = fragmentNavigation
+                }
             )
         }
 

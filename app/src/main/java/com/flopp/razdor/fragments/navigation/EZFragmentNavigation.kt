@@ -2,6 +2,7 @@ package com.flopp.razdor.fragments.navigation
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -30,20 +31,18 @@ UIThemable {
         val context = context
             ?: return null
 
-        navigation = context.mainActivity()
-            .fragmentNavigation
-
-
         return onCreateView(
             context
         )
     }
 
+    open fun backPressed() {
+        navigation?.pop()
+    }
+
     override fun applyTheme(
         theme: UITheme
-    ) {
-        TODO()
-    }
+    ) = Unit
 
     protected abstract fun onCreateView(
         context: Context

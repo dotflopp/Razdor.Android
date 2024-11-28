@@ -37,11 +37,7 @@ class EZViewLogin(
 
     override fun applyTheme(
         theme: UITheme
-    ) {
-        setBackgroundColor(
-            theme.colorBackground
-        )
-    }
+    ) = Unit
 
     init {
         val margin = EZApp.height * 0.02f
@@ -52,56 +48,6 @@ class EZViewLogin(
         val typefaceFieldHint = context.getFont(
             R.font.open_sans_bold
         )
-
-        UIViewShaper(
-            context
-        ).apply {
-            val h = EZApp.height
-            val w = EZApp.width
-
-            shapes = arrayOf(
-                UICanvasCircle(
-                    x = 0.0f,
-                    y = h * 0.25f,
-                    radius = w * 0.2f
-                ),
-                UICanvasCircle(
-                    x = w * 0.3f,
-                    y = h * 0.95f,
-                    radius = w * 0.4f
-                ),
-                UICanvasRectRound(
-                    RectF(
-                        w * 0.1f,
-                        h * 0.42f,
-                        w * 0.8f,
-                        h * 0.59f
-                    ),
-                    radius = w * 0.12f,
-                    rotation = -25f
-                ),
-                UICanvasRectRound(
-                    RectF(
-                        w * 0.9f,
-                        h * 0.1f,
-                        w * 1.05f,
-                        h * 0.49f
-                    ),
-                    radius = w * 0.12f,
-                    rotation = -25f
-                )
-            )
-
-            applyTheme(
-                EZApp.theme
-            )
-
-            addView(
-                this,
-                -1,
-                -1
-            )
-        }
 
         UITextView(
             context
