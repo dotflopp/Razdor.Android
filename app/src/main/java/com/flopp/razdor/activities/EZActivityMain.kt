@@ -10,10 +10,9 @@ import androidx.core.view.WindowInsetsCompat
 import com.flopp.razdor.EZApp
 import com.flopp.razdor.activities.callbacks.EZCallbackBackPressedNavigation
 import com.flopp.razdor.fragments.auth.EZFragmentAuth
-import com.flopp.razdor.fragments.auth.EZFragmentIntro
 import com.flopp.razdor.fragments.navigation.EZFragmentNavigation
 import com.flopp.razdor.navigation.EZNavigationFragment
-import com.flopp.razdor.services.EZServiceToast
+import com.flopp.razdor.repos.EZRepoToast
 
 class EZActivityMain
 : AppCompatActivity() {
@@ -26,7 +25,7 @@ class EZActivityMain
         EZFragmentNavigation
     >? = null
 
-    private val mServiceToast = EZServiceToast()
+    private val mServiceToast = EZRepoToast()
 
     override fun onCreate(
         savedInstanceState: Bundle?

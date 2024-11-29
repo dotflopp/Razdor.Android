@@ -1,11 +1,10 @@
-package com.flopp.razdor.services
+package com.flopp.razdor.repos
 
 import android.content.Context
-import android.inputmethodservice.InputMethodService
 import android.os.Vibrator
 import android.view.inputmethod.InputMethodManager
 
-class EZServicesSystem(
+class EZRepoServices(
     context: Context
 ) {
     val vibrator = context.getSystemService(

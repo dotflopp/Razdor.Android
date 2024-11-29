@@ -11,6 +11,8 @@ import com.flopp.razdor.pagers.EZViewPagerShaper
 abstract class EZPageableFragment
 : Fragment() {
 
+
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,

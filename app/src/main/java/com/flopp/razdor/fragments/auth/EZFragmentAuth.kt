@@ -6,6 +6,9 @@ import androidx.core.view.ViewCompat
 import androidx.viewpager2.widget.ViewPager2
 import com.flopp.razdor.EZApp
 import com.flopp.razdor.adapters.EZAdapterPager
+import com.flopp.razdor.fragments.auth.interfaces.EZListenerOnLoginSuccess
+import com.flopp.razdor.fragments.auth.interfaces.EZListenerOnSignInSuccess
+import com.flopp.razdor.fragments.call.EZFragmentCall
 import com.flopp.razdor.fragments.navigation.EZFragmentNavigation
 import good.damn.ui.UIViewShaper
 import good.damn.ui.components.shapes.UICanvasCircle
@@ -14,7 +17,7 @@ import good.damn.ui.layouts.UIFrameLayout
 import com.flopp.razdor.pagers.EZViewPagerShaper
 
 class EZFragmentAuth
-: EZFragmentNavigation() {
+: EZFragmentNavigation(), EZListenerOnLoginSuccess, EZListenerOnSignInSuccess {
 
     companion object {
         private val TAG = EZFragmentAuth::class.simpleName
@@ -120,8 +123,12 @@ class EZFragmentAuth
                         onClickBtnSignIn(it)
                     }
                 },
-                EZFragmentSignIn(),
-                EZFragmentLogin()
+                EZFragmentSignIn().apply {
+                    onSignInSuccess = this@EZFragmentAuth
+                },
+                EZFragmentLogin().apply {
+                    onLoginSuccess = this@EZFragmentAuth
+                }
             )
 
             mViewPagerShaper = EZViewPagerShaper(
@@ -141,6 +148,28 @@ class EZFragmentAuth
         }
 
         return@let root
+    }
+
+    override fun onLoginSuccess() {
+        navigation?.push(
+            EZFragmentCall()
+        )
+    }
+
+    override fun onSignInSuccess() {
+
+    }
+
+    override fun backPressed() {
+        mViewPagerShaper?.apply {
+            if (currentItem == 0) {
+                super.backPressed()
+                return
+            }
+            pathAnimationReverse()
+            currentItem = 0
+        }
+
     }
 
     private inline fun onClickBtnSignIn(
@@ -165,18 +194,6 @@ class EZFragmentAuth
             )
             currentItem = 2
         }
-    }
-
-    override fun backPressed() {
-        mViewPagerShaper?.apply {
-            if (currentItem == 0) {
-                super.backPressed()
-                return
-            }
-            pathAnimationReverse()
-            currentItem = 0
-        }
-
     }
 
 }

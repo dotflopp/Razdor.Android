@@ -4,18 +4,15 @@ import com.flopp.razdor.EZApp
 import com.flopp.razdor.enums.EZEnumStateAuth
 import com.flopp.razdor.extensions.json.toUser
 import com.flopp.razdor.extensions.okhttp.toJSON
-import com.flopp.razdor.network.http.base.EZClientBase
-import com.flopp.razdor.network.http.clients.listeners.EZIObserverHttpOnAuth
+import com.flopp.razdor.model.EZModelUser
+import com.flopp.razdor.network.http.listeners.EZIObserverHttpOnAuth
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 
-class EZClientHttp(
-    override val id: String,
-    override val username: String?,
-): EZClientBase {
+class EZClientHttp {
 
     companion object {
         private const val URL_LOGIN = "${EZApp.rootUrl}/login"
@@ -24,10 +21,19 @@ class EZClientHttp(
 
     private val mClient = OkHttpClient()
 
+    private var mUsername = ""
+    private var mPassword = ""
+
     fun login(
+        username: String,
+        password: String,
         withObserver: EZIObserverHttpOnAuth? = null,
         scope: CoroutineScope
     ) = scope.launch {
+
+        mUsername = username
+        mPassword = password
+
         val request = Request.Builder()
             .url(URL_LOGIN)
             .post(
@@ -56,11 +62,11 @@ class EZClientHttp(
         )
     }
 
-    private fun process(
+    private suspend fun process(
         withObserver: EZIObserverHttpOnAuth?,
         request: Request
     ) {
-        val response = mClient.newCall(
+        /*val response = mClient.newCall(
             request
         ).execute()
 
@@ -68,16 +74,22 @@ class EZClientHttp(
             .body
             ?.toJSON()
             ?.toUser()
-
-        if (user == null) {
-            withObserver?.onAuthFailed(
-                EZEnumStateAuth.USER_NOT_FOUND
-            )
-            return
+*/
+        EZApp.testUsers.forEach {
+            if (it.username == mUsername) {
+                withObserver?.onAuthFailed(
+                    EZEnumStateAuth.USER_NOT_FOUND
+                )
+                return
+            }
         }
 
         withObserver?.onAuthSuccess(
-            user
+            EZModelUser(
+                "-1",
+                "nope",
+                mUsername
+            )
         )
     }
 }

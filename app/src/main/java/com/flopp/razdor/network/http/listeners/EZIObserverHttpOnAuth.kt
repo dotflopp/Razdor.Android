@@ -1,14 +1,14 @@
-package com.flopp.razdor.network.http.clients.listeners
+package com.flopp.razdor.network.http.listeners
 
 import com.flopp.razdor.enums.EZEnumStateAuth
 import com.flopp.razdor.model.EZModelUser
 
 interface EZIObserverHttpOnAuth {
-    fun onAuthSuccess(
+    suspend fun onAuthSuccess(
         user: EZModelUser
     )
 
-    fun onAuthFailed(
+    suspend fun onAuthFailed(
         state: EZEnumStateAuth
     )
 }

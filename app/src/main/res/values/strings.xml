@@ -14,8 +14,8 @@
     <string name="welcomeBack">С возвращением!</string>
     <string name="letCallSomeDudes">Пора созвониться с товарищами\nи устроить пару игровых сессий</string>
     <string name="connectToServer">Соединяемся с сервером</string>
-    <string name="gettingData">Получаем данные...</string>
-    <string name="loginToAccount">Готово 👌</string>
+    <string name="gettingData">Получаем данные…</string>
+    <string name="loginToAccount">Входим в аккаунт… 👌</string>
     <string name="accountInformation">Информация об аккаунте</string>
     <string name="signin">Зарегистрироваться</string>
 </resources>

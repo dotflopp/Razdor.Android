@@ -1,4 +1,4 @@
-package com.flopp.razdor.services
+package com.flopp.razdor.repos
 
 import android.content.Context
 import android.view.Gravity
@@ -7,7 +7,7 @@ import com.flopp.razdor.EZApp
 import com.flopp.razdor.extensions.view.boundsFrame
 import good.damn.ui.toasts.UIToastText
 
-class EZServiceToast {
+class EZRepoToast {
 
     var container: FrameLayout? = null
 

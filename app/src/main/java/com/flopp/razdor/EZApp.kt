@@ -4,18 +4,17 @@ import android.app.Application
 import com.flopp.razdor.model.EZModelUser
 import com.flopp.razdor.patterns.EZPatternEmail
 import com.flopp.razdor.patterns.EZPatternPassword
-import com.flopp.razdor.services.EZServicesSystem
+import com.flopp.razdor.repos.EZRepoServices
 import com.flopp.razdor.themes.UIThemeDark
 import good.damn.ui.theme.UITheme
 import org.webrtc.EglBase
-import java.util.regex.Pattern
 
 class EZApp
 : Application() {
 
     companion object {
 
-        var services: EZServicesSystem? = null
+        var services: EZRepoServices? = null
 
         var width = 0f
         var height = 0f
@@ -48,7 +47,7 @@ class EZApp
     override fun onCreate() {
         super.onCreate()
 
-        services = EZServicesSystem(
+        services = EZRepoServices(
             applicationContext
         )
 
