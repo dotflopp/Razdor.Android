@@ -28,6 +28,8 @@ class EZApp
 
         val eglBaseContext = EglBase.create().eglBaseContext
 
+        var currentUser: EZModelUser? = null
+
         val testUsers = arrayOf(
             EZModelUser(
                 "0f0d0s-asdaslsk",

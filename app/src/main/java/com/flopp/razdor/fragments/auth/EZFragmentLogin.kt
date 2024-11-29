@@ -63,10 +63,6 @@ EZIObserverHttpOnAuth {
             0
         )
 
-        applyTheme(
-            EZApp.theme
-        )
-
         val margin = EZApp.height * 0.02f
         val fieldHeight = EZApp.height * 0.09f
         val fieldWidth = EZApp.width * 0.85f
@@ -339,7 +335,9 @@ EZIObserverHttpOnAuth {
 
             delay(1750)
 
-            onLoginSuccess?.onLoginSuccess()
+            onLoginSuccess?.onLoginSuccess(
+                user
+            )
         }
     }
 

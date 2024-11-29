@@ -7,6 +7,7 @@ import com.flopp.razdor.extensions.okhttp.toJSON
 import com.flopp.razdor.model.EZModelUser
 import com.flopp.razdor.network.http.listeners.EZIObserverHttpOnAuth
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -75,21 +76,20 @@ class EZClientHttp {
             ?.toJSON()
             ?.toUser()
 */
+
+        delay(1500)
         EZApp.testUsers.forEach {
             if (it.username == mUsername) {
-                withObserver?.onAuthFailed(
-                    EZEnumStateAuth.USER_NOT_FOUND
+                withObserver?.onAuthSuccess(
+                    it
                 )
                 return
             }
         }
 
-        withObserver?.onAuthSuccess(
-            EZModelUser(
-                "-1",
-                "nope",
-                mUsername
-            )
+        withObserver?.onAuthFailed(
+            EZEnumStateAuth.USER_NOT_FOUND
         )
+
     }
 }

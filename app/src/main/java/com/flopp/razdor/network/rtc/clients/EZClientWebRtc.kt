@@ -42,6 +42,18 @@ class EZClientWebRtc(
 
     var onTransferEvents: EZListenerRtcTransferEvents? = null
 
+    init {
+        PeerConnectionFactory.initialize(
+            PeerConnectionFactory.InitializationOptions.builder(
+                context
+            ).setEnableInternalTracer(
+                true
+            ).setFieldTrials(
+                "WebRTC-H264HighProfile/Enabled/"
+            ).createInitializationOptions()
+        )
+    }
+
     private val mServersIce = arrayListOf(
         PeerConnection.IceServer.builder(
             "turn:fr-turn2.xirsys.com:3478?transport=udp"
@@ -77,8 +89,8 @@ class EZClientWebRtc(
             observer
         )
 
-    private val mLocalTrackId = "${fromUser.username}_track"
-    private val mLocalStreamId = "${fromUser.username}_stream"
+    private val mLocalTrackId = "${fromUser.id}_track"
+    private val mLocalStreamId = "${fromUser.id}_stream"
 
     private val mLocalAudioSource = mPeerConnectionFactory.createAudioSource(
         MediaConstraints()
@@ -98,18 +110,6 @@ class EZClientWebRtc(
             add(MediaConstraints.KeyValuePair("OfferToReceiveVideo","true"))
             add(MediaConstraints.KeyValuePair("OfferToReceiveAudio","true"))
         }
-    }
-
-    init {
-        PeerConnectionFactory.initialize(
-            PeerConnectionFactory.InitializationOptions.builder(
-                context
-            ).setEnableInternalTracer(
-                true
-            ).setFieldTrials(
-                "WebRTC-H264HighProfile/Enabled/"
-            ).createInitializationOptions()
-        )
     }
 
     fun setupVideoSource(

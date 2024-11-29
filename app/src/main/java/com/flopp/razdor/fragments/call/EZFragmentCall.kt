@@ -7,6 +7,7 @@ import com.flopp.razdor.bridges.EZBridgeRtcService
 import com.flopp.razdor.extensions.mainActivity
 import com.flopp.razdor.extensions.view.boundsFrame
 import com.flopp.razdor.fragments.navigation.EZFragmentNavigation
+import com.flopp.razdor.model.EZModelUser
 import com.flopp.razdor.network.rtc.clients.EZClientWebRtc
 import com.flopp.razdor.views.surface.EZViewSurfaceRtc
 import good.damn.ui.layouts.UIFrameLayout
@@ -14,14 +15,28 @@ import good.damn.ui.layouts.UIFrameLayout
 class EZFragmentCall
 : EZFragmentNavigation() {
 
+    var fromUser: EZModelUser? = null
+
     private var mBridgeRtcService: EZBridgeRtcService? = null
-    private var mClientRtc: EZClientWebRtc? = null
+
+    private var mSurfaceRemote: EZViewSurfaceRtc? = null
+    private var mSurfaceLocal: EZViewSurfaceRtc? = null
 
     override fun onStart() {
         super.onStart()
-        context?.apply {
-            mBridgeRtcService = EZBridgeRtcService(
-                mainActivity()
+
+        val context = context
+            ?: return
+
+        val fromUser = fromUser
+            ?: return
+
+        mBridgeRtcService = EZBridgeRtcService(
+            context.mainActivity(),
+            fromUser
+        ).apply {
+            callTo(
+                EZApp.testUsers[0]
             )
         }
     }
@@ -55,6 +70,8 @@ class EZFragmentCall
             addView(
                 this
             )
+
+            mSurfaceRemote = this
         }
 
         EZViewSurfaceRtc(
@@ -74,6 +91,8 @@ class EZFragmentCall
             addView(
                 this
             )
+
+            mSurfaceLocal = this
         }
     }
 

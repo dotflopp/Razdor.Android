@@ -33,6 +33,8 @@ class EZServiceRtc
     override fun onUnbind(
         intent: Intent?
     ): Boolean {
+        Log.d(TAG, "onUnbind: $mBinder")
+        mBinder = null
         return true // allow rebind
     }
 

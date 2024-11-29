@@ -6,10 +6,14 @@ import androidx.core.view.ViewCompat
 import androidx.viewpager2.widget.ViewPager2
 import com.flopp.razdor.EZApp
 import com.flopp.razdor.adapters.EZAdapterPager
+import com.flopp.razdor.extensions.checkPermissionCamera
+import com.flopp.razdor.extensions.checkPermissionMicrophone
+import com.flopp.razdor.extensions.mainActivity
 import com.flopp.razdor.fragments.auth.interfaces.EZListenerOnLoginSuccess
 import com.flopp.razdor.fragments.auth.interfaces.EZListenerOnSignInSuccess
 import com.flopp.razdor.fragments.call.EZFragmentCall
 import com.flopp.razdor.fragments.navigation.EZFragmentNavigation
+import com.flopp.razdor.model.EZModelUser
 import good.damn.ui.UIViewShaper
 import good.damn.ui.components.shapes.UICanvasCircle
 import good.damn.ui.components.shapes.animation.data.UICanvasShapeAnimationCircle
@@ -72,6 +76,12 @@ class EZFragmentAuth
     ) = UIFrameLayout(
         context
     ).let { root ->
+
+        context.mainActivity().apply {
+            checkPermissionCamera()
+            checkPermissionMicrophone()
+        }
+
         root.applyTheme(
             EZApp.theme
         )
@@ -150,9 +160,13 @@ class EZFragmentAuth
         return@let root
     }
 
-    override fun onLoginSuccess() {
+    override fun onLoginSuccess(
+        user: EZModelUser
+    ) {
         navigation?.push(
-            EZFragmentCall()
+            EZFragmentCall().apply {
+                fromUser = user
+            }
         )
     }
 
