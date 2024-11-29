@@ -10,6 +10,11 @@ class UIFrameLayout(
 ): FrameLayout(
     context
 ), UIThemable {
+
+    init {
+        clipChildren = false
+    }
+
     override fun applyTheme(
         theme: UITheme
     ) {

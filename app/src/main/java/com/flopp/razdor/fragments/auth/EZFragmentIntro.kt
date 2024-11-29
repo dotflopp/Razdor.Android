@@ -3,9 +3,13 @@ package com.flopp.razdor.fragments.auth
 import android.content.Context
 import android.view.Gravity
 import android.view.View
+import android.view.animation.AccelerateDecelerateInterpolator
+import android.view.animation.OvershootInterpolator
 import com.flopp.razdor.EZApp
 import com.flopp.razdor.R
 import com.flopp.razdor.extensions.view.boundsFrame
+import good.damn.ui.animation.UIAnimationGroup
+import good.damn.ui.animation.UIAnimationScale
 import good.damn.ui.buttons.UIButton
 import good.damn.ui.buttons.UIButtonSemi
 import good.damn.ui.extensions.getFont
@@ -41,6 +45,28 @@ class EZFragmentIntro
         ).apply {
             setOnClickListener(
                 onClickLogin
+            )
+
+            animationGroupTouchDown = UIAnimationGroup(
+                arrayOf(
+                    UIAnimationScale(
+                        1.0f,
+                        0.9f
+                    )
+                ),
+                OvershootInterpolator(),
+                150L
+            )
+
+            animationGroupTouchUp = UIAnimationGroup(
+                arrayOf(
+                    UIAnimationScale(
+                        0.9f,
+                        1.0f
+                    )
+                ),
+                OvershootInterpolator(),
+                150L
             )
 
             text = context.getString(

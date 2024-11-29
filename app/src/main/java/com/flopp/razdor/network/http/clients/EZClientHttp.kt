@@ -1,11 +1,11 @@
-package com.flopp.razdor.network.clients.http
+package com.flopp.razdor.network.http.clients
 
 import com.flopp.razdor.EZApp
 import com.flopp.razdor.enums.EZEnumStateAuth
 import com.flopp.razdor.extensions.json.toUser
 import com.flopp.razdor.extensions.okhttp.toJSON
-import com.flopp.razdor.network.clients.base.EZClientBase
-import com.flopp.razdor.network.clients.http.listeners.EZIObserverHttpOnAuth
+import com.flopp.razdor.network.http.base.EZClientBase
+import com.flopp.razdor.network.http.clients.listeners.EZIObserverHttpOnAuth
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import okhttp3.OkHttpClient

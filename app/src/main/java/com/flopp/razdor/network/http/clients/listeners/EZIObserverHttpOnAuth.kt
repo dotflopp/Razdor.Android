@@ -1,4 +1,4 @@
-package com.flopp.razdor.network.clients.http.listeners
+package com.flopp.razdor.network.http.clients.listeners
 
 import com.flopp.razdor.enums.EZEnumStateAuth
 import com.flopp.razdor.model.EZModelUser
