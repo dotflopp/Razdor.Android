@@ -15,17 +15,19 @@
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
 
-    <uses-permission android:name="android.permission.CAPTURE_AUDIO_HOTWORD"
-        tools:ignore="ProtectedPermissions" />
-    <uses-permission android:name="android.permission.CAPTURE_MEDIA_OUTPUT"
-        tools:ignore="ProtectedPermissions" />
-    <uses-permission android:name="android.permission.CAPTURE_VIDEO_OUTPUT"
-        tools:ignore="ProtectedPermissions"/>
-    <uses-permission android:name="android.permission.CAPTURE_TUNER_AUDIO_INPUT"
-        tools:ignore="ProtectedPermissions"/>
-    <uses-permission android:name="android.permission.CAPTURE_VOICE_COMMUNICATION_OUTPUT"
-        tools:ignore="ProtectedPermissions"/>
 
+    <!-- Does this shit need? $START-->
+<!--    <uses-permission android:name="android.permission.CAPTURE_AUDIO_HOTWORD"-->
+<!--        tools:ignore="ProtectedPermissions" />-->
+<!--    <uses-permission android:name="android.permission.CAPTURE_MEDIA_OUTPUT"-->
+<!--        tools:ignore="ProtectedPermissions" />-->
+<!--    <uses-permission android:name="android.permission.CAPTURE_VIDEO_OUTPUT"-->
+<!--        tools:ignore="ProtectedPermissions"/>-->
+<!--    <uses-permission android:name="android.permission.CAPTURE_TUNER_AUDIO_INPUT"-->
+<!--        tools:ignore="ProtectedPermissions"/>-->
+<!--    <uses-permission android:name="android.permission.CAPTURE_VOICE_COMMUNICATION_OUTPUT"-->
+<!--        tools:ignore="ProtectedPermissions"/>-->
+    <!-- Does this shit need? $END -->
 
     <application
         android:name=".EZApp"

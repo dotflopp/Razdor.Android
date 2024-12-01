@@ -1,7 +1,10 @@
 package com.flopp.razdor.fragments.call
 
 import android.content.Context
+import android.util.Log
 import android.view.Gravity
+import android.view.View
+import android.widget.Button
 import com.flopp.razdor.EZApp
 import com.flopp.razdor.bridges.EZBridgeRtcService
 import com.flopp.razdor.extensions.mainActivity
@@ -10,6 +13,7 @@ import com.flopp.razdor.fragments.navigation.EZFragmentNavigation
 import com.flopp.razdor.model.EZModelUser
 import com.flopp.razdor.network.rtc.clients.EZClientWebRtc
 import com.flopp.razdor.views.surface.EZViewSurfaceRtc
+import good.damn.ui.buttons.UIButton
 import good.damn.ui.layouts.UIFrameLayout
 
 class EZFragmentCall
@@ -34,11 +38,7 @@ class EZFragmentCall
         mBridgeRtcService = EZBridgeRtcService(
             context.mainActivity(),
             fromUser
-        ).apply {
-            callTo(
-                EZApp.testUsers[0]
-            )
-        }
+        )
     }
 
     override fun onStop() {
@@ -93,6 +93,77 @@ class EZFragmentCall
             )
 
             mSurfaceLocal = this
+        }
+
+        val s = EZApp.height * 0.1f
+
+        Button(
+            context
+        ).apply {
+
+            text = "CALL"
+
+            setOnClickListener {
+                var selectedUser: EZModelUser? = null
+                for (user in EZApp.testUsers) {
+                    if (fromUser?.username != user.username) {
+                        selectedUser = user
+                        break
+                    }
+                }
+
+                Log.d("EZFragmentCall:", "onCreateView: CALL: $selectedUser")
+
+                selectedUser?.apply {
+                    mBridgeRtcService?.callTo(
+                        this
+                    )
+                }
+            }
+
+            boundsFrame(
+                width = s,
+                height = s
+            )
+
+            addView(
+                this
+            )
+        }
+
+
+        Button(
+            context
+        ).apply {
+
+            text = "RCV"
+
+            setOnClickListener {
+                var selectedUser: EZModelUser? = null
+                for (user in EZApp.testUsers) {
+                    if (fromUser?.username != user.username) {
+                        selectedUser = user
+                        break
+                    }
+                }
+
+                Log.d("EZFragmentCall:", "onCreateView: ANSWER: $selectedUser")
+                selectedUser?.apply {
+                    mBridgeRtcService?.answerTo(
+                        this
+                    )
+                }
+            }
+
+            boundsFrame(
+                width = s,
+                height = s,
+                start = s
+            )
+
+            addView(
+                this
+            )
         }
     }
 

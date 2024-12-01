@@ -31,5 +31,7 @@ extends UITheme {
 
         colorCorrect = 0xff66BB6A;
 
+        colorIcon = 0xff30303F;
+
     }
 }

@@ -8,6 +8,9 @@ import android.view.animation.OvershootInterpolator
 import com.flopp.razdor.EZApp
 import com.flopp.razdor.R
 import com.flopp.razdor.extensions.view.boundsFrame
+import good.damn.editor.importer.VEModelImport
+import good.damn.editor.importer.VEViewAVS
+import good.damn.sav.misc.Size
 import good.damn.ui.animation.UIAnimationGroup
 import good.damn.ui.animation.UIAnimationScale
 import good.damn.ui.buttons.UIButton

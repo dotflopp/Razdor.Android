@@ -76,6 +76,12 @@ EZListenerRtcTransferEvents {
         user
     )
 
+    fun answerTo(
+        user: EZModelUser
+    ) = mClientRtc.answerTo(
+        user
+    )
+
     fun stop(
         activity: AppCompatActivity
     ) {

@@ -42,6 +42,10 @@ dependencies {
     implementation (libs.webrtc)
     implementation(libs.okhttp)
 
+    implementation("com.github.GoodDamn.VectorEditorAndroid:import:1.0")
+    implementation("com.github.GoodDamn.VectorEditorAndroid:misc:1.0")
+    implementation("com.github.GoodDamn.VectorEditorAndroid:core:1.0")
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(project(":ui"))

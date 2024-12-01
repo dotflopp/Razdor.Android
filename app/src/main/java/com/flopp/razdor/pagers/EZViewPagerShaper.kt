@@ -1,6 +1,7 @@
 package com.flopp.razdor.pagers
 
 import androidx.viewpager2.widget.ViewPager2
+import good.damn.editor.importer.VEViewAVS
 import good.damn.ui.UIViewShaper
 
 class EZViewPagerShaper(

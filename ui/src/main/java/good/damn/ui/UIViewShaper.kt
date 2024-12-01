@@ -1,6 +1,7 @@
 package good.damn.ui
 
 import android.animation.ValueAnimator
+import android.animation.ValueAnimator.AnimatorUpdateListener
 import android.content.Context
 import android.graphics.Canvas
 import android.view.View
@@ -60,6 +61,14 @@ ValueAnimator.AnimatorUpdateListener {
             animation.animatedValue as Float
         )
         invalidate()
+    }
+
+    fun addUpdateListener(
+        listener: AnimatorUpdateListener
+    ) {
+        mAnimator.addUpdateListener(
+            listener
+        )
     }
 
     fun setupPathAnimation(

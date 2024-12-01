@@ -1,14 +1,17 @@
 package com.flopp.razdor.fragments.auth
 
 import android.content.Context
+import android.view.Gravity
 import android.view.View
 import androidx.core.view.ViewCompat
 import androidx.viewpager2.widget.ViewPager2
 import com.flopp.razdor.EZApp
+import com.flopp.razdor.R
 import com.flopp.razdor.adapters.EZAdapterPager
 import com.flopp.razdor.extensions.checkPermissionCamera
 import com.flopp.razdor.extensions.checkPermissionMicrophone
 import com.flopp.razdor.extensions.mainActivity
+import com.flopp.razdor.extensions.view.boundsFrame
 import com.flopp.razdor.fragments.auth.interfaces.EZListenerOnLoginSuccess
 import com.flopp.razdor.fragments.auth.interfaces.EZListenerOnSignInSuccess
 import com.flopp.razdor.fragments.call.EZFragmentCall
@@ -19,6 +22,9 @@ import good.damn.ui.components.shapes.UICanvasCircle
 import good.damn.ui.components.shapes.animation.data.UICanvasShapeAnimationCircle
 import good.damn.ui.layouts.UIFrameLayout
 import com.flopp.razdor.pagers.EZViewPagerShaper
+import good.damn.editor.importer.VEModelImport
+import good.damn.editor.importer.VEViewAVS
+import good.damn.sav.misc.Size
 
 class EZFragmentAuth
 : EZFragmentNavigation(), EZListenerOnLoginSuccess, EZListenerOnSignInSuccess {
@@ -116,7 +122,52 @@ class EZFragmentAuth
             )
         }
 
-        val viewPager = ViewPager2(
+        val viewAvs = VEViewAVS(
+            context
+        ).apply {
+            val canvasSize = (
+                EZApp.width * 0.5f
+                ).run {
+                    Size(
+                        this,
+                        this
+                    )
+                }
+
+            model = VEModelImport.createFromResource(
+                resources,
+                R.raw.avs_mouse,
+                canvasSize
+            ).apply {
+                shapes.forEach {
+                    it.color = EZApp.theme.colorIcon
+                }
+            }
+
+            val currentX = EZApp.width * 0.075f - (
+                EZApp.width - canvasSize.width
+            ) * 0.5f - canvasSize.width
+
+            shaper.addUpdateListener {
+                val f = it.animatedValue as Float
+                scaleX = 1.0f - 0.8f * f
+                scaleY = scaleX
+                translationX = currentX * f
+            }
+
+            boundsFrame(
+                gravity = Gravity.CENTER_HORIZONTAL,
+                width = canvasSize.width,
+                height = canvasSize.height,
+                top = EZApp.height * 0.1f
+            )
+
+            root.addView(
+                this
+            )
+        }
+
+        ViewPager2(
             context
         ).apply {
             background = null
