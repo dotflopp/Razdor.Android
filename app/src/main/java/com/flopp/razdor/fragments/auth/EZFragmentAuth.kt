@@ -122,11 +122,11 @@ class EZFragmentAuth
             )
         }
 
-        val viewAvs = VEViewAVS(
+        VEViewAVS(
             context
         ).apply {
             val canvasSize = (
-                EZApp.width * 0.5f
+                EZApp.width * 0.75f
                 ).run {
                     Size(
                         this,
@@ -144,9 +144,7 @@ class EZFragmentAuth
                 }
             }
 
-            val currentX = EZApp.width * 0.075f - (
-                EZApp.width - canvasSize.width
-            ) * 0.5f - canvasSize.width
+            val currentX = EZApp.width * -0.5f
 
             shaper.addUpdateListener {
                 val f = it.animatedValue as Float

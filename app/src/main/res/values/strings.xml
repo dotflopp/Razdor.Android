@@ -18,4 +18,6 @@
     <string name="loginToAccount">Входим в аккаунт… 👌</string>
     <string name="accountInformation">Информация об аккаунте</string>
     <string name="signin">Зарегистрироваться</string>
+    <string name="introQuote">Сообщество уровня AAA,\nсовременно, модно, молодёжно</string>
+    <string name="porazdorim">Razdor?</string>
 </resources>
