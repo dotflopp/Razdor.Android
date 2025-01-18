@@ -1,3 +1,23 @@
 <resources>
-    <string name="app_name">ZoV_Android</string>
+    <string name="app_name">Razdor</string>
+    <string name="credentialsBlank">Не все данные заполнены</string>
+    <string name="сredentialsInvalid">Некорректные данные аутентификации</string>
+
+    <string name="errorSomething">Произошла ошибка</string>
+    <string name="errorUserNotFound">Пользователь не найден</string>
+    <string name="errorUserAlreadExists">Такой пользователь уже существует</string>
+    <string name="username">Email</string>
+    <string name="password">Пароль</string>
+    <string name="login">Войти</string>
+    <string name="warningUsername">К примеру, example@gmail.com</string>
+    <string name="warningPassword">Больше 8 символов и содержать $/][</string>
+    <string name="welcomeBack">С возвращением!</string>
+    <string name="letCallSomeDudes">Пора созвониться с товарищами\nи устроить пару игровых сессий</string>
+    <string name="connectToServer">Соединяемся с сервером</string>
+    <string name="gettingData">Получаем данные…</string>
+    <string name="loginToAccount">Входим в аккаунт… 👌</string>
+    <string name="accountInformation">Информация об аккаунте</string>
+    <string name="signin">Зарегистрироваться</string>
+    <string name="introQuote">Сообщество уровня AAA,\nсовременно, модно, молодёжно</string>
+    <string name="porazdorim">Razdor?</string>
 </resources>
