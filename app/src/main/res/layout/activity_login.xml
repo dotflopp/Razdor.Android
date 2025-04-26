@@ -43,13 +43,23 @@
         app:layout_constraintTop_toBottomOf="@id/usernameEt" />
     <Button
         android:layout_width="200dp"
+        android:text="Запрос"
+        android:layout_marginTop="10dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/passwordEt"
+        android:id="@+id/btn_serv"/>
+    <Button
+        android:layout_width="200dp"
         android:text="Войти"
         android:layout_marginTop="20dp"
         android:layout_height="wrap_content"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/passwordEt"
+        app:layout_constraintTop_toBottomOf="@+id/btn_serv"
         android:id="@+id/btn"/>
     <TextView
         android:layout_width="200dp"
