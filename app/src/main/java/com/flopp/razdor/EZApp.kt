@@ -4,6 +4,7 @@ import android.app.Application
 import com.flopp.razdor.model.EZModelUser
 import com.flopp.razdor.patterns.EZPatternEmail
 import com.flopp.razdor.patterns.EZPatternPassword
+import com.flopp.razdor.patterns.EZPatternUsername
 import com.flopp.razdor.repos.EZRepoServices
 import com.flopp.razdor.themes.UIThemeDark
 import good.damn.ui.theme.UITheme
@@ -25,6 +26,7 @@ class EZApp
 
         val patternPassword = EZPatternPassword()
         val patternEmail = EZPatternEmail()
+        val patternUsername = EZPatternUsername()
 
         val eglBaseContext = EglBase.create().eglBaseContext
 

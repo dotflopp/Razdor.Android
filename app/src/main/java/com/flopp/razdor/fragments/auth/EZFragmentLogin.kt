@@ -1,8 +1,6 @@
 package com.flopp.razdor.fragments.auth
 
 import android.content.Context
-import android.os.Handler
-import android.os.Looper
 import android.text.method.PasswordTransformationMethod
 import android.view.Gravity
 import android.view.animation.AccelerateDecelerateInterpolator
@@ -13,7 +11,6 @@ import com.flopp.razdor.enums.EZEnumStateAuth
 import com.flopp.razdor.extensions.ui.setupVibration
 import com.flopp.razdor.extensions.view.boundsFrame
 import com.flopp.razdor.fragments.auth.interfaces.EZListenerOnLoginSuccess
-import com.flopp.razdor.fragments.navigation.EZFragmentNavigation
 import com.flopp.razdor.model.EZModelUser
 import com.flopp.razdor.network.http.clients.EZClientHttp
 import com.flopp.razdor.network.http.listeners.EZIObserverHttpOnAuth
@@ -438,7 +435,3 @@ EZIObserverHttpOnAuth {
     }
 
 }
-
-private data class Datable(
-    var b: Boolean = false
-)

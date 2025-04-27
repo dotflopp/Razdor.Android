@@ -7,11 +7,13 @@ import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.animation.OvershootInterpolator
 import com.flopp.razdor.EZApp
 import com.flopp.razdor.R
+import com.flopp.razdor.enums.EZEnumStateAuth
 import com.flopp.razdor.extensions.ui.setupVibration
 import com.flopp.razdor.extensions.view.boundsFrame
 import com.flopp.razdor.fragments.auth.interfaces.EZListenerOnSignInSuccess
-import com.flopp.razdor.fragments.navigation.EZFragmentNavigation
+import com.flopp.razdor.model.EZModelUser
 import com.flopp.razdor.network.http.clients.EZClientHttp
+import com.flopp.razdor.network.http.listeners.EZIObserverHttpOnAuth
 import com.flopp.razdor.patterns.EZPattern
 import good.damn.ui.UITextView
 import good.damn.ui.UITextViewSemi
@@ -26,9 +28,11 @@ import good.damn.ui.layouts.UILinearLayoutVertical
 import good.damn.ui.textfield.UITextField
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.withContext
 
 class EZFragmentSignIn
-: EZPageableFragment() {
+: EZPageableFragment(), EZIObserverHttpOnAuth {
 
     var onSignInSuccess: EZListenerOnSignInSuccess? = null
 
@@ -37,7 +41,7 @@ class EZFragmentSignIn
         Dispatchers.IO
     )
 
-    private var mBtnLogin: UIButton? = null
+    private var mBtnSignIn: UIButton? = null
     private var mFieldUsername: UITextField? = null
     private var mFieldEmail: UITextField? = null
     private var mFieldPassword: UITextField? = null
@@ -314,7 +318,7 @@ class EZFragmentSignIn
             )
         }
 
-        mBtnLogin = UIButton(
+        mBtnSignIn = UIButton(
             context
         ).apply {
 
@@ -328,13 +332,15 @@ class EZFragmentSignIn
                 R.font.open_sans_bold
             )
 
-            /*setOnClickListener {
-                onClickBtnLogin(
+            setOnClickListener {
+                onClickBtnSignIn(
                     this,
                     mFieldUsername!!,
-                    mFieldPassword!!
+                    mFieldEmail!!,
+                    mFieldPassword!!,
+                    mFieldConfirmPassword!!
                 )
-            }*/
+            }
 
             animationGroupTouchDown = UIAnimationGroup(
                 arrayOf(
@@ -386,8 +392,153 @@ class EZFragmentSignIn
                 this
             )
         }
+    }
+
+    private inline fun onClickBtnSignIn(
+        btn: UIButton,
+        fieldUsername: UITextField,
+        fieldEmail: UITextField,
+        fieldPassword: UITextField,
+        fieldConfirmPassword: UITextField,
+    ){
+        val context = btn.context
+        val hasError = Datable()
+
+        if (checkFieldPattern(fieldUsername, EZApp.patternUsername, hasError)
+            ||checkFieldPattern(fieldEmail, EZApp.patternEmail, hasError)
+            || checkFieldPattern(fieldPassword, EZApp.patternPassword, hasError)
+            || checkFieldPattern(fieldConfirmPassword, EZApp.patternPassword, hasError)
+            || checkLikenessPassword(fieldPassword, fieldConfirmPassword, hasError)
+            || hasError.b) {
+            return
+        }
+
+        fieldUsername.tintColor = EZApp.theme.colorCorrect
+        fieldEmail.tintColor = EZApp.theme.colorCorrect
+        fieldPassword.tintColor = fieldEmail.tintColor
+        fieldConfirmPassword.tintColor = fieldEmail.tintColor
+
+        val username = fieldUsername.text!!.toString()
+        val email = fieldEmail.text!!.toString()
+        val password = fieldPassword.text!!.toString()
+        //val confirmPassword = fieldConfirmPassword.text!!.toString()
+
+        btn.isEnabled = false
+        fieldUsername.isEnabled = false
+        fieldEmail.isEnabled = false
+        fieldPassword.isEnabled = false
+        fieldConfirmPassword.isEnabled = false
+
+        btn.changeTextAnimated(
+            context.getString(
+                R.string.connectToServer
+            )
+        )
+
+        mClientHttp.login(
+            email,
+            password,
+            this@EZFragmentSignIn,
+            mScopeLogin
+        )
 
     }
 
+    private fun checkLikenessPassword(
+        field1: UITextField,
+        field2: UITextField,
+        d: Datable
+    ): Boolean{
+        field1.clearFocus()
+        field2.clearFocus()
+
+        if(field1.text?.toString()==field2.text?.toString()) {
+            return false
+        }
+
+        field1.error(
+            EZApp.theme
+        )
+        field2.error(
+            EZApp.theme
+        )
+        d.b = true
+
+        return false
+    }
+
+    private fun checkFieldPattern(
+        field: UITextField,
+        pattern: EZPattern,
+        d: Datable
+    ): Boolean {
+        field.clearFocus()
+        field.text?.toString()?.apply {
+            if (pattern.matchesPattern(this)) {
+                return false
+            }
+        }
+
+        field.error(
+            EZApp.theme
+        )
+        d.b = true
+
+        return false
+    }
+
+    override suspend fun onAuthSuccess(
+        user: EZModelUser
+    ) {
+        withContext(
+            Dispatchers.Main
+        ) {
+            mBtnSignIn?.apply {
+                changeTextAnimated(
+                    context.getString(
+                        R.string.loginToAccount
+                    )
+                )
+            }
+
+            delay(1750)
+
+            onSignInSuccess?.onSignInSuccess(
+                user
+            )
+        }
+    }
+
+    override suspend fun onAuthFailed(
+        state: EZEnumStateAuth
+    ) {
+        withContext(
+            Dispatchers.Main
+        ) {
+            mBtnSignIn?.apply {
+                changeTextAnimated(
+                    context.getString(
+                        R.string.signin
+                    )
+                )
+                isEnabled = true
+                startShakeAnimation()
+            }
+
+            mFieldPassword?.apply {
+                isEnabled = true
+                error(
+                    EZApp.theme
+                )
+            }
+
+            mFieldUsername?.apply {
+                isEnabled = true
+                error(
+                    EZApp.theme
+                )
+            }
+        }
+    }
 }
 

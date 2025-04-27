@@ -219,8 +219,14 @@ class EZFragmentAuth
         )
     }
 
-    override fun onSignInSuccess() {
-
+    override fun onSignInSuccess(
+        user: EZModelUser
+    ) {
+        navigation?.push(
+            EZFragmentCall().apply {
+                fromUser = user
+            }
+        )
     }
 
     override fun backPressed() {

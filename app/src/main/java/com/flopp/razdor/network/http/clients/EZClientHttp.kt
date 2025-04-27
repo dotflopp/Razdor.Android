@@ -2,9 +2,7 @@ package com.flopp.razdor.network.http.clients
 
 import com.flopp.razdor.EZApp
 import com.flopp.razdor.enums.EZEnumStateAuth
-import com.flopp.razdor.extensions.json.toUser
-import com.flopp.razdor.extensions.okhttp.toJSON
-import com.flopp.razdor.model.EZModelUser
+import com.flopp.razdor.fragments.auth.EZFragmentSignIn
 import com.flopp.razdor.network.http.listeners.EZIObserverHttpOnAuth
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
