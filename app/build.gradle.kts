@@ -7,6 +7,7 @@ android {
     namespace = "com.flopp.razdor"
     compileSdk = 34
 
+
     defaultConfig {
         applicationId = "com.flopp.razdor"
         minSdk = 21

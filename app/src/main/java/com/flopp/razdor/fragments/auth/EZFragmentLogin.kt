@@ -171,11 +171,11 @@ EZIObserverHttpOnAuth {
         ).apply {
 
             subhint = context.getString(
-                R.string.warningUsername
+                R.string.warningEmail
             )
 
             hint = context.getString(
-                R.string.username
+                R.string.email
             )
 
             setTypefaceId(
