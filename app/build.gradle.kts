@@ -56,6 +56,7 @@ dependencies {
     implementation("com.google.firebase:firebase-analytics")
     implementation("com.google.firebase:firebase-database")
 
+
     implementation ("com.mesibo.api:webrtc:1.0.5")
 
     implementation ("com.guolindev.permissionx:permissionx:1.6.1")
