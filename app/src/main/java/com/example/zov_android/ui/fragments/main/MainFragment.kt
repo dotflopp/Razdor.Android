@@ -40,7 +40,7 @@ class MainFragment : NavigableFragment(), MainService.Listener {
         //GroupsFragment.newInstance()
     )
     private val tList = listOf(
-        "Друзья",
+        "Личка",
         "Группы"
     )
 
