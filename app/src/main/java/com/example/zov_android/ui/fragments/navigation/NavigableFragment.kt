@@ -11,7 +11,7 @@ abstract class NavigableFragment: Fragment() {
 
     var navigation: NavigationFragment<NavigableFragment>? = null
 
-    final override fun onCreateView(
+    open override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?

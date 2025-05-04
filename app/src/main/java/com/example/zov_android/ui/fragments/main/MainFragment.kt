@@ -3,37 +3,46 @@ package com.example.zov_android.ui.fragments.main
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
+import android.util.Log
 import android.view.View
-import android.view.ViewGroup
 import androidx.core.view.isVisible
+import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.zov_android.R
-import com.example.zov_android.ui.adapters.MainRecyclerViewAdapter
+import androidx.viewpager2.widget.ViewPager2
+import com.example.zov_android.ui.adapters.FriendsRecyclerViewAdapter
 import com.example.zov_android.data.repository.MainRepository
-import com.example.zov_android.databinding.ActivityMainBinding
 import com.example.zov_android.databinding.FragmentMainBinding
 import com.example.zov_android.domain.service.MainService
 import com.example.zov_android.domain.service.MainServiceRepository
 import com.example.zov_android.domain.utils.DataModel
 import com.example.zov_android.domain.utils.DataModelType
 import com.example.zov_android.ui.activities.CallActivity
+import com.example.zov_android.ui.adapters.VpAdapter
 import com.example.zov_android.ui.fragments.navigation.NavigableFragment
+import com.google.android.material.tabs.TabLayoutMediator
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class MainFragment : NavigableFragment(), MainRecyclerViewAdapter.Listener, MainService.Listener {
+class MainFragment : NavigableFragment(), MainService.Listener {
 
     @Inject
     lateinit var mainRepository: MainRepository
     @Inject
     lateinit var mainServiceRepository: MainServiceRepository
-    private var mainAdapter: MainRecyclerViewAdapter? = null
+    private var friendsAdapter: FriendsRecyclerViewAdapter? = null
 
     private var _binding: FragmentMainBinding? = null
     private val binding get() = _binding!!
+
+    private val fList = listOf(
+        FriendsFragment.newInstance(),
+        //GroupsFragment.newInstance()
+    )
+    private val tList = listOf(
+        "Друзья",
+        "Группы"
+    )
 
 
 
@@ -48,50 +57,70 @@ class MainFragment : NavigableFragment(), MainRecyclerViewAdapter.Listener, Main
     }
 
     private fun init() {
-        setupRecyclerView()
         subscribeObservers()
+        setupRecyclerView()
     }
 
-    private fun setupRecyclerView() {
-        mainAdapter = MainRecyclerViewAdapter(this)
-        val layoutManager = LinearLayoutManager(requireContext())
-        binding.mainRecyclerView.apply {
-            setLayoutManager(layoutManager)
-            adapter = mainAdapter
-        }
+    private fun setupRecyclerView() = with(_binding) {
+        //search.setIconifiedByDefault(false)
+
+        val adapter = VpAdapter(activity as FragmentActivity, fList)
+        this?.vp!!.adapter = adapter
+
+        TabLayoutMediator(tabLayout, vp){
+                tab, pos -> tab.text = tList[pos]
+        }.attach()
+
+        vp.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+            override fun onPageSelected(position: Int) {
+                super.onPageSelected(position)
+                // Здесь можно добавить код обновления фрагмента при его переключении
+                val fragment = fList[position]
+                if (fragment is FriendsFragment) {
+                    Log.d("MyLog", "Friends")
+
+                    mainRepository.observeUsersStatus { users ->
+                        fragment.updateFriendsList(users)
+                    }
+
+                    //model.favData.value = ItemsAdapter.fafv.asd
+                    //model.liveDataList.value = ll
+                    /*if (arr.isEmpty() and arrf.isEmpty()) {
+                        model.favData.value = ItemsAdapter.fafv.asd
+                        model.liveDataList.value = ll
+                    }
+                    else {
+                        model.favData.value = arrf
+                        model.liveDataList.value = arr
+                    }*/
+
+
+
+                } /*else if (fragment is GroupeFragment) {
+                    Log.d("MyLog", "fav")
+                    if (arr.isEmpty() and arrf.isEmpty()) {
+                        model.favData.value = ItemsAdapter.fafv.asd
+                        model.liveDataList.value = ll
+                    }
+                    else {
+                        model.favData.value = arrf
+                        model.liveDataList.value = arr
+                    }
+                }*/
+
+            }
+        })
     }
 
+    //получаем данные из firebase
     private fun subscribeObservers() {
         MainService.listener = this // прослушка входящих событий
         mainRepository.observeUsersStatus {
-            mainAdapter?.updateList(it)
+            friendsAdapter?.updateList(it)
+            Log.d("MyLog", "Data received in MainFragment: $it")
         }
     }
 
-    //обработка вызова на стороне отправителя
-    override fun onVideoCallClicked(username: String) {
-        mainRepository.sendConnectionsRequest(username, true) {
-            if (it) {
-                startActivity(Intent(requireContext(), CallActivity::class.java).apply {
-                    putExtra("target", username)
-                    putExtra("isVideoCall", true)
-                    putExtra("isCaller", true)
-                })
-            }
-        }
-    }
-
-    override fun onAudioCallClicked(username: String) {
-        mainRepository.sendConnectionsRequest(username, false) {
-            if (it) {
-                startActivity(Intent(requireContext(), CallActivity::class.java).apply {
-                    putExtra("target", username)
-                    putExtra("isVideoCall", false)
-                    putExtra("isCaller", true)
-                })
-            }
-        }
-    }
 
     //обработка входящего вызова на стороне получателя
     override fun onCallReceived(model: DataModel) {
@@ -124,4 +153,5 @@ class MainFragment : NavigableFragment(), MainRecyclerViewAdapter.Listener, Main
         super.onDestroyView()
         _binding = null
     }
+
 }

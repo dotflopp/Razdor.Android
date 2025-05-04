@@ -1,14 +1,16 @@
 package com.example.zov_android.ui.adapters
 
 import android.annotation.SuppressLint
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.example.zov_android.R
-import com.example.zov_android.databinding.ItemMainRecyclerViewBinding
+import com.example.zov_android.databinding.ItemFriendsRecyclerViewBinding
 
-class MainRecyclerViewAdapter(private val listener: Listener): RecyclerView.Adapter<MainRecyclerViewAdapter.MainRecyclerViewHolder>() {
+
+class FriendsRecyclerViewAdapter(private val listener: Listener): RecyclerView.Adapter<FriendsRecyclerViewAdapter.FriendsRecyclerViewHolder>() {
 
     interface Listener{
         fun onVideoCallClicked(username:String)
@@ -19,27 +21,29 @@ class MainRecyclerViewAdapter(private val listener: Listener): RecyclerView.Adap
 
     @SuppressLint("NotifyDataSetChanged")
     fun updateList(list:List<Pair<String,String>>){
+        Log.d("MyLog", "Data received in FriendsRecyclerViewAdapter: $list")
         this.usersList = list
         notifyDataSetChanged() // уведомляет об изменении данных, в будущем использовать notifyItemRangeInserted
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MainRecyclerViewHolder {
-        val binding = ItemMainRecyclerViewBinding.inflate(
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FriendsRecyclerViewHolder {
+        val binding = ItemFriendsRecyclerViewBinding.inflate(
             LayoutInflater.from(parent.context),
             parent,
             false
         )
-        return MainRecyclerViewHolder(binding)
+        return FriendsRecyclerViewHolder(binding)
     }
 
     override fun getItemCount(): Int {
         return usersList?.size?:0
     }
 
-    override fun onBindViewHolder(holder: MainRecyclerViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: FriendsRecyclerViewHolder, position: Int) {
         //Привязывает данные к каждому элементу списка
         usersList?.let { list->
             val user = list[position]
+            Log.d("MyLog", "Binding user at position $position: $user")
             holder.bind(user,{//слушатели нажатия
                 listener.onVideoCallClicked(it)
             },{
@@ -49,16 +53,16 @@ class MainRecyclerViewAdapter(private val listener: Listener): RecyclerView.Adap
     }
 
 
-    class MainRecyclerViewHolder(private val binding: ItemMainRecyclerViewBinding) :
+    class FriendsRecyclerViewHolder(private val binding: ItemFriendsRecyclerViewBinding) :
         RecyclerView.ViewHolder(binding.root) {
         private val context = binding.root.context
 
-        fun bind( //принимаем имя пользователя и его статус, видео и аудио возащают имя пользователя
+        fun bind( //принимаем имя пользователя и его статус, видео и аудио возвращают имя пользователя
             user: Pair<String, String>,
             videoCallClicked: (String) -> Unit,
             audioCallClicked: (String) -> Unit
         ) {
-            binding.apply {// создание новго объекта
+            binding.apply {// создание нового объекта
                 when (user.second) {
                     "ONLINE" -> {
                         videoCallBtn.isVisible = true //кнопки видимы
