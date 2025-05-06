@@ -7,13 +7,12 @@ import android.util.Log
 import android.view.View
 import androidx.core.view.isVisible
 import androidx.fragment.app.FragmentActivity
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.viewpager2.widget.ViewPager2
 import com.example.zov_android.ui.adapters.FriendsRecyclerViewAdapter
 import com.example.zov_android.data.repository.MainRepository
 import com.example.zov_android.databinding.FragmentMainBinding
 import com.example.zov_android.domain.service.MainService
-import com.example.zov_android.domain.service.MainServiceRepository
+import com.example.zov_android.data.repository.MainServiceRepository
 import com.example.zov_android.domain.utils.DataModel
 import com.example.zov_android.domain.utils.DataModelType
 import com.example.zov_android.ui.activities.CallActivity
@@ -57,7 +56,7 @@ class MainFragment : NavigableFragment(), MainService.Listener {
     }
 
     private fun init() {
-        subscribeObservers()
+        //subscribeObservers()
         setupRecyclerView()
     }
 
@@ -79,9 +78,9 @@ class MainFragment : NavigableFragment(), MainService.Listener {
                 if (fragment is FriendsFragment) {
                     Log.d("MyLog", "Friends")
 
-                    mainRepository.observeUsersStatus { users ->
+                   /* mainRepository.observeUsersStatus { users ->
                         fragment.updateFriendsList(users)
-                    }
+                    }*/
 
                     //model.favData.value = ItemsAdapter.fafv.asd
                     //model.liveDataList.value = ll
@@ -113,13 +112,13 @@ class MainFragment : NavigableFragment(), MainService.Listener {
     }
 
     //получаем данные из firebase
-    private fun subscribeObservers() {
+    /*private fun subscribeObservers() {
         MainService.listener = this // прослушка входящих событий
         mainRepository.observeUsersStatus {
             friendsAdapter?.updateList(it)
             Log.d("MyLog", "Data received in MainFragment: $it")
         }
-    }
+    }*/
 
 
     //обработка входящего вызова на стороне получателя

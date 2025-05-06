@@ -6,7 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import com.example.zov_android.R
 import com.example.zov_android.databinding.ActivityCallBinding
-import com.example.zov_android.domain.service.MainServiceRepository
+import com.example.zov_android.data.repository.MainServiceRepository
 import com.example.zov_android.domain.service.MainService
 import com.example.zov_android.domain.utils.convertToHumanTime
 import dagger.hilt.android.AndroidEntryPoint

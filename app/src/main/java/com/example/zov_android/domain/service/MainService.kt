@@ -86,9 +86,9 @@ class MainService: Service(), MainRepository.Listener { //реализация �
 
             mainRepository.listener = this // получаем последний полученный ласт ивент
             // при каждом запуске службы, отслеживаем происходит ли какое-то событие внутри основной службы
-            mainRepository.initFirebase()
+            //mainRepository.initFirebase()
             // инициализируем наш webRTC клиент
-            mainRepository.initWebRtcClient(username!!)
+            //mainRepository.initWebRtcClient(username!!)
 
         }
     }
@@ -162,17 +162,17 @@ class MainService: Service(), MainRepository.Listener { //реализация �
     }
 
     private fun handleStopService(){
-        mainRepository.endCall()
+       /* mainRepository.endCall()
         mainRepository.logOff(){
             isServiceRunning = false
             stopSelf()
-        }
+        }*/
     }
 
     private fun endCallAndRestartRepository(){
-        mainRepository.endCall()
+       /* mainRepository.endCall()
         endCallListener?.onCallEnded()
-        mainRepository.initWebRtcClient(username!!)
+        mainRepository.initWebRtcClient(username!!)*/
     }
 
     override fun endCall() {

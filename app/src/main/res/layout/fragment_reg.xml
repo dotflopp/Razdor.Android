@@ -16,10 +16,12 @@
         android:layout_height="wrap_content"
         android:textSize="20sp"
         app:layout_constraintTop_toBottomOf="@id/firebaseLogo"
-        android:text="ZoV \n\n\n\n Регистрация"
+        android:text="Razdor \n\n\n\n Регистрация"
         android:gravity="center"
         android:textStyle="bold"
         android:id="@+id/welcomeTv"/>
+
+
     <EditText
         android:layout_width="300dp"
         android:layout_height="wrap_content"
@@ -33,12 +35,23 @@
     <EditText
         android:layout_width="300dp"
         android:layout_height="wrap_content"
+        android:hint="Email"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:id="@+id/emailEt"
+        android:inputType="textEmailAddress"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/usernameEt" />
+    <EditText
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
         android:hint="Пароль"
         app:layout_constraintEnd_toEndOf="parent"
         android:id="@+id/passwordEt"
         android:inputType="textPassword"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/usernameEt" />
+        app:layout_constraintTop_toBottomOf="@id/emailEt" />
+
+
     <Button
         android:layout_width="200dp"
         android:text="Зарегистрироваться"

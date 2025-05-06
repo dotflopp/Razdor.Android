@@ -1,9 +1,16 @@
 package com.example.zov_android.ui.fragments.navigation
 
 import android.widget.FrameLayout
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentManager
+import com.example.zov_android.R
+import dagger.Module
+import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.android.components.ActivityComponent
 
-class NavigationFragment<FRAGMENT: NavigableFragment>(
+
+open class NavigationFragment(
     private val fragmentManager: FragmentManager,
     private val container: FrameLayout
 ) {
@@ -14,11 +21,12 @@ class NavigationFragment<FRAGMENT: NavigableFragment>(
     fun last() = fragmentManager.fragments.lastOrNull() as? NavigableFragment
 
     fun push(
-        fragment: FRAGMENT,
+        fragment: NavigableFragment,
         tag: String? = null
     ) {
+        fragment.navigation = this
         fragmentManager.beginTransaction().apply{
-            add(container.id, fragment, tag)
+            replace(container.id, fragment, tag)
             addToBackStack(null)
         }.commit()
     }

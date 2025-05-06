@@ -3,6 +3,7 @@ package com.example.zov_android.domain.service
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import com.example.zov_android.data.repository.MainServiceRepository
 import com.example.zov_android.ui.activities.CloseActivity
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject

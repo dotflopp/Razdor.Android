@@ -54,7 +54,7 @@ class FriendsFragment : NavigableFragment(), FriendsRecyclerViewAdapter.Listener
 
     //обработка вызова на стороне отправителя
     override fun onVideoCallClicked(username: String) {
-        mainRepository.sendConnectionsRequest(username, true) {
+      /*  mainRepository.sendConnectionsRequest(username, true) {
             if (it) {
                 startActivity(Intent(requireContext(), CallActivity::class.java).apply {
                     putExtra("target", username)
@@ -62,11 +62,11 @@ class FriendsFragment : NavigableFragment(), FriendsRecyclerViewAdapter.Listener
                     putExtra("isCaller", true)
                 })
             }
-        }
+        }*/
     }
 
     override fun onAudioCallClicked(username: String) {
-        mainRepository.sendConnectionsRequest(username, false) {
+       /* mainRepository.sendConnectionsRequest(username, false) {
             if (it) {
                 startActivity(Intent(requireContext(), CallActivity::class.java).apply {
                     putExtra("target", username)
@@ -74,7 +74,7 @@ class FriendsFragment : NavigableFragment(), FriendsRecyclerViewAdapter.Listener
                     putExtra("isCaller", true)
                 })
             }
-        }
+        }*/
     }
 
     fun updateFriendsList(users: List<Pair<String, String>>) {

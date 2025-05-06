@@ -1,8 +1,11 @@
 package com.example.zov_android.data.repository
 
 import android.util.Log
+import com.example.zov_android.data.api.ApiClient
 import com.example.zov_android.data.firebaseClient.FirebaseClient
-import com.example.zov_android.domain.service.MainService
+import com.example.zov_android.data.models.request.LoginRequest
+import com.example.zov_android.data.models.request.SignupRequest
+import com.example.zov_android.data.models.response.AuthResponse
 import com.example.zov_android.domain.utils.DataModel
 import com.example.zov_android.domain.utils.DataModelType
 import com.example.zov_android.domain.utils.UserStatus
@@ -19,7 +22,8 @@ import javax.inject.Singleton
 
 @Singleton
 class MainRepository @Inject constructor(
-    private val firebaseClient: FirebaseClient,
+    //private val firebaseClient: FirebaseClient,
+    private val apiClient: ApiClient,
     private val clientWebRTC: ClientWebRTC,
     private val gson: Gson
 ) : ClientWebRTC.Listener {
@@ -28,20 +32,20 @@ class MainRepository @Inject constructor(
     var listener: Listener? = null
     private var remoteView:SurfaceViewRenderer? = null
 
-    fun login(username: String, password: String, isDone: (Boolean, String?) -> Unit) {
-        firebaseClient.login(username, password, isDone)
+    fun login(loginRequest: LoginRequest, isSuccessful: (Boolean, String?, AuthResponse?) -> Unit) {
+        apiClient.postLogin(loginRequest, isSuccessful)
     }
 
-    fun reg(username: String, password: String, isDone: (Boolean, String?) -> Unit) {
-        firebaseClient.reg(username, password, isDone)
+    fun signup(signupRequest: SignupRequest, isSuccessful: (Boolean, String?, AuthResponse?) -> Unit) {
+        apiClient.postSignUp(signupRequest, isSuccessful)
     }
 
-    // наблюдение за статусом пользователя
-    fun observeUsersStatus(status:(List<Pair<String,String>>)->Unit){ //имя пользователя, статус
+    // наблюдение за статусом пользователя, получение списка пользователей
+    /*fun observeUsersStatus(status:(List<Pair<String,String>>)->Unit){ //имя пользователя, статус
         firebaseClient.observeUsersStatus(status)
-    }
+    }*/
 
-    fun initFirebase(){
+    /*fun initFirebase(){
         // все клиенты будут следить за ласт ивентом
         firebaseClient.subscribeForLatestEvent(object : FirebaseClient.Listener{
             override fun onLatestEventReceived(event: DataModel) {
@@ -83,9 +87,9 @@ class MainRepository @Inject constructor(
             }
 
         })
-    }
+    }*/
 
-    fun sendConnectionsRequest(target: String, isVideoCall:Boolean, success:(Boolean)->Unit) {
+    /*fun sendConnectionsRequest(target: String, isVideoCall:Boolean, success:(Boolean)->Unit) {
         firebaseClient.sendMessageToOtherClient(
             DataModel(
                 type = if(isVideoCall) DataModelType.StartVideoCall else DataModelType.StartAudioCall,
@@ -93,16 +97,13 @@ class MainRepository @Inject constructor(
             ),
             success
         )
-    }
-
-    fun waitingResponse(success: (Boolean) -> Unit) {
-
-    }
+    }*/
 
     fun setTarget(target: String) {
         this.target = target
     }
 
+    /*
     fun initWebRtcClient(username: String){
         clientWebRTC.listener = this
         clientWebRTC.initializeWebrtcClient(username, object : MyPeerObserver() {
@@ -135,7 +136,7 @@ class MainRepository @Inject constructor(
                 }
             }
         })
-    }
+    }*/
 
     fun initLocalSurfaceView(view: SurfaceViewRenderer, isVideoCall: Boolean) {
         clientWebRTC.initLocalSurfaceView(view, isVideoCall)
@@ -149,11 +150,11 @@ class MainRepository @Inject constructor(
     fun startCall() {
         clientWebRTC.call(target!!)
     }
-
+/*
     fun endCall() {
         clientWebRTC.closeConnection()
         changeMyStatus(UserStatus.ONLINE)
-    }
+    }*/
 
     fun sendEndCall() {
         onTransferEventToSocket(
@@ -164,10 +165,11 @@ class MainRepository @Inject constructor(
         )
     }
 
+    /*
     private fun changeMyStatus(status: UserStatus) {
         firebaseClient.changeMyStatus(status)
     }
-
+    */
     // авто-отключение звука
     fun toggleAudio(shouldBeMuted: Boolean) {
         clientWebRTC.toggleAudio(shouldBeMuted)
@@ -182,22 +184,27 @@ class MainRepository @Inject constructor(
         clientWebRTC.switchCamera()
     }
 
-    // передача ласт ивента другому участику
+    // передача ласт ивента другому участику\
+    /*
     override fun onTransferEventToSocket(data: DataModel) {
         firebaseClient.sendMessageToOtherClient(data) {}
     }
 
+*/
 
-
-
+/*
     fun logOff(function: () -> Unit) = firebaseClient.logOff(function)
 
-
+*/
     interface Listener{
         // функция получения ласт ивента
         fun onLatestEventReceived(dataModel: DataModel)
 
         fun endCall()
+    }
+
+    override fun onTransferEventToSocket(data: DataModel) {
+        TODO("Not yet implemented")
     }
 
 }

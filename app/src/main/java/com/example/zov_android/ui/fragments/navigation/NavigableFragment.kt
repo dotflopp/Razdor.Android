@@ -6,10 +6,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import javax.inject.Inject
 
 abstract class NavigableFragment: Fragment() {
 
-    var navigation: NavigationFragment<NavigableFragment>? = null
+    lateinit var navigation: NavigationFragment
 
     open override fun onCreateView(
         inflater: LayoutInflater,
@@ -22,8 +23,12 @@ abstract class NavigableFragment: Fragment() {
         return onCreateView(context)
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+    }
+
     open fun backPressed() {
-        navigation?.pop()
+        navigation.pop()
     }
 
 

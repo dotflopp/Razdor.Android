@@ -1,11 +1,15 @@
 package com.example.zov_android.ui.fragments.auth
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Toast
+import com.example.zov_android.data.models.request.SignupRequest
 import com.example.zov_android.databinding.FragmentRegBinding
 import com.example.zov_android.data.repository.MainRepository
+import com.example.zov_android.ui.activities.MainActivity
 import com.example.zov_android.ui.fragments.navigation.NavigableFragment
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -31,6 +35,7 @@ class RegFragment : NavigableFragment() {
         binding.apply {
             btn.setOnClickListener {
                 val username = usernameEt.text.toString()
+                val email = emailEt.text.toString()
                 val password = passwordEt.text.toString()
 
                 if (username.isEmpty() || password.isEmpty()) {
@@ -38,22 +43,30 @@ class RegFragment : NavigableFragment() {
                     return@setOnClickListener
                 }
 
-                mainRepository.reg(username, password) { isDone, message ->
-                    if (!isDone) {
-                        Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
-                    } else {
-                        // Переход на MainActivity (можно заменить на другой фрагмент при необходимости)
-                        val intent = requireActivity().intent
-                        intent.setClassName(requireContext(), "com.example.zov_android.ui.activities.MainActivity")
-                        intent.putExtra("username", username)
-                        startActivity(intent)
-                    }
+                mainRepository.signup(
+                    signupRequest = SignupRequest(username, email, password))
+                    { isSuccessful, errorMessage, result ->
+                        if (!isSuccessful) {
+                            requireActivity().runOnUiThread {
+                                Toast.makeText(requireContext(), errorMessage, Toast.LENGTH_SHORT).show()
+                            }
+                            Log.e("ApiError", errorMessage ?: "Unknown error")
+                        } else {
+                            Log.d("Navigation", "Starting MainActivity...")
+                            requireActivity().runOnUiThread {
+                                val intent = Intent(requireContext(), MainActivity::class.java).apply {
+                                    putExtra("userparams", result)
+                                    flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                                }
+                                startActivity(intent)
+                                requireActivity().finish()
+                            }
+                        }
                 }
             }
 
             TransitionBtn.setOnClickListener {
-                // Переход на LoginFragment
-                navigation?.push(LoginFragment())
+                navigation.push(LoginFragment())
             }
         }
     }
@@ -63,3 +76,4 @@ class RegFragment : NavigableFragment() {
         _binding = null
     }
 }
+

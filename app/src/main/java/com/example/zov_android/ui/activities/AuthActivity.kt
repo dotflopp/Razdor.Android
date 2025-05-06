@@ -11,7 +11,7 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class AuthActivity : AppCompatActivity() {
-    private lateinit var navigationFragment: NavigationFragment<NavigableFragment>
+    private lateinit var navigationFragment: NavigationFragment
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -23,7 +23,6 @@ class AuthActivity : AppCompatActivity() {
         navigationFragment = NavigationFragment(fragmentManager, container)
 
         if (savedInstanceState == null) {
-            // Загрузка начального фрагмента
             navigateTo(LoginFragment())
         }
     }

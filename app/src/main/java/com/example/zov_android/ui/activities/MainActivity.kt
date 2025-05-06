@@ -2,14 +2,16 @@ package com.example.zov_android.ui.activities
 
 
 import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.zov_android.R
+import com.example.zov_android.data.models.response.AuthResponse
 import com.example.zov_android.domain.utils.getCameraAndMicPermission
 import com.example.zov_android.data.repository.MainRepository
-import com.example.zov_android.domain.service.MainServiceRepository
+import com.example.zov_android.data.repository.MainServiceRepository
 import com.example.zov_android.ui.fragments.main.MainFragment
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -17,7 +19,8 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
-    private var username: String? = null
+    private var token: String? = null
+    private var authResponse: AuthResponse? = null
 
     @Inject lateinit var mainRepository: MainRepository
     @Inject lateinit var mainServiceRepository: MainServiceRepository
@@ -26,8 +29,18 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        username = intent.getStringExtra("username")
-        if (username == null) finish()
+        authResponse = intent.getSerializableExtra("userparams", AuthResponse::class.java)
+
+        if (authResponse == null) {
+            Log.e("MainActivity", "AuthResponse is null")
+            finish()
+            return
+        }
+        else{
+            token = authResponse!!.token
+            Log.d("MainActivity", "Received token: $token")
+        }
+
 
         checkPermissionsAndStartService()
         loadMainFragment()
@@ -36,7 +49,7 @@ class MainActivity : AppCompatActivity() {
     private fun loadMainFragment() {
         val fragment = MainFragment().apply {
             arguments = Bundle().apply {
-                putString("username", username)
+                putString("userparams", token)
             }
         }
         supportFragmentManager.beginTransaction()
@@ -51,7 +64,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun startMyService() {
-        username?.let { mainServiceRepository.startService(it) }
+        token?.let { mainServiceRepository.startService(it) }
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
