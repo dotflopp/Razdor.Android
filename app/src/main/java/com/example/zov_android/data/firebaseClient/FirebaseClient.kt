@@ -4,12 +4,11 @@ import com.example.zov_android.domain.utils.DataModel
 import com.example.zov_android.domain.utils.FirebaseFieldNames.LATEST_EVENT
 import com.example.zov_android.domain.utils.FirebaseFieldNames.PASSWORD
 import com.example.zov_android.domain.utils.FirebaseFieldNames.STATUS
-import com.example.zov_android.domain.utils.UserStatus
+import com.example.zov_android.data.utils.UserCommunicationSelectedStatus
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ValueEventListener
-import com.google.firebase.database.values
 import com.google.gson.Gson
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -46,7 +45,7 @@ class FirebaseClient @Inject constructor(
 
                     if(password == dbPassword){
                         //вход
-                        dbRef.child(username).child(STATUS).setValue(UserStatus.ONLINE)
+                        dbRef.child(username).child(STATUS).setValue(UserCommunicationSelectedStatus.Online)
                             .addOnCompleteListener {
                                 setUserName(username)
                                 //слушатель завершения
@@ -79,7 +78,7 @@ class FirebaseClient @Inject constructor(
                     //регаем нового пользователя, если имени пользователя нет
                     dbRef.child(username).child(PASSWORD).setValue(password)
                         .addOnCompleteListener{//если всё успешно, обновляем статус user-а
-                            dbRef.child(username).child(STATUS).setValue(UserStatus.ONLINE)
+                            dbRef.child(username).child(STATUS).setValue(UserCommunicationSelectedStatus.Online)
                                 .addOnCompleteListener {
                                     setUserName(username)
                                     done(true,null)
@@ -156,7 +155,7 @@ class FirebaseClient @Inject constructor(
         }
     }
 
-    fun changeMyStatus(status: UserStatus) {
+    fun changeMyStatus(status: UserCommunicationSelectedStatus) {
         dbRef.child(currentUserName!!).child(STATUS).setValue(status.name)
     }
 
@@ -165,7 +164,7 @@ class FirebaseClient @Inject constructor(
     }
 
     fun logOff(function: () -> Unit) {
-        dbRef.child(currentUserName!!).child(STATUS).setValue(UserStatus.OFFLINE)
+        dbRef.child(currentUserName!!).child(STATUS).setValue(UserCommunicationSelectedStatus.Invisible)
             .addOnFailureListener{
                 function()
             }

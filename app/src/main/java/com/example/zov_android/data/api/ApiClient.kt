@@ -1,10 +1,12 @@
 package com.example.zov_android.data.api
 
+import android.util.Log
 import com.example.zov_android.data.models.response.ExceptionResponse
 import com.example.zov_android.data.models.Guild
 import com.example.zov_android.data.models.request.LoginRequest
 import com.example.zov_android.data.models.request.SignupRequest
 import com.example.zov_android.data.models.response.AuthResponse
+import com.example.zov_android.data.models.response.UserResponse
 import com.google.gson.Gson
 import retrofit2.Call
 import retrofit2.Callback
@@ -14,90 +16,71 @@ import javax.inject.Inject
 class ApiClient @Inject constructor(
     private val apiService: ApiService
 ) {
-    fun fetchGuilds(callback: (Boolean, String?, List<Guild>?) -> Unit){
-        apiService.getMyGuilds().enqueue(object : Callback<List<Guild>> {
-            override fun onResponse(call: Call<List<Guild>>, response: Response<List<Guild>>) {
-                if (response.isSuccessful) {
-                    val guilds = response.body()
-                    callback(true, null, guilds)
-                } else {
-                    callback(false, "Server error: ${response.code()}", null)
-                }
-            }
-
-            override fun onFailure(call: Call<List<Guild>>, t: Throwable) {
-                callback(false, "Request failed: ${t.message}", null)
-            }
-        })
-    }
-
-    fun postSignUp(signupRequest: SignupRequest, callback: (Boolean, String?, AuthResponse?)->Unit){
-        apiService.postSignUp(signupRequest).enqueue(object: Callback<AuthResponse>{
-            override fun onResponse(
-                call: Call<AuthResponse>,
-                response: Response<AuthResponse>
-            ) {
+    private inline fun <T> handleCall(
+        call: Call<T>,
+        crossinline callback: (Boolean, String?, T?) -> Unit
+    ) {
+        call.enqueue(object : Callback<T> {
+            override fun onResponse(call: Call<T>, response: Response<T>) {
                 when {
                     response.isSuccessful -> {
-                        val signupResponse = response.body()
-                        callback(true, null, signupResponse)
+                        callback(true, null, response.body())
                     }
-
-                    response.code() in 400..499 -> {
-                        val errorBody = response.errorBody()?.string()
-                        try {
-                            val exceptionResponse = Gson().fromJson(errorBody, ExceptionResponse::class.java)
-                            callback(false, "Client error: ${exceptionResponse.message}", null)
-                        } catch (e: Exception) {
-                            callback(false, "Client error: Не удалось распарсить ответ", null)
-                        }
-                    }
-
-                    else -> {
-                        callback(false, "Server error: ${response.code()}", null)
-                    }
+                    response.code() in 400..499 -> handleClientError(response, callback)
+                    else -> callback(false, "Server error: ${response.code()}", null)
                 }
             }
 
-            override fun onFailure(call: Call<AuthResponse>, t: Throwable) {
+            override fun onFailure(call: Call<T>, t: Throwable) {
                 callback(false, "Request failed: ${t.message}", null)
             }
         })
     }
 
-    fun postLogin(loginRequest: LoginRequest, callback: (Boolean, String?, AuthResponse?) -> Unit){
-        apiService.postLogin(loginRequest).enqueue(object: Callback<AuthResponse> {
-            override fun onResponse(
-                call: Call<AuthResponse>,
-                response: Response<AuthResponse>
-            ) {
-                when {
-                    response.isSuccessful -> {
-                        val signupResponse = response.body()
-                        callback(true, null, signupResponse)
-                    }
+    private inline fun <T> handleClientError(
+        response: Response<T>,
+        crossinline callback: (Boolean, String?, T?) -> Unit
+    ) {
+        try {
+            Log.d("API_ERROR", "Response code: ${response.code()}")
 
-                    response.code() in 400..499 -> {
-                        val errorBody = response.errorBody()?.string()
-                        try {
-                            val exceptionResponse = Gson().fromJson(errorBody, ExceptionResponse::class.java)
-                            callback(false, "Client error: ${exceptionResponse.message}", null)
-                        } catch (e: Exception) {
-                            callback(false, "Client error: Не удалось распарсить ответ", null)
-                        }
-                    }
+            val errorBody = response.errorBody()?.string()
+            Log.d("API_ERROR", "Error body: $errorBody")
 
-                    else -> {
-                        callback(false, "Server error: ${response.code()}", null)
-                    }
+            when {
+                errorBody.isNullOrBlank() -> callback(false, "Client error: Пустой ответ", null)
+                else -> try {
+                    val exceptionResponse = Gson().fromJson(errorBody, ExceptionResponse::class.java)
+                    callback(false, "Client error: ${exceptionResponse.message}", null)
+                } catch (e: Exception) {
+                    Log.e("API_ERROR", "Ошибка парсинга", e)
+                    callback(false, "Client error: Не удалось распарсить ответ", null)
                 }
             }
-
-            override fun onFailure(call: Call<AuthResponse>, t: Throwable) {
-                callback(false, "Request failed: ${t.message}", null)
-            }
-
-        })
+        } catch (e: Exception) {
+            Log.e("API_ERROR", "Обработка ошибок", e)
+            callback(false, "Client error: ${e.message ?: "Неизвестная ошибка"}", null)
+        }
     }
 
+    fun fetchGuilds(callback: (Boolean, String?, List<Guild>?) -> Unit) {
+        handleCall(apiService.getMyGuilds(), callback)
+    }
+
+    fun getSpecificUser(userId: Long, callback: (Boolean, String?, UserResponse?) -> Unit){
+        handleCall(apiService.getIdUser(userId), callback)
+    }
+
+    fun getYourself(token: String, callback: (Boolean, String?, UserResponse?) -> Unit) {
+        handleCall(apiService.getMeUser("Bearer $token"), callback)
+    }
+
+    fun signUp(signupRequest: SignupRequest, callback: (Boolean, String?, AuthResponse?) -> Unit) {
+        handleCall(apiService.postSignUp(signupRequest), callback)
+    }
+
+    fun login(loginRequest: LoginRequest, callback: (Boolean, String?, AuthResponse?) -> Unit) {
+        handleCall(apiService.postLogin(loginRequest), callback)
+    }
 }
+

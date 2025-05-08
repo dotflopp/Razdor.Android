@@ -5,6 +5,9 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 
+
+// при попытке получить экземпляр ApiService Dagger будет смотреть на этот модуль
+
 @Module
 @InstallIn(SingletonComponent::class)
 object NetworkModule {

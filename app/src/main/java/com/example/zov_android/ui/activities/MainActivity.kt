@@ -2,7 +2,6 @@ package com.example.zov_android.ui.activities
 
 
 import android.content.pm.PackageManager
-import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
@@ -12,8 +11,11 @@ import com.example.zov_android.data.models.response.AuthResponse
 import com.example.zov_android.domain.utils.getCameraAndMicPermission
 import com.example.zov_android.data.repository.MainRepository
 import com.example.zov_android.data.repository.MainServiceRepository
+import com.example.zov_android.data.utils.decodeToken
+import com.example.zov_android.data.utils.parseSnowflake
 import com.example.zov_android.ui.fragments.main.MainFragment
 import dagger.hilt.android.AndroidEntryPoint
+import java.time.Instant
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -32,18 +34,40 @@ class MainActivity : AppCompatActivity() {
         authResponse = intent.getSerializableExtra("userparams", AuthResponse::class.java)
 
         if (authResponse == null) {
-            Log.e("MainActivity", "AuthResponse is null")
+            Log.e("Token", "AuthResponse is null")
             finish()
             return
         }
         else{
             token = authResponse!!.token
-            Log.d("MainActivity", "Received token: $token")
+            Log.d("Token", "Полученный token: $token")
         }
 
+        val decodedToken = decodeToken(token!!)
+        val (timestamp, workerId, sequence) = parseSnowflake(decodedToken.userId)
+
+        Log.d("Token", "User ID (Snowflake) token: ${decodedToken.userId}")
+        Log.d("Token", "Creation Time token: ${decodedToken.creationTime}")
+        Log.d("Token", "Signature token: ${decodedToken.signature}")
+
+        Log.d("Token","Timestamp: $timestamp ms (${Instant.ofEpochMilli(timestamp)})")
+        Log.d("Token","Worker ID: $workerId")
+        Log.d("Token","Sequence: $sequence")
 
         checkPermissionsAndStartService()
         loadMainFragment()
+
+        mainRepository.getYourself(token!!){ isSuccessful, message, user ->
+            if(isSuccessful){
+                Log.d("UserData", "User: $user")
+            }
+            else{
+                Log.d("UserData", "$message")
+            }
+        }
+
+        // mainRepository.getSpecificUser()
+
     }
 
     private fun loadMainFragment() {

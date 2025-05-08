@@ -1,21 +1,14 @@
 package com.example.zov_android.data.repository
 
-import android.util.Log
 import com.example.zov_android.data.api.ApiClient
-import com.example.zov_android.data.firebaseClient.FirebaseClient
 import com.example.zov_android.data.models.request.LoginRequest
 import com.example.zov_android.data.models.request.SignupRequest
 import com.example.zov_android.data.models.response.AuthResponse
+import com.example.zov_android.data.models.response.UserResponse
 import com.example.zov_android.domain.utils.DataModel
 import com.example.zov_android.domain.utils.DataModelType
-import com.example.zov_android.domain.utils.UserStatus
 import com.example.zov_android.data.webrtc.ClientWebRTC
-import com.example.zov_android.data.webrtc.MyPeerObserver
 import com.google.gson.Gson
-import org.webrtc.IceCandidate
-import org.webrtc.MediaStream
-import org.webrtc.PeerConnection
-import org.webrtc.SessionDescription
 import org.webrtc.SurfaceViewRenderer
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -33,11 +26,19 @@ class MainRepository @Inject constructor(
     private var remoteView:SurfaceViewRenderer? = null
 
     fun login(loginRequest: LoginRequest, isSuccessful: (Boolean, String?, AuthResponse?) -> Unit) {
-        apiClient.postLogin(loginRequest, isSuccessful)
+        apiClient.login(loginRequest, isSuccessful)
     }
 
     fun signup(signupRequest: SignupRequest, isSuccessful: (Boolean, String?, AuthResponse?) -> Unit) {
-        apiClient.postSignUp(signupRequest, isSuccessful)
+        apiClient.signUp(signupRequest, isSuccessful)
+    }
+
+    fun getYourself(token: String, isSuccessful: (Boolean, String?, UserResponse?) -> Unit) {
+        apiClient.getYourself(token, isSuccessful)
+    }
+
+    fun getSpecificUser(userId: Long, isSuccessful: (Boolean, String?, UserResponse?) -> Unit){
+        apiClient.getSpecificUser(userId, isSuccessful)
     }
 
     // наблюдение за статусом пользователя, получение списка пользователей
