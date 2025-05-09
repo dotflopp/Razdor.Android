@@ -5,7 +5,9 @@ import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import com.example.zov_android.R
 import com.example.zov_android.data.models.response.AuthResponse
 import com.example.zov_android.domain.utils.getCameraAndMicPermission
@@ -14,7 +16,10 @@ import com.example.zov_android.data.repository.MainServiceRepository
 import com.example.zov_android.data.utils.decodeToken
 import com.example.zov_android.data.utils.parseSnowflake
 import com.example.zov_android.ui.fragments.main.MainFragment
+import com.example.zov_android.ui.viewmodels.BaseViewModel
+import com.example.zov_android.ui.viewmodels.UserViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 import java.time.Instant
 import javax.inject.Inject
 
@@ -23,6 +28,7 @@ class MainActivity : AppCompatActivity() {
 
     private var token: String? = null
     private var authResponse: AuthResponse? = null
+    private val userViewModel: UserViewModel by viewModels()
 
     @Inject lateinit var mainRepository: MainRepository
     @Inject lateinit var mainServiceRepository: MainServiceRepository
@@ -57,14 +63,19 @@ class MainActivity : AppCompatActivity() {
         checkPermissionsAndStartService()
         loadMainFragment()
 
-        mainRepository.getYourself(token!!){ isSuccessful, message, user ->
-            if(isSuccessful){
-                Log.d("UserData", "User: $user")
-            }
-            else{
-                Log.d("UserData", "$message")
+        userViewModel.loadUserData(token)
+        lifecycleScope.launch {
+            userViewModel.state.collect(){state ->
+                when(state){
+                    is BaseViewModel.ViewState.Error -> {}
+                    BaseViewModel.ViewState.Idle -> {}
+                    BaseViewModel.ViewState.Loading -> {}
+                    is BaseViewModel.ViewState.Success -> {}
+                }
+
             }
         }
+
 
         // mainRepository.getSpecificUser()
 

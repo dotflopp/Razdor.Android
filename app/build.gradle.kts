@@ -56,6 +56,10 @@ dependencies {
     implementation("com.google.firebase:firebase-analytics")
     implementation("com.google.firebase:firebase-database")
 
+    implementation ("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.2")
+    implementation ("androidx.activity:activity-ktx:1.7.0")
+    implementation ("androidx.fragment:fragment-ktx:1.6.0")
+
 
     implementation ("com.mesibo.api:webrtc:1.0.5")
 

@@ -1,6 +1,5 @@
 package com.example.zov_android.data.api
 
-import android.util.Log
 import com.example.zov_android.data.models.response.ExceptionResponse
 import com.example.zov_android.data.models.Guild
 import com.example.zov_android.data.models.request.LoginRequest
@@ -8,79 +7,121 @@ import com.example.zov_android.data.models.request.SignupRequest
 import com.example.zov_android.data.models.response.AuthResponse
 import com.example.zov_android.data.models.response.UserResponse
 import com.google.gson.Gson
-import retrofit2.Call
-import retrofit2.Callback
 import retrofit2.Response
+import java.io.IOException
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class ApiClient @Inject constructor(
-    private val apiService: ApiService
+    private val apiService: ApiService,
+    private val gson: Gson
 ) {
-    private inline fun <T> handleCall(
-        call: Call<T>,
-        crossinline callback: (Boolean, String?, T?) -> Unit
-    ) {
-        call.enqueue(object : Callback<T> {
-            override fun onResponse(call: Call<T>, response: Response<T>) {
-                when {
-                    response.isSuccessful -> {
-                        callback(true, null, response.body())
-                    }
-                    response.code() in 400..499 -> handleClientError(response, callback)
-                    else -> callback(false, "Server error: ${response.code()}", null)
-                }
-            }
-
-            override fun onFailure(call: Call<T>, t: Throwable) {
-                callback(false, "Request failed: ${t.message}", null)
-            }
-        })
+    sealed class Result<out T> {
+        data class Success<out T>(val data: T) : Result<T>()
+        data class Error(
+            val type: ErrorType,
+            val code: Int? = null,
+            val message: String? = null,
+            val rawBody: String? = null
+        ) : Result<Nothing>()
     }
 
-    private inline fun <T> handleClientError(
-        response: Response<T>,
-        crossinline callback: (Boolean, String?, T?) -> Unit
-    ) {
-        try {
-            Log.d("API_ERROR", "Response code: ${response.code()}")
+    enum class ErrorType {
+        NETWORK,
+        CLIENT,
+        SERVER,
+        PARSING,
+        UNKNOWN
+    }
 
-            val errorBody = response.errorBody()?.string()
-            Log.d("API_ERROR", "Error body: $errorBody")
-
-            when {
-                errorBody.isNullOrBlank() -> callback(false, "Client error: Пустой ответ", null)
-                else -> try {
-                    val exceptionResponse = Gson().fromJson(errorBody, ExceptionResponse::class.java)
-                    callback(false, "Client error: ${exceptionResponse.message}", null)
-                } catch (e: Exception) {
-                    Log.e("API_ERROR", "Ошибка парсинга", e)
-                    callback(false, "Client error: Не удалось распарсить ответ", null)
-                }
-            }
+    private suspend fun <T> safeApiCall(
+        call: suspend () -> Response<T>
+    ): Result<T> {
+        return try {
+            val response = call()
+            handleResponse(response)
         } catch (e: Exception) {
-            Log.e("API_ERROR", "Обработка ошибок", e)
-            callback(false, "Client error: ${e.message ?: "Неизвестная ошибка"}", null)
+            handleException(e)
         }
     }
 
-    fun fetchGuilds(callback: (Boolean, String?, List<Guild>?) -> Unit) {
-        handleCall(apiService.getMyGuilds(), callback)
+    private fun <T> handleResponse(response: Response<T>): Result<T> {
+        return when {
+            response.isSuccessful -> {
+                val body = response.body()
+                if (body != null) {
+                    Result.Success(body)
+                } else {
+                    Result.Error(
+                        type = ErrorType.PARSING,
+                        message = "Пустое тело"
+                    )
+                }
+            }
+            response.code() in 400..499 -> handleClientError(response)
+            else -> Result.Error(
+                type = ErrorType.SERVER,
+                code = response.code(),
+                message = "Server error"
+            )
+        }
     }
 
-    fun getSpecificUser(userId: Long, callback: (Boolean, String?, UserResponse?) -> Unit){
-        handleCall(apiService.getIdUser(userId), callback)
+    private fun <T> handleClientError(response: Response<T>): Result.Error {
+        return try {
+            val errorBody = response.errorBody()?.string().orEmpty()
+            val exceptionResponse = try {
+                gson.fromJson(errorBody, ExceptionResponse::class.java)
+            } catch (e: Exception) {
+                null
+            }
+
+            Result.Error(
+                type = ErrorType.CLIENT,
+                code = response.code(),
+                message = exceptionResponse?.message ?: "Client error",
+                rawBody = errorBody
+            )
+        } catch (e: Exception) {
+            Result.Error(
+                type = ErrorType.PARSING,
+                message = "Ошибка парсинга. Client error: ${e.message}"
+            )
+        }
     }
 
-    fun getYourself(token: String, callback: (Boolean, String?, UserResponse?) -> Unit) {
-        handleCall(apiService.getMeUser("Bearer $token"), callback)
+    private fun handleException(e: Exception): Result.Error {
+        return when (e) {
+            is IOException -> Result.Error(
+                type = ErrorType.NETWORK,
+                message = "Network error: ${e.message}"
+            )
+            else -> Result.Error(
+                type = ErrorType.UNKNOWN,
+                message = "Unknown error: ${e.message}"
+            )
+        }
     }
 
-    fun signUp(signupRequest: SignupRequest, callback: (Boolean, String?, AuthResponse?) -> Unit) {
-        handleCall(apiService.postSignUp(signupRequest), callback)
+    suspend fun fetchGuilds(): Result<List<Guild>> = safeApiCall {
+        apiService.getMyGuilds()
     }
 
-    fun login(loginRequest: LoginRequest, callback: (Boolean, String?, AuthResponse?) -> Unit) {
-        handleCall(apiService.postLogin(loginRequest), callback)
+    suspend fun getSpecificUser(userId: Long): Result<UserResponse> = safeApiCall {
+        apiService.getIdUser(userId)
+    }
+
+    suspend fun getYourself(token: String): Result<UserResponse> = safeApiCall {
+        apiService.getMeUser("Bearer $token")
+    }
+
+    suspend fun signUp(signupRequest: SignupRequest): Result<AuthResponse> = safeApiCall {
+        apiService.postSignUp(signupRequest)
+    }
+
+    suspend fun login(loginRequest: LoginRequest): Result<AuthResponse> = safeApiCall {
+        apiService.postLogin(loginRequest)
     }
 }
 

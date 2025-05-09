@@ -6,18 +6,26 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.Toast
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import com.example.zov_android.data.models.request.SignupRequest
+import com.example.zov_android.data.models.response.AuthResponse
 import com.example.zov_android.databinding.FragmentRegBinding
 import com.example.zov_android.data.repository.MainRepository
 import com.example.zov_android.ui.activities.MainActivity
 import com.example.zov_android.ui.fragments.navigation.NavigableFragment
+import com.example.zov_android.ui.viewmodels.AuthViewModel
+import com.example.zov_android.ui.viewmodels.BaseViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class RegFragment : NavigableFragment() {
     private var _binding: FragmentRegBinding? = null
     private val binding get() = _binding!!
+
+    private val authViewModel: AuthViewModel by viewModels()
 
     @Inject lateinit var mainRepository: MainRepository
 
@@ -43,25 +51,16 @@ class RegFragment : NavigableFragment() {
                     return@setOnClickListener
                 }
 
-                mainRepository.signup(
-                    signupRequest = SignupRequest(username, email, password))
-                    { isSuccessful, errorMessage, result ->
-                        if (!isSuccessful) {
-                            requireActivity().runOnUiThread {
-                                Toast.makeText(requireContext(), errorMessage, Toast.LENGTH_SHORT).show()
-                            }
-                            Log.e("ApiError", errorMessage ?: "Unknown error")
-                        } else {
-                            Log.d("Navigation", "Starting MainActivity...")
-                            requireActivity().runOnUiThread {
-                                val intent = Intent(requireContext(), MainActivity::class.java).apply {
-                                    putExtra("userparams", result)
-                                    flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                                }
-                                startActivity(intent)
-                                requireActivity().finish()
-                            }
+                authViewModel.loadSignupData(SignupRequest(username,email,password))
+                lifecycleScope.launch {
+                    authViewModel.state.collect(){state->
+                        when(state){
+                            is BaseViewModel.ViewState.Error -> handleError(state.message)
+                            BaseViewModel.ViewState.Idle -> {}
+                            BaseViewModel.ViewState.Loading -> {}
+                            is BaseViewModel.ViewState.Success -> handleSuccess(state.data)
                         }
+                    }
                 }
             }
 
@@ -69,6 +68,20 @@ class RegFragment : NavigableFragment() {
                 navigation.push(LoginFragment())
             }
         }
+    }
+
+    private fun handleSuccess(authResponse: AuthResponse) {
+        val intent = Intent(requireContext(), MainActivity::class.java).apply {
+            putExtra("userparams", authResponse)
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        }
+        startActivity(intent)
+        requireActivity().finish()
+    }
+
+    private fun handleError(message: String) {
+        Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
+        Log.e("AuthError", message)
     }
 
     override fun onDestroyView() {

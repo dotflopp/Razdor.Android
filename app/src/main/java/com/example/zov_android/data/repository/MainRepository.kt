@@ -25,20 +25,20 @@ class MainRepository @Inject constructor(
     var listener: Listener? = null
     private var remoteView:SurfaceViewRenderer? = null
 
-    fun login(loginRequest: LoginRequest, isSuccessful: (Boolean, String?, AuthResponse?) -> Unit) {
-        apiClient.login(loginRequest, isSuccessful)
+    suspend fun login(loginRequest: LoginRequest): ApiClient.Result<AuthResponse> {
+        return apiClient.login(loginRequest)
     }
 
-    fun signup(signupRequest: SignupRequest, isSuccessful: (Boolean, String?, AuthResponse?) -> Unit) {
-        apiClient.signUp(signupRequest, isSuccessful)
+    suspend fun signup(signupRequest: SignupRequest): ApiClient.Result<AuthResponse> {
+        return apiClient.signUp(signupRequest)
     }
 
-    fun getYourself(token: String, isSuccessful: (Boolean, String?, UserResponse?) -> Unit) {
-        apiClient.getYourself(token, isSuccessful)
+    suspend fun getYourself(token: String): ApiClient.Result<UserResponse> {
+        return apiClient.getYourself(token)
     }
 
-    fun getSpecificUser(userId: Long, isSuccessful: (Boolean, String?, UserResponse?) -> Unit){
-        apiClient.getSpecificUser(userId, isSuccessful)
+    suspend fun getSpecificUser(userId: Long): ApiClient.Result<UserResponse>{
+        return  apiClient.getSpecificUser(userId)
     }
 
     // наблюдение за статусом пользователя, получение списка пользователей

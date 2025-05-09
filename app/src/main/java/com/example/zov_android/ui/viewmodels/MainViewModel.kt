@@ -1,4 +1,6 @@
 package com.example.zov_android.ui.viewmodels
 
-class MainViewModel {
-}
+import javax.inject.Inject
+
+/*class MainViewModel @Inject constructor {
+}*/
