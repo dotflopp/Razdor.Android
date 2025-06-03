@@ -1,25 +1,34 @@
 package com.example.zov_android.data.repository
 
+
 import com.example.zov_android.data.api.ApiClient
+import com.example.zov_android.data.models.request.ChannelRequest
+import com.example.zov_android.data.models.request.GuildRequest
 import com.example.zov_android.data.models.request.LoginRequest
 import com.example.zov_android.data.models.request.SignupRequest
+import com.example.zov_android.data.models.request.StatusRequest
 import com.example.zov_android.data.models.response.AuthResponse
+import com.example.zov_android.data.models.response.ChannelResponse
+import com.example.zov_android.data.models.response.ExceptionResponse
+import com.example.zov_android.data.models.response.GuildResponse
+import com.example.zov_android.data.models.response.SessionResponse
 import com.example.zov_android.data.models.response.UserResponse
+import com.example.zov_android.data.utils.TokenData
+import com.example.zov_android.data.utils.decodeToken
+import com.example.zov_android.data.utils.parseSnowflake
 import com.example.zov_android.domain.utils.DataModel
-import com.example.zov_android.domain.utils.DataModelType
-import com.example.zov_android.data.webrtc.ClientWebRTC
-import com.google.gson.Gson
+import com.example.zov_android.data.webrtc.WebRtcManager
+import com.example.zov_android.domain.service.MainService
+import com.example.zov_android.domain.utils.UserCommunicationSelectedStatus
 import org.webrtc.SurfaceViewRenderer
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class MainRepository @Inject constructor(
-    //private val firebaseClient: FirebaseClient,
     private val apiClient: ApiClient,
-    private val clientWebRTC: ClientWebRTC,
-    private val gson: Gson
-) : ClientWebRTC.Listener {
+    private val clientWebRTC: WebRtcManager,
+)  {
 
     private var target: String? = null
     var listener: Listener? = null
@@ -33,144 +42,72 @@ class MainRepository @Inject constructor(
         return apiClient.signUp(signupRequest)
     }
 
+    suspend fun putChangeUserStatus(token: String, status: StatusRequest): ApiClient.Result<Unit>{
+        return apiClient.putChangeUserStatus(token, status)
+    }
+
     suspend fun getYourself(token: String): ApiClient.Result<UserResponse> {
         return apiClient.getYourself(token)
     }
+
+    suspend fun postSpecificSession(guildId:Long, channelId: Long): ApiClient.Result<SessionResponse>{
+        return apiClient.postSpecificSession(guildId, channelId)
+    }
+
+    suspend fun postCreateGuild(guildRequest: GuildRequest): ApiClient.Result<GuildResponse>{
+        return apiClient.postGuild(guildRequest)
+    }
+
+    suspend fun postCreateChannel(guildId: Long, channelRequest: ChannelRequest): ApiClient.Result<ChannelResponse>{
+        return apiClient.createChannel(guildId, channelRequest)
+    }
+
+
+
+    fun decodingToken(token: String): TokenData {
+        return decodeToken(token)
+    }
+    fun parseSnowflakeMr(token: Long): Triple<Long, Int, Int> {
+        return parseSnowflake(token)
+    }
+
 
     suspend fun getSpecificUser(userId: Long): ApiClient.Result<UserResponse>{
         return  apiClient.getSpecificUser(userId)
     }
 
-    // наблюдение за статусом пользователя, получение списка пользователей
-    /*fun observeUsersStatus(status:(List<Pair<String,String>>)->Unit){ //имя пользователя, статус
-        firebaseClient.observeUsersStatus(status)
-    }*/
-
-    /*fun initFirebase(){
-        // все клиенты будут следить за ласт ивентом
-        firebaseClient.subscribeForLatestEvent(object : FirebaseClient.Listener{
-            override fun onLatestEventReceived(event: DataModel) {
-                //уведомляем о новом событии (что с ним сделать?)
-                listener?.onLatestEventReceived(event)
-                when (event.type) {
-                    DataModelType.Offer ->{
-                        clientWebRTC.onRemoteSessionReceived( //принять удалённый сеанс
-                            SessionDescription( // создаем описание сессии
-                                SessionDescription.Type.OFFER,
-                                event.data.toString()
-                            )
-                        )
-                        clientWebRTC.answer(target!!) // отвечам на звонок
-                    }
-                    DataModelType.Answer ->{
-                        clientWebRTC.onRemoteSessionReceived(
-                            SessionDescription(
-                                SessionDescription.Type.ANSWER,
-                                event.data.toString()
-                            )
-                        )
-                    }
-                    DataModelType.IceCandidates ->{
-                        val candidate: IceCandidate? = try {
-                            gson.fromJson(event.data.toString(), IceCandidate::class.java)
-                        }catch (e:Exception){
-                            null
-                        }
-                        candidate?.let { // добавляем кандидатов и передаём их
-                            clientWebRTC.addIceCandidateToPeer(it)
-                        }
-                    }
-                    DataModelType.EndCall ->{
-                        listener?.endCall()
-                    }
-                    else -> Unit
-                }
-            }
-
-        })
-    }*/
-
-    /*fun sendConnectionsRequest(target: String, isVideoCall:Boolean, success:(Boolean)->Unit) {
-        firebaseClient.sendMessageToOtherClient(
-            DataModel(
-                type = if(isVideoCall) DataModelType.StartVideoCall else DataModelType.StartAudioCall,
-                target = target
-            ),
-            success
-        )
-    }*/
 
     fun setTarget(target: String) {
         this.target = target
     }
 
-    /*
+
     fun initWebRtcClient(username: String){
-        clientWebRTC.listener = this
-        clientWebRTC.initializeWebrtcClient(username, object : MyPeerObserver() {
+        clientWebRTC.initializeWebrtcClient(username)
+    }
 
-            override fun onAddStream(p0: MediaStream?) {
-                super.onAddStream(p0)
-                //уведомляем о новом потоке
-                try {
-                    p0?.videoTracks?.get(0)?.addSink(remoteView) // добавляем синхронизацию к видео
-                }catch (e:Exception){
-                    e.printStackTrace()
-                }
-            }
 
-            override fun onIceCandidate(p0: IceCandidate?) {
-                super.onIceCandidate(p0)
-                p0?.let { // если не null отправляем кандидата
-                    clientWebRTC.sendIceCandidate(target!!, it)
-                }
-            }
-
-            override fun onConnectionChange(newState: PeerConnection.PeerConnectionState?) {
-                Log.d("MainService","onConnection:${newState}" )
-                super.onConnectionChange(newState)
-                if (newState == PeerConnection.PeerConnectionState.CONNECTED) {
-                    // 1- смена статуса на вызове
-                    changeMyStatus(UserStatus.IN_CALL)
-                    // 2. очищаем ласт ивент в пользовательском разделе в бд
-                    firebaseClient.clearLatestEvent()
-                }
-            }
-        })
-    }*/
 
     fun initLocalSurfaceView(view: SurfaceViewRenderer, isVideoCall: Boolean) {
+        //if (MainService.isLocalViewInitialized) return
         clientWebRTC.initLocalSurfaceView(view, isVideoCall)
     }
 
     fun initRemoteSurfaceView(view: SurfaceViewRenderer) {
+        //if (MainService.isRemoteViewInitialized) return
         clientWebRTC.initRemoteSurfaceView(view)
         this.remoteView = view
     }
 
-    fun startCall() {
-        clientWebRTC.call(target!!)
-    }
-/*
-    fun endCall() {
-        clientWebRTC.closeConnection()
-        changeMyStatus(UserStatus.ONLINE)
-    }*/
-
     fun sendEndCall() {
-        onTransferEventToSocket(
+        /*onTransferEventToSocket(
             DataModel(
                 type = DataModelType.EndCall,
                 target = target!!
             )
-        )
+        )*/
     }
 
-    /*
-    private fun changeMyStatus(status: UserStatus) {
-        firebaseClient.changeMyStatus(status)
-    }
-    */
     // авто-отключение звука
     fun toggleAudio(shouldBeMuted: Boolean) {
         clientWebRTC.toggleAudio(shouldBeMuted)
@@ -186,17 +123,7 @@ class MainRepository @Inject constructor(
     }
 
     // передача ласт ивента другому участику\
-    /*
-    override fun onTransferEventToSocket(data: DataModel) {
-        firebaseClient.sendMessageToOtherClient(data) {}
-    }
 
-*/
-
-/*
-    fun logOff(function: () -> Unit) = firebaseClient.logOff(function)
-
-*/
     interface Listener{
         // функция получения ласт ивента
         fun onLatestEventReceived(dataModel: DataModel)
@@ -204,8 +131,10 @@ class MainRepository @Inject constructor(
         fun endCall()
     }
 
-    override fun onTransferEventToSocket(data: DataModel) {
-        TODO("Not yet implemented")
+    fun startCall() {
+        //clientWebRTC.startCall("Lukus")
     }
+
+
 
 }

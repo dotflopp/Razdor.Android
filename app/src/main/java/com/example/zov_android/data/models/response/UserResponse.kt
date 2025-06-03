@@ -1,12 +1,12 @@
 package com.example.zov_android.data.models.response
 
-import com.example.zov_android.data.utils.UserCommunicationDisplayedStatus
-import com.example.zov_android.data.utils.UserCommunicationSelectedStatus
+import com.example.zov_android.domain.utils.UserCommunicationDisplayedStatus
+import com.example.zov_android.domain.utils.UserCommunicationSelectedStatus
 import java.io.Serializable
 import java.time.Instant
 
 data class UserResponse(
-    val id: Long,
+    val id: String,
     val email: String,
     val identityName: String,
     val nickname: String,

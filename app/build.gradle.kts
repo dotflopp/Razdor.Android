@@ -43,6 +43,10 @@ android {
 
 dependencies {
     implementation("com.google.dagger:hilt-android:2.51.1")
+    implementation("org.testng:testng:7.7.0") {
+        exclude(group = "junit") // Исключаем junit
+        exclude(group = "org.hamcrest") // Исключаем hamcrest
+    }
     kapt("com.google.dagger:hilt-android-compiler:2.51.1")
 
     implementation ("com.google.code.gson:gson:2.11.0")
@@ -60,8 +64,17 @@ dependencies {
     implementation ("androidx.activity:activity-ktx:1.7.0")
     implementation ("androidx.fragment:fragment-ktx:1.6.0")
 
-
+    implementation ("com.microsoft.signalr:signalr:9.0.4")
     implementation ("com.mesibo.api:webrtc:1.0.5")
+
+    testImplementation ("junit:junit:4.13.2") {
+        exclude(group = "org.hamcrest", module = "hamcrest-core")
+    }
+    testImplementation ("org.hamcrest:hamcrest:2.2")
+    testImplementation ("org.mockito:mockito-core:3.12.4") {
+        exclude(group = "org.hamcrest")
+    }
+
 
     implementation ("com.guolindev.permissionx:permissionx:1.6.1")
 
@@ -75,7 +88,6 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
 }
 
-// Allow references to generated code
 kapt {
     correctErrorTypes = true
 }

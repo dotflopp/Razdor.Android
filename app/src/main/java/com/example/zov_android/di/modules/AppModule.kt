@@ -1,6 +1,7 @@
-package com.example.zov_android.domain.utils
+package com.example.zov_android.di.modules
 
 import android.content.Context
+import com.example.zov_android.data.repository.MainRepository
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.gson.Gson
@@ -21,10 +22,5 @@ class AppModule {
     @Provides
     fun provideGson(): Gson = Gson();
 
-    @Provides
-    fun provideDateBaseInstance():FirebaseDatabase = FirebaseDatabase.getInstance()
 
-    //получаем объект базы данных и возращаем на него ссылку
-    @Provides
-    fun provideDatabaseReference(db:FirebaseDatabase): DatabaseReference = db.reference
 }

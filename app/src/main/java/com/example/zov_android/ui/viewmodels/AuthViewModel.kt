@@ -1,8 +1,6 @@
 package com.example.zov_android.ui.viewmodels
 
 
-import android.util.Log
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.zov_android.data.api.ApiClient
 import com.example.zov_android.data.models.request.LoginRequest
@@ -22,15 +20,13 @@ class AuthViewModel @Inject constructor(
 
     fun loadLoginData(loginRequest: LoginRequest) {
         handleRequest(
-            request = { repository.login(loginRequest) },
-            successHandler = { it }
-        )
+            request = { repository.login(loginRequest) }
+        ) { it }
     }
 
     fun loadSignupData(signupRequest: SignupRequest) {
         handleRequest(
-            request = { repository.signup(signupRequest) },
-            successHandler = { it }
-        )
+            request = { repository.signup(signupRequest) }
+        ) { it }
     }
 }

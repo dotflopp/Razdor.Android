@@ -1,11 +1,17 @@
 package com.example.zov_android.data.api
 
+import com.example.zov_android.data.models.request.ChannelRequest
 import com.example.zov_android.data.models.response.ExceptionResponse
-import com.example.zov_android.data.models.Guild
+import com.example.zov_android.data.models.request.GuildRequest
 import com.example.zov_android.data.models.request.LoginRequest
 import com.example.zov_android.data.models.request.SignupRequest
+import com.example.zov_android.data.models.request.StatusRequest
 import com.example.zov_android.data.models.response.AuthResponse
+import com.example.zov_android.data.models.response.ChannelResponse
+import com.example.zov_android.data.models.response.GuildResponse
+import com.example.zov_android.data.models.response.SessionResponse
 import com.example.zov_android.data.models.response.UserResponse
+import com.example.zov_android.domain.utils.UserCommunicationSelectedStatus
 import com.google.gson.Gson
 import retrofit2.Response
 import java.io.IOException
@@ -21,9 +27,9 @@ class ApiClient @Inject constructor(
         data class Success<out T>(val data: T) : Result<T>()
         data class Error(
             val type: ErrorType,
-            val code: Int? = null,
+            val statusCode: Int? = null,
             val message: String? = null,
-            val rawBody: String? = null
+            val responseBody: String? = null
         ) : Result<Nothing>()
     }
 
@@ -62,7 +68,7 @@ class ApiClient @Inject constructor(
             response.code() in 400..499 -> handleClientError(response)
             else -> Result.Error(
                 type = ErrorType.SERVER,
-                code = response.code(),
+                statusCode = response.code(),
                 message = "Server error"
             )
         }
@@ -79,9 +85,9 @@ class ApiClient @Inject constructor(
 
             Result.Error(
                 type = ErrorType.CLIENT,
-                code = response.code(),
+                statusCode = response.code(),
                 message = exceptionResponse?.message ?: "Client error",
-                rawBody = errorBody
+                responseBody = errorBody
             )
         } catch (e: Exception) {
             Result.Error(
@@ -104,12 +110,28 @@ class ApiClient @Inject constructor(
         }
     }
 
-    suspend fun fetchGuilds(): Result<List<Guild>> = safeApiCall {
+    suspend fun fetchGuilds(): Result<List<GuildRequest>> = safeApiCall {
         apiService.getMyGuilds()
+    }
+
+    suspend fun postGuild(guildRequest: GuildRequest):Result<GuildResponse> = safeApiCall {
+        apiService.postGuilds(guildRequest)
+    }
+
+    suspend fun createChannel(guildId:Long, channelRequest: ChannelRequest):Result<ChannelResponse> = safeApiCall {
+        apiService.postChannels(guildId, channelRequest)
+    }
+
+    suspend fun postSpecificSession(guildId:Long, channelId:Long): Result<SessionResponse> = safeApiCall{
+        apiService.postSessionId(guildId, channelId)
     }
 
     suspend fun getSpecificUser(userId: Long): Result<UserResponse> = safeApiCall {
         apiService.getIdUser(userId)
+    }
+
+    suspend fun putChangeUserStatus(token: String, status: StatusRequest): Result<Unit> = safeApiCall {
+        apiService.putSelectedStatus("Bearer $token", status)
     }
 
     suspend fun getYourself(token: String): Result<UserResponse> = safeApiCall {

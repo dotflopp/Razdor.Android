@@ -7,10 +7,10 @@ import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.example.zov_android.R
-import com.example.zov_android.databinding.ItemFriendsRecyclerViewBinding
+import com.example.zov_android.databinding.ItemUsersRecyclerViewBinding
 
 
-class FriendsRecyclerViewAdapter(private val listener: Listener): RecyclerView.Adapter<FriendsRecyclerViewAdapter.FriendsRecyclerViewHolder>() {
+class UsersRecyclerViewAdapter(private val listener: Listener): RecyclerView.Adapter<UsersRecyclerViewAdapter.UsersRecyclerViewHolder>() {
 
     interface Listener{
         fun onVideoCallClicked(username:String)
@@ -21,25 +21,25 @@ class FriendsRecyclerViewAdapter(private val listener: Listener): RecyclerView.A
 
     @SuppressLint("NotifyDataSetChanged")
     fun updateList(list:List<Pair<String,String>>){
-        Log.d("MyLog", "Data received in FriendsRecyclerViewAdapter: $list")
+        Log.d("MyLog", "Data received in UsersRecyclerViewAdapter: $list")
         this.usersList = list
-        notifyDataSetChanged() // уведомляет об изменении данных, в будущем использовать notifyItemRangeInserted
+        notifyDataSetChanged() // уведомляет об изменении данных
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FriendsRecyclerViewHolder {
-        val binding = ItemFriendsRecyclerViewBinding.inflate(
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): UsersRecyclerViewHolder {
+        val binding = ItemUsersRecyclerViewBinding.inflate(
             LayoutInflater.from(parent.context),
             parent,
             false
         )
-        return FriendsRecyclerViewHolder(binding)
+        return UsersRecyclerViewHolder(binding)
     }
 
     override fun getItemCount(): Int {
         return usersList?.size?:0
     }
 
-    override fun onBindViewHolder(holder: FriendsRecyclerViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: UsersRecyclerViewHolder, position: Int) {
         //Привязывает данные к каждому элементу списка
         usersList?.let { list->
             val user = list[position]
@@ -53,7 +53,7 @@ class FriendsRecyclerViewAdapter(private val listener: Listener): RecyclerView.A
     }
 
 
-    class FriendsRecyclerViewHolder(private val binding: ItemFriendsRecyclerViewBinding) :
+    class UsersRecyclerViewHolder(private val binding: ItemUsersRecyclerViewBinding) :
         RecyclerView.ViewHolder(binding.root) {
         private val context = binding.root.context
 
@@ -64,10 +64,13 @@ class FriendsRecyclerViewAdapter(private val listener: Listener): RecyclerView.A
         ) {
             binding.apply {// создание нового объекта
                 when (user.second) {
-                    "ONLINE" -> {
+                    "Online" -> {
                         videoCallBtn.isVisible = true //кнопки видимы
                         audioCallBtn.isVisible = true
                         videoCallBtn.setOnClickListener {
+                            it.animate().scaleX(0.9f).scaleY(0.9f).setDuration(100).withEndAction {
+                                it.animate().scaleX(1f).scaleY(1f).duration = 100
+                            }
                             videoCallClicked.invoke(user.first)
                         }
                         audioCallBtn.setOnClickListener {
@@ -77,18 +80,18 @@ class FriendsRecyclerViewAdapter(private val listener: Listener): RecyclerView.A
                         statusTv.text = "В сети"
                     }
 
-                    "OFFLINE" -> {
+                    "Offline" -> {
                         videoCallBtn.isVisible = false
                         audioCallBtn.isVisible = false
                         statusTv.setTextColor(context.resources.getColor(R.color.red, null))
                         statusTv.text = "Не в сети"
                     }
 
-                    "IN_CALL" -> {
+                    "Invisible" -> {
                         videoCallBtn.isVisible = false
                         audioCallBtn.isVisible = false
                         statusTv.setTextColor(context.resources.getColor(R.color.yellow, null))
-                        statusTv.text = "Идёт разговор"
+                        statusTv.text = "Не в сети"
                     }
                 }
                 usernameTv.text = user.first

@@ -1,4 +1,4 @@
-package com.example.zov_android.data.utils
+package com.example.zov_android.domain.utils
 
 enum class UserCommunicationSelectedStatus {
     Online,

@@ -1,5 +1,7 @@
-package com.example.zov_android.data.api
+package com.example.zov_android.di.modules
 
+import com.example.zov_android.data.api.ApiService
+import com.example.zov_android.data.api.RetrofitClient
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

@@ -30,9 +30,9 @@ fun decodeToken(token: String): TokenData {
 }
 
 fun parseSnowflake(snowflake: Long): Triple<Long, Int, Int> {
-    val timestamp = (snowflake shr 22) // 42 бита
-    val workerId = ((snowflake shr 19) and 0x07).toInt() // 3 бита
-    val sequence = (snowflake and 0x7FFFF).toInt() // 19 бит
+    val timestamp = snowflake shr 22           // 42 бита
+    val workerId = ((snowflake shr 18) and 0x0F).toInt()  // 4 бита (сдвиг на 18, маска 0x0F)
+    val sequence = (snowflake and 0x3FFFF).toInt()        // 18 бит (маска 0x3FFFF)
 
     return Triple(timestamp, workerId, sequence)
 }

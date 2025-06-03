@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#808185"
+    tools:context=".ui.fragments.main.ProfileFragment">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="140dp"
+        android:background="#CF7777"
+        tools:ignore="MissingConstraints" />
+
+
+    <!-- Кнопка настроек (верхний правый угол) -->
+    <ImageButton
+        android:id="@+id/settingsButton"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:src="@drawable/ic_settings"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:contentDescription="Настройки"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_margin="16dp"/>
+
+    <!-- Контейнер для иконки профиля с индикатором статуса -->
+    <FrameLayout
+        android:id="@+id/avatarContainer"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        app:layout_constraintTop_toBottomOf="@id/settingsButton"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="24dp">
+
+        <ImageView
+            android:id="@+id/iconProfile"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            android:src="@drawable/mouseicon"
+            android:background="@drawable/borderless_button"/>
+
+        <FrameLayout
+            android:id="@+id/statusBorderless"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:foreground="@drawable/borderless_black"
+            android:layout_gravity="bottom|end">
+            <View
+                android:id="@+id/statusIndicator"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/circle_green"
+                />
+        </FrameLayout>
+    </FrameLayout>
+
+    <!-- Кнопка выбора статуса (слева от аватара) -->
+    <android.widget.Button
+        android:id="@+id/statusButton"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:text="Статус"
+        android:textColor="#000000"
+        android:background="@drawable/borderless_button"
+        android:foreground="?attr/selectableItemBackground"
+        android:contentDescription="Выбор статуса"
+        android:paddingHorizontal="8dp"
+        app:layout_constraintEnd_toStartOf="@id/avatarContainer"
+        app:layout_constraintTop_toTopOf="@id/avatarContainer"
+        app:layout_constraintBottom_toBottomOf="@id/avatarContainer"
+        android:layout_marginEnd="16dp"/>
+
+    <!-- Кнопка редактирования (справа от аватара) -->
+    <FrameLayout
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        tools:ignore="MissingConstraints"
+        android:background="@drawable/borderless_button"
+        app:layout_constraintStart_toEndOf="@id/avatarContainer"
+        app:layout_constraintTop_toTopOf="@id/avatarContainer"
+        app:layout_constraintBottom_toBottomOf="@id/avatarContainer"
+        android:layout_marginStart="16dp"
+        >
+
+        <android.widget.ImageButton
+            android:id="@+id/editButton"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+
+            android:src="@drawable/ic_edit"
+            android:scaleType="fitCenter"
+            />
+    </FrameLayout>
+
+    <LinearLayout
+        android:id="@+id/userinfo"
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:orientation="vertical"
+        android:layout_marginHorizontal="10dp"
+        app:layout_constraintTop_toBottomOf="@id/avatarContainer"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:ignore="InvalidId,MissingConstraints">
+
+        <TextView
+            android:id="@+id/username"
+            android:layout_gravity="center"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="UserNickname"
+            android:textColor="#FFFFFF"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            app:layout_constraintTop_toBottomOf="@id/avatarContainer"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="10dp"/>
+
+
+        <TextView
+            android:layout_gravity="center"
+            android:id="@+id/identity"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="#NNNNN"
+            android:textColor="#CCCCCC"
+            android:textSize="18sp"
+            app:layout_constraintTop_toBottomOf="@id/username"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="8dp"/>
+
+        <TextView
+            android:layout_width="80dp"
+            android:layout_height="20dp"
+            android:layout_marginStart="15dp"
+            android:text="О себе:"
+            android:textColor="#FFFFFF"
+            android:textSize="18sp"
+            />
+
+        <!-- Блок описания -->
+        <TextView
+            android:background="@drawable/borderless_black"
+            android:id="@+id/description"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Описание"
+            android:textColor="#FFFFFF"
+            android:textSize="16sp"
+            android:layout_marginHorizontal="10dp"
+            android:layout_marginVertical="5dp"
+            android:gravity="center"
+            android:padding="24dp"
+            app:layout_constraintWidth_percent="0.9"
+            android:layout_marginTop="24dp"/>
+    </LinearLayout>
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

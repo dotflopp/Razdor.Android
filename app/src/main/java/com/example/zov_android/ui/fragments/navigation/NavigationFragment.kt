@@ -14,12 +14,6 @@ open class NavigationFragment(
     private val fragmentManager: FragmentManager,
     private val container: FrameLayout
 ) {
-
-    val size: Int
-        get() = fragmentManager.fragments.size
-
-    fun last() = fragmentManager.fragments.lastOrNull() as? NavigableFragment
-
     fun push(
         fragment: NavigableFragment,
         tag: String? = null

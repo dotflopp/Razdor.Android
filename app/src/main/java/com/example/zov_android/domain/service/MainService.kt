@@ -6,6 +6,7 @@ import android.app.PendingIntent
 import android.app.Service
 import android.content.Intent
 import android.os.IBinder
+import android.util.Log
 import androidx.core.app.NotificationCompat
 import com.example.zov_android.R
 import com.example.zov_android.data.repository.MainRepository
@@ -31,9 +32,22 @@ class MainService: Service(), MainRepository.Listener { //реализация �
     companion object{
         var listener: Listener? = null
         var endCallListener: EndCallListener? = null
-        var localSurfaceView: SurfaceViewRenderer? = null
-        var remoteSurfaceView: SurfaceViewRenderer? = null
+
         var screenPermissionIntent : Intent? = null
+
+        var localSurfaceView: SurfaceViewRenderer? = null
+            set(value) {
+                field = value
+                isLocalViewInitialized = value != null
+            }
+        var remoteSurfaceView: SurfaceViewRenderer? = null
+            set(value) {
+                field = value
+                isRemoteViewInitialized = value != null
+            }
+        var isLocalViewInitialized = false
+        var isRemoteViewInitialized = false
+
     }
 
     override fun onCreate() {
@@ -62,14 +76,23 @@ class MainService: Service(), MainRepository.Listener { //реализация �
         val isVideoCall = incomingIntent.getBooleanExtra("isVideoCall", true)
         val isCaller = incomingIntent.getBooleanExtra("isCaller", false)
 
-        mainRepository.setTarget(target!!)
+        // Проверка инициализации через флаги
+        /*if (isLocalViewInitialized || isRemoteViewInitialized) {
+            Log.e("MainService", "Views already initialized. Local: $isLocalViewInitialized, Remote: $isRemoteViewInitialized")
+            return
+        }*/
 
-        mainRepository.initLocalSurfaceView(localSurfaceView!!,isVideoCall)
-        mainRepository.initRemoteSurfaceView(remoteSurfaceView!!)
+        try {
+            target?.let { mainRepository.setTarget(it) }
 
-        if(!isCaller){ // из mainActivity
-            //оба человека находятся в созвоне, запускаем созвон
-            mainRepository.startCall()
+            // Инициализация с проверкой
+            mainRepository.initLocalSurfaceView(localSurfaceView!!, isVideoCall)
+            mainRepository.initRemoteSurfaceView(remoteSurfaceView!!)
+            //mainRepository.startCall()
+
+        } catch (e: Exception) {
+            Log.e("MainService", "Error initializing views: ${e.message}")
+            stopSelf()
         }
     }
 
@@ -85,11 +108,8 @@ class MainService: Service(), MainRepository.Listener { //реализация �
             //настройка клиентов
 
             mainRepository.listener = this // получаем последний полученный ласт ивент
-            // при каждом запуске службы, отслеживаем происходит ли какое-то событие внутри основной службы
-            //mainRepository.initFirebase()
             // инициализируем наш webRTC клиент
-            //mainRepository.initWebRtcClient(username!!)
-
+            mainRepository.initWebRtcClient(username!!)
         }
     }
 
