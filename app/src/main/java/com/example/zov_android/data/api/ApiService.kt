@@ -8,11 +8,9 @@ import com.example.zov_android.data.models.response.AuthResponse
 import com.example.zov_android.data.models.request.LoginRequest
 import com.example.zov_android.data.models.request.StatusRequest
 import com.example.zov_android.data.models.response.ChannelResponse
-import com.example.zov_android.data.models.response.ExceptionResponse
 import com.example.zov_android.data.models.response.GuildResponse
 import com.example.zov_android.data.models.response.SessionResponse
 import com.example.zov_android.data.models.response.UserResponse
-import com.example.zov_android.domain.utils.UserCommunicationSelectedStatus
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -23,8 +21,14 @@ import retrofit2.http.Path
 
 interface ApiService {
 
-    @GET("guilds/@my")
-    suspend fun getMyGuilds(): Response<List<GuildRequest>>
+    @GET("communities/@my")
+    suspend fun getMyGuilds(@Header("Authorization") token: String): Response<List<GuildResponse>>
+
+    @POST("communities")
+    suspend fun postGuilds(
+        @Header("Authorization") token: String,
+        @Body params: GuildRequest
+    ): Response<GuildResponse>
 
     @GET("users/@me")
     suspend fun getMeUser(@Header("Authorization") token: String): Response<UserResponse>
@@ -44,8 +48,6 @@ interface ApiService {
     @POST("auth/signup")
     suspend fun postSignUp(@Body params: SignupRequest): Response<AuthResponse>
 
-    @POST("communities")
-    suspend fun postGuilds(@Body params: GuildRequest): Response<GuildResponse>
 
     @POST("communities/{communityId}/channels")
     suspend fun postChannels(

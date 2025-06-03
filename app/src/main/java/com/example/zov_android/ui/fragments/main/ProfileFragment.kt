@@ -19,6 +19,7 @@ import com.example.zov_android.di.qualifiers.Token
 import com.example.zov_android.di.qualifiers.User
 import com.example.zov_android.domain.utils.UserCommunicationSelectedStatus
 import com.example.zov_android.ui.fragments.navigation.NavigableFragment
+import com.example.zov_android.ui.fragments.navigation.NavigationInsideFragment
 import com.example.zov_android.ui.viewmodels.BaseViewModel
 import com.example.zov_android.ui.viewmodels.UserViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -40,6 +41,7 @@ class ProfileFragment : NavigableFragment() {
     @Inject
     @Token
     lateinit var token: String
+
 
     override fun onCreateView(context: Context): View {
         _binding = FragmentProfileBinding.inflate(layoutInflater)

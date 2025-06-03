@@ -21,6 +21,9 @@ class GuildViewModel @Inject constructor(
     private val guildViewModel = @SuppressLint("StaticFieldLeak")
     object: BaseViewModel<GuildResponse>(ViewState.Idle) {}
 
+    private val guildListViewModel = @SuppressLint("StaticFieldLeak")
+    object : BaseViewModel<List<GuildResponse>>(ViewState.Idle){}
+
     private val channelViewModel = @SuppressLint("StaticFieldLeak")
     object: BaseViewModel<ChannelResponse>(ViewState.Idle) {}
 
@@ -29,13 +32,21 @@ class GuildViewModel @Inject constructor(
 
     // Публичные состояния
     val guildState: StateFlow<BaseViewModel.ViewState<GuildResponse>> = guildViewModel.state
+    val listGuildState: StateFlow<BaseViewModel.ViewState<List<GuildResponse>>> = guildListViewModel.state
     val channelState: StateFlow<BaseViewModel.ViewState<ChannelResponse>> = channelViewModel.state
     val sessionState: StateFlow<BaseViewModel.ViewState<SessionResponse>> = sessionViewModel.state
 
-    fun loadGuildData(guildRequest: GuildRequest){
+    fun loadGuildData(token:String, guildRequest: GuildRequest){
         guildViewModel.handleRequest(
-            request = {repository.postCreateGuild(guildRequest)},
-            successHandler = { it },
+            request = {repository.postCreateGuild(token, guildRequest)},
+            successHandler = { it }
+        )
+    }
+
+    fun getGuildsUser(token:String){
+        guildListViewModel.handleRequest(
+            request = {repository.getGuilds(token)},
+            successHandler = {it}
         )
     }
 

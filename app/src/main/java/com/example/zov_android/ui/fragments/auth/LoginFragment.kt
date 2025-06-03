@@ -14,6 +14,7 @@ import com.example.zov_android.databinding.FragmentLoginBinding
 import com.example.zov_android.data.repository.MainRepository
 import com.example.zov_android.ui.activities.MainActivity
 import com.example.zov_android.ui.fragments.navigation.NavigableFragment
+import com.example.zov_android.ui.fragments.navigation.NavigationInsideFragment
 import com.example.zov_android.ui.viewmodels.AuthViewModel
 import com.example.zov_android.ui.viewmodels.BaseViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -28,7 +29,6 @@ class LoginFragment : NavigableFragment() {
     private val authViewModel: AuthViewModel by viewModels()
 
     @Inject lateinit var mainRepository: MainRepository
-
 
     override fun onCreateView(context: Context): View {
         _binding = FragmentLoginBinding.inflate(layoutInflater)

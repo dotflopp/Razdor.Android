@@ -17,6 +17,7 @@ import com.example.zov_android.databinding.FragmentMainBinding
 import com.example.zov_android.ui.adapters.UsersRecyclerViewAdapter
 import com.example.zov_android.ui.adapters.VpAdapter
 import com.example.zov_android.ui.fragments.navigation.NavigableFragment
+import com.example.zov_android.ui.fragments.navigation.NavigationInsideFragment
 import com.example.zov_android.ui.viewmodels.BaseViewModel
 import com.example.zov_android.ui.viewmodels.UserViewModel
 import com.google.android.material.tabs.TabLayoutMediator
@@ -41,15 +42,6 @@ class ChatFragment : NavigableFragment(), UsersRecyclerViewAdapter.Listener {
 
     private var _binding: FragmentChatBinding? = null
     private val binding get() = _binding!!
-
-    private val fragments = listOf(
-        UsersFragment.newInstance(),
-        //GuildFragment.newInstance()
-    )
-    private val titles = listOf(
-        "Личные",
-        "Группы"
-    )
 
     override fun onCreateView(context: Context): View {
         _binding = FragmentChatBinding.inflate(layoutInflater)

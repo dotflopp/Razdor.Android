@@ -110,13 +110,14 @@ class ApiClient @Inject constructor(
         }
     }
 
-    suspend fun fetchGuilds(): Result<List<GuildRequest>> = safeApiCall {
-        apiService.getMyGuilds()
+    suspend fun postGuild(token:String, guildRequest: GuildRequest):Result<GuildResponse> = safeApiCall {
+        apiService.postGuilds("Bearer $token", guildRequest)
     }
 
-    suspend fun postGuild(guildRequest: GuildRequest):Result<GuildResponse> = safeApiCall {
-        apiService.postGuilds(guildRequest)
+    suspend fun receiveGuilds(token: String): Result<List<GuildResponse>> = safeApiCall {
+        apiService.getMyGuilds("Bearer $token")
     }
+
 
     suspend fun createChannel(guildId:Long, channelRequest: ChannelRequest):Result<ChannelResponse> = safeApiCall {
         apiService.postChannels(guildId, channelRequest)

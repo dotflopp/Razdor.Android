@@ -117,7 +117,6 @@
 
     </androidx.cardview.widget.CardView>
 
-    <!-- Лэйаут для входящего вызова -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/incomingCallLayout"
         android:layout_width="match_parent"

@@ -11,7 +11,7 @@ import javax.inject.Inject
 abstract class NavigableFragment: Fragment() {
     lateinit var navigation: NavigationFragment
     lateinit var navigationInside: NavigationInsideFragment
-    open override fun onCreateView(
+    override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?

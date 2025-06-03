@@ -10,7 +10,8 @@ import com.example.zov_android.R
 import com.example.zov_android.databinding.ItemUsersRecyclerViewBinding
 
 
-class UsersRecyclerViewAdapter(private val listener: Listener): RecyclerView.Adapter<UsersRecyclerViewAdapter.UsersRecyclerViewHolder>() {
+class UsersRecyclerViewAdapter(private val listener: Listener)
+    : RecyclerView.Adapter<UsersRecyclerViewAdapter.UsersRecyclerViewHolder>() {
 
     interface Listener{
         fun onVideoCallClicked(username:String)
@@ -53,8 +54,8 @@ class UsersRecyclerViewAdapter(private val listener: Listener): RecyclerView.Ada
     }
 
 
-    class UsersRecyclerViewHolder(private val binding: ItemUsersRecyclerViewBinding) :
-        RecyclerView.ViewHolder(binding.root) {
+    class UsersRecyclerViewHolder(private val binding: ItemUsersRecyclerViewBinding)
+        : RecyclerView.ViewHolder(binding.root) {
         private val context = binding.root.context
 
         fun bind( //принимаем имя пользователя и его статус, видео и аудио возвращают имя пользователя

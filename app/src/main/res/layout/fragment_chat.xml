@@ -23,7 +23,7 @@
             android:layout_marginHorizontal="10dp"
             android:layout_width="125dp"
             android:layout_height="48dp"
-            android:text="Сообшения"
+            android:text="Сообщения"
             android:textSize="20sp"
             android:textColor="@color/white"
             />

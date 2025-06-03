@@ -55,10 +55,9 @@ dependencies {
     implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
     implementation ("com.squareup.okhttp3:logging-interceptor:4.9.3")
 
-    implementation ("com.google.firebase:firebase-database-ktx:21.0.0")
-    implementation(platform("com.google.firebase:firebase-bom:33.5.1"))
-    implementation("com.google.firebase:firebase-analytics")
-    implementation("com.google.firebase:firebase-database")
+    implementation ("de.hdodenhof:circleimageview:3.1.0")
+    implementation ("io.coil-kt:coil:2.4.0")
+
 
     implementation ("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.2")
     implementation ("androidx.activity:activity-ktx:1.7.0")

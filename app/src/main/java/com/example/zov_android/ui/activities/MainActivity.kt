@@ -45,7 +45,6 @@ class MainActivity : AppCompatActivity() {
     @Inject lateinit var webRtcManager: WebRtcManager
 
     private val userViewModel: UserViewModel by viewModels()
-    private val guildViewModel: GuildViewModel by viewModels()
 
     @Inject lateinit var mainRepository: MainRepository
     @Inject lateinit var mainServiceRepository: MainServiceRepository
@@ -109,7 +108,6 @@ class MainActivity : AppCompatActivity() {
 
         //Log.d("BaseVM","loadUserData")
 
-        //guildViewModel.loadGuildData(GuildRequest("mause"))
         //guildViewModel.loadChannelData(1, ChannelRequest(0,1,"mouse",1,1,2))
     }
 

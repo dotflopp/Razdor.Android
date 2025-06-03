@@ -34,8 +34,6 @@ class BaseMainFragment : NavigableFragment(), MainService.Listener {
     private val userViewModel: UserViewModel by activityViewModels()
 
 
-    private var selectedStatus: StatusRequest? = null
-
     override fun onCreateView(context: Context): View {
         _binding = FragmentBaseMainBinding.inflate(layoutInflater)
         return binding.root
@@ -70,6 +68,16 @@ class BaseMainFragment : NavigableFragment(), MainService.Listener {
             val tag = "ProfileFragment"
             if (!isFragmentAlreadyAdded(tag)) {
                 navigationInside.pushUp(ProfileFragment(), tag)
+            }
+            else{
+                childFragmentManager.popBackStack()
+            }
+        }
+
+        binding.icHome.setOnClickListener {
+            val tag = "MainFragment"
+            if (!isFragmentAlreadyAdded(tag)) {
+                navigationInside.push(MainFragment(), tag)
             }
             else{
                 childFragmentManager.popBackStack()

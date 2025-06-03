@@ -1,9 +1,6 @@
 package com.example.zov_android.di.modules
 
 import android.content.Context
-import com.example.zov_android.data.repository.MainRepository
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.FirebaseDatabase
 import com.google.gson.Gson
 import dagger.Module
 import dagger.Provides

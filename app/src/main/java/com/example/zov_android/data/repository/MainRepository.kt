@@ -54,12 +54,16 @@ class MainRepository @Inject constructor(
         return apiClient.postSpecificSession(guildId, channelId)
     }
 
-    suspend fun postCreateGuild(guildRequest: GuildRequest): ApiClient.Result<GuildResponse>{
-        return apiClient.postGuild(guildRequest)
+    suspend fun postCreateGuild(token:String, guildRequest: GuildRequest): ApiClient.Result<GuildResponse>{
+        return apiClient.postGuild(token, guildRequest)
     }
 
     suspend fun postCreateChannel(guildId: Long, channelRequest: ChannelRequest): ApiClient.Result<ChannelResponse>{
         return apiClient.createChannel(guildId, channelRequest)
+    }
+
+    suspend fun getGuilds(token: String): ApiClient.Result<List<GuildResponse>>{
+        return apiClient.receiveGuilds(token)
     }
 
 

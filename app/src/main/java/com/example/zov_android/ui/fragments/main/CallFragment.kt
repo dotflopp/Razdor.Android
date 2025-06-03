@@ -19,6 +19,7 @@ import com.example.zov_android.di.qualifiers.User
 import com.example.zov_android.domain.service.MainService
 import com.example.zov_android.domain.utils.convertToHumanTime
 import com.example.zov_android.ui.fragments.navigation.NavigableFragment
+import com.example.zov_android.ui.fragments.navigation.NavigationInsideFragment
 import com.example.zov_android.ui.viewmodels.BaseViewModel
 import com.example.zov_android.ui.viewmodels.GuildViewModel
 import dagger.hilt.android.AndroidEntryPoint

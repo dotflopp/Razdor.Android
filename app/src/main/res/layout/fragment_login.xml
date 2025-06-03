@@ -25,10 +25,10 @@
         android:layout_width="300dp"
         android:layout_height="wrap_content"
         android:hint="Email"
-        app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="10dp"
         android:id="@+id/emailEt"
         android:inputType="textEmailAddress"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/welcomeTv" />
     <EditText
