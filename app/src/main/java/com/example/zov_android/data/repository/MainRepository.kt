@@ -4,6 +4,7 @@ package com.example.zov_android.data.repository
 import com.example.zov_android.data.api.ApiClient
 import com.example.zov_android.data.models.request.ChannelRequest
 import com.example.zov_android.data.models.request.GuildRequest
+import com.example.zov_android.data.models.request.InvitesRequest
 import com.example.zov_android.data.models.request.LoginRequest
 import com.example.zov_android.data.models.request.SignupRequest
 import com.example.zov_android.data.models.request.StatusRequest
@@ -11,6 +12,8 @@ import com.example.zov_android.data.models.response.AuthResponse
 import com.example.zov_android.data.models.response.ChannelResponse
 import com.example.zov_android.data.models.response.ExceptionResponse
 import com.example.zov_android.data.models.response.GuildResponse
+import com.example.zov_android.data.models.response.InvitesResponse
+import com.example.zov_android.data.models.response.MembersGuildResponse
 import com.example.zov_android.data.models.response.SessionResponse
 import com.example.zov_android.data.models.response.UserResponse
 import com.example.zov_android.data.utils.TokenData
@@ -50,20 +53,33 @@ class MainRepository @Inject constructor(
         return apiClient.getYourself(token)
     }
 
-    suspend fun postSpecificSession(guildId:Long, channelId: Long): ApiClient.Result<SessionResponse>{
-        return apiClient.postSpecificSession(guildId, channelId)
+    suspend fun postSpecificSession(token: String, channelId: Long): ApiClient.Result<SessionResponse>{
+        return apiClient.postConnectionVoiceChannel(token, channelId)
     }
 
     suspend fun postCreateGuild(token:String, guildRequest: GuildRequest): ApiClient.Result<GuildResponse>{
         return apiClient.postGuild(token, guildRequest)
     }
 
-    suspend fun postCreateChannel(guildId: Long, channelRequest: ChannelRequest): ApiClient.Result<ChannelResponse>{
-        return apiClient.createChannel(guildId, channelRequest)
+    suspend fun postCreateChannel(token:String, guildId: Long, channelRequest: ChannelRequest): ApiClient.Result<ChannelResponse>{
+        return apiClient.createChannel(token, guildId, channelRequest)
     }
+
+    suspend fun getChannelGuild(token:String, guildId: Long): ApiClient.Result<List<ChannelResponse>>{
+        return apiClient.getChannel(token, guildId)
+    }
+
 
     suspend fun getGuilds(token: String): ApiClient.Result<List<GuildResponse>>{
         return apiClient.receiveGuilds(token)
+    }
+
+    suspend fun getUsersGuild(token: String, guildId: Long): ApiClient.Result<List<MembersGuildResponse>>{
+        return apiClient.getUsersGuild(token, guildId)
+    }
+
+    suspend fun postInvites(token:String, guildId: Long, invitesRequest: InvitesRequest): ApiClient.Result<InvitesResponse>{
+        return apiClient.postInvites(token, guildId, invitesRequest)
     }
 
 

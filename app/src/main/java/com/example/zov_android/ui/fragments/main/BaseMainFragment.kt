@@ -29,7 +29,7 @@ import javax.inject.Inject
 
 class BaseMainFragment : NavigableFragment(), MainService.Listener {
     private var _binding: FragmentBaseMainBinding? = null
-    private val binding get() = _binding!!
+    val binding get() = _binding!!
 
     private val userViewModel: UserViewModel by activityViewModels()
 
@@ -104,12 +104,19 @@ class BaseMainFragment : NavigableFragment(), MainService.Listener {
     }
 
     fun handleBackPress(): Boolean {
-        Log.d("BackPress", "BaseMainFragment handleBackPress called")
         if (childFragmentManager.backStackEntryCount > 0) {
-            Log.d("BackPress", "Popping back stack")
             childFragmentManager.popBackStack()
             return true
         }
+
+        val currentFragment = childFragmentManager.primaryNavigationFragment
+        Log.d("BackPress", "Текущий фрагмент: $currentFragment")
+
+        if (currentFragment is UsersGuildFragment) {
+
+            return true
+        }
+
         return false
     }
 
@@ -132,13 +139,13 @@ class BaseMainFragment : NavigableFragment(), MainService.Listener {
             binding.acceptButton.setOnClickListener {  //уведомляем отправителя о принятии запроса
 
                 binding.incomingCallLayout.isVisible = false
-                navigation.push(CallFragment().apply {
+                /*navigation.push(CallFragment().apply {
                     arguments = Bundle().apply {
                         putString("target", "lukus")
                         putBoolean("isVideoCall", true)
                         putBoolean("isCaller", true)
                     }
-                })
+                })*/
             }
 
             binding.declineButton.setOnClickListener {

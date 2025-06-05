@@ -2,38 +2,22 @@ package com.example.zov_android.ui.fragments.main
 
 import android.content.Context
 import android.os.Bundle
-import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.viewpager2.widget.ViewPager2
-import com.example.zov_android.data.repository.MainRepository
-import com.example.zov_android.data.repository.MainServiceRepository
 import com.example.zov_android.databinding.FragmentChatBinding
-import com.example.zov_android.databinding.FragmentMainBinding
 import com.example.zov_android.ui.adapters.UsersRecyclerViewAdapter
-import com.example.zov_android.ui.adapters.VpAdapter
 import com.example.zov_android.ui.fragments.navigation.NavigableFragment
-import com.example.zov_android.ui.fragments.navigation.NavigationInsideFragment
 import com.example.zov_android.ui.viewmodels.BaseViewModel
 import com.example.zov_android.ui.viewmodels.UserViewModel
-import com.google.android.material.tabs.TabLayoutMediator
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class ChatFragment : NavigableFragment(), UsersRecyclerViewAdapter.Listener {
-
-    @Inject
-    lateinit var mainRepository: MainRepository
-    @Inject
-    lateinit var mainServiceRepository: MainServiceRepository
 
     private var usersAdapter: UsersRecyclerViewAdapter? = null
 
@@ -65,23 +49,23 @@ class ChatFragment : NavigableFragment(), UsersRecyclerViewAdapter.Listener {
 
     //обработка вызова на стороне отправителя
     override fun onVideoCallClicked(username: String) {
-        navigation.push(CallFragment().apply {
+        /*navigation.push(CallFragment().apply {
             arguments = Bundle().apply {
                 putString("target", username)
                 putBoolean("isVideoCall", true)
                 putBoolean("isCaller", true)
             }
-        })
+        })*/
     }
 
     override fun onAudioCallClicked(username: String) {
-        navigation.push(CallFragment().apply {
+        /*navigation.push(CallFragment().apply {
             arguments = Bundle().apply {
                 putString("target", username)
                 putBoolean("isVideoCall", false)
                 putBoolean("isCaller", true)
             }
-        })
+        })*/
     }
 
     private fun connection() = with(_binding){
@@ -96,9 +80,7 @@ class ChatFragment : NavigableFragment(), UsersRecyclerViewAdapter.Listener {
         }*/
     }
 
-    private fun init() = with(binding) {
-        //val adapter = VpAdapter(requireActivity(), fragments)
-
+    private fun init(){
         lifecycleScope.launch(Dispatchers.Main) {
             userViewModel.userState.collectLatest { state ->
                 when (state) {
@@ -114,7 +96,6 @@ class ChatFragment : NavigableFragment(), UsersRecyclerViewAdapter.Listener {
                 }
             }
         }
-
     }
 
     private fun showLoading() {

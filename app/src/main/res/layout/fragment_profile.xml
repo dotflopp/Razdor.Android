@@ -15,7 +15,6 @@
         tools:ignore="MissingConstraints" />
 
 
-    <!-- Кнопка настроек (верхний правый угол) -->
     <ImageButton
         android:id="@+id/settingsButton"
         android:layout_width="40dp"
@@ -27,7 +26,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_margin="16dp"/>
 
-    <!-- Контейнер для иконки профиля с индикатором статуса -->
     <FrameLayout
         android:id="@+id/avatarContainer"
         android:layout_width="120dp"
@@ -60,7 +58,6 @@
         </FrameLayout>
     </FrameLayout>
 
-    <!-- Кнопка выбора статуса (слева от аватара) -->
     <android.widget.Button
         android:id="@+id/statusButton"
         android:layout_width="wrap_content"
@@ -76,7 +73,6 @@
         app:layout_constraintBottom_toBottomOf="@id/avatarContainer"
         android:layout_marginEnd="16dp"/>
 
-    <!-- Кнопка редактирования (справа от аватара) -->
     <FrameLayout
         android:layout_width="50dp"
         android:layout_height="50dp"

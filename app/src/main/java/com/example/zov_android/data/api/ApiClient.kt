@@ -3,12 +3,15 @@ package com.example.zov_android.data.api
 import com.example.zov_android.data.models.request.ChannelRequest
 import com.example.zov_android.data.models.response.ExceptionResponse
 import com.example.zov_android.data.models.request.GuildRequest
+import com.example.zov_android.data.models.request.InvitesRequest
 import com.example.zov_android.data.models.request.LoginRequest
 import com.example.zov_android.data.models.request.SignupRequest
 import com.example.zov_android.data.models.request.StatusRequest
 import com.example.zov_android.data.models.response.AuthResponse
 import com.example.zov_android.data.models.response.ChannelResponse
 import com.example.zov_android.data.models.response.GuildResponse
+import com.example.zov_android.data.models.response.InvitesResponse
+import com.example.zov_android.data.models.response.MembersGuildResponse
 import com.example.zov_android.data.models.response.SessionResponse
 import com.example.zov_android.data.models.response.UserResponse
 import com.example.zov_android.domain.utils.UserCommunicationSelectedStatus
@@ -118,13 +121,25 @@ class ApiClient @Inject constructor(
         apiService.getMyGuilds("Bearer $token")
     }
 
-
-    suspend fun createChannel(guildId:Long, channelRequest: ChannelRequest):Result<ChannelResponse> = safeApiCall {
-        apiService.postChannels(guildId, channelRequest)
+    suspend fun getUsersGuild(token: String, guildId: Long): Result<List<MembersGuildResponse>> = safeApiCall{
+        apiService.getMembersGuild(token, guildId)
     }
 
-    suspend fun postSpecificSession(guildId:Long, channelId:Long): Result<SessionResponse> = safeApiCall{
-        apiService.postSessionId(guildId, channelId)
+    suspend fun postInvites(token: String, guildId: Long, invitesRequest: InvitesRequest): Result<InvitesResponse> = safeApiCall{
+        apiService.postInvitation("Bearer $token", guildId, invitesRequest)
+    }
+
+
+    suspend fun createChannel(token: String, guildId:Long, channelRequest: ChannelRequest): Result<ChannelResponse> = safeApiCall {
+        apiService.postChannels("Bearer $token", guildId, channelRequest)
+    }
+
+    suspend fun getChannel(token: String, guildId: Long): Result<List<ChannelResponse>> = safeApiCall{
+        apiService.getChannels("Bearer $token", guildId)
+    }
+
+    suspend fun postConnectionVoiceChannel(token: String, channelId:Long): Result<SessionResponse> = safeApiCall{
+        apiService.postConnect("Bearer $token", channelId)
     }
 
     suspend fun getSpecificUser(userId: Long): Result<UserResponse> = safeApiCall {

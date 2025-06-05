@@ -19,6 +19,7 @@ import com.example.zov_android.data.repository.MainServiceRepository
 import com.example.zov_android.data.signalr.SignalR
 import com.example.zov_android.data.webrtc.WebRtcManager
 import com.example.zov_android.ui.fragments.main.BaseMainFragment
+import com.example.zov_android.ui.fragments.main.MainFragment
 import com.example.zov_android.ui.fragments.navigation.NavigableFragment
 import com.example.zov_android.ui.fragments.navigation.NavigationFragment
 import com.example.zov_android.ui.fragments.navigation.NavigationInsideFragment
@@ -27,6 +28,7 @@ import com.example.zov_android.ui.viewmodels.GuildViewModel
 import com.example.zov_android.ui.viewmodels.UserViewModel
 import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -81,7 +83,7 @@ class MainActivity : AppCompatActivity() {
         userViewModel.loadUserData(token)
 
 
-        lifecycleScope.launch {
+        lifecycleScope.launch(Dispatchers.IO) {
             userViewModel.userState.collect{ state->
                 when(state){
                     is BaseViewModel.ViewState.Success -> {
@@ -106,9 +108,6 @@ class MainActivity : AppCompatActivity() {
             navigateTo(BaseMainFragment())
         }
 
-        //Log.d("BaseVM","loadUserData")
-
-        //guildViewModel.loadChannelData(1, ChannelRequest(0,1,"mouse",1,1,2))
     }
 
     private fun checkPermissionsAndStartService() {
@@ -135,9 +134,10 @@ class MainActivity : AppCompatActivity() {
 
     @Deprecated("Deprecated in Java")
     override fun onBackPressed() {
-        val mainFragment = supportFragmentManager.findFragmentById(R.id.fragment_container) as? BaseMainFragment
-        Log.d("BackPress", "$mainFragment")
-        if (mainFragment?.handleBackPress() == true) {
+        val baseMainFragment = supportFragmentManager.findFragmentById(R.id.fragment_container) as? BaseMainFragment
+
+        Log.d("BackPress", "$baseMainFragment")
+        if (baseMainFragment?.handleBackPress() == true) {
             // Обработка возврата в BaseMainFragment успешна, ничего не делаем
             return
         }

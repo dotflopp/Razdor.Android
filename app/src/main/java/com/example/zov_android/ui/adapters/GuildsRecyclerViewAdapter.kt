@@ -7,7 +7,7 @@ import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import com.example.zov_android.R
 import com.example.zov_android.data.models.response.GuildResponse
-import com.example.zov_android.databinding.ItemGroupRecyclerViewBinding
+import com.example.zov_android.databinding.ItemGuildRecyclerViewBinding
 
 class GuildsRecyclerViewAdapter(private val listener:Listener)
     :RecyclerView.Adapter<GuildsRecyclerViewAdapter.GuildsRecyclerViewHolder>() {
@@ -25,7 +25,7 @@ class GuildsRecyclerViewAdapter(private val listener:Listener)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GuildsRecyclerViewHolder {
-        val binding = ItemGroupRecyclerViewBinding.inflate(
+        val binding = ItemGuildRecyclerViewBinding.inflate(
             LayoutInflater.from(parent.context),
             parent,
             false
@@ -56,7 +56,7 @@ class GuildsRecyclerViewAdapter(private val listener:Listener)
     }
 
 
-    class GuildsRecyclerViewHolder(val binding: ItemGroupRecyclerViewBinding)
+    class GuildsRecyclerViewHolder(val binding: ItemGuildRecyclerViewBinding)
         :RecyclerView.ViewHolder(binding.root) {
             fun bind(onGuildClick: () -> Unit) {
                 binding.apply {

@@ -15,6 +15,7 @@ import com.example.zov_android.data.repository.MainServiceRepository
 import com.example.zov_android.data.signalr.SignalR
 import com.example.zov_android.data.webrtc.WebRtcManager
 import com.example.zov_android.databinding.FragmentCallBinding
+import com.example.zov_android.di.qualifiers.Token
 import com.example.zov_android.di.qualifiers.User
 import com.example.zov_android.domain.service.MainService
 import com.example.zov_android.domain.utils.convertToHumanTime
@@ -30,11 +31,17 @@ import javax.inject.Inject
 
 
 @AndroidEntryPoint
-class CallFragment : NavigableFragment(), MainService.EndCallListener {
+class CallFragment(
+    private val idChannel: Long
+): NavigableFragment(), MainService.EndCallListener {
 
     @Inject
     @User
     lateinit var user: UserResponse
+
+    @Inject
+    @Token
+    lateinit var token: String
 
     private var _binding: FragmentCallBinding? = null
     private val binding get() = _binding!!
@@ -118,7 +125,7 @@ class CallFragment : NavigableFragment(), MainService.EndCallListener {
         viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
             try {
                 signalR.startConnection()
-                guildViewModel.loadSessionData(1, 1)
+                guildViewModel.loadSessionData(token, idChannel)
 
                 guildViewModel.sessionState.collect { state ->
                     when (state) {

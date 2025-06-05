@@ -3,12 +3,15 @@ package com.example.zov_android.data.api
 
 import com.example.zov_android.data.models.request.ChannelRequest
 import com.example.zov_android.data.models.request.GuildRequest
+import com.example.zov_android.data.models.request.InvitesRequest
 import com.example.zov_android.data.models.request.SignupRequest
 import com.example.zov_android.data.models.response.AuthResponse
 import com.example.zov_android.data.models.request.LoginRequest
 import com.example.zov_android.data.models.request.StatusRequest
 import com.example.zov_android.data.models.response.ChannelResponse
 import com.example.zov_android.data.models.response.GuildResponse
+import com.example.zov_android.data.models.response.InvitesResponse
+import com.example.zov_android.data.models.response.MembersGuildResponse
 import com.example.zov_android.data.models.response.SessionResponse
 import com.example.zov_android.data.models.response.UserResponse
 import retrofit2.Response
@@ -21,14 +24,12 @@ import retrofit2.http.Path
 
 interface ApiService {
 
-    @GET("communities/@my")
-    suspend fun getMyGuilds(@Header("Authorization") token: String): Response<List<GuildResponse>>
+    @POST("auth/login")
+    suspend fun postLogin(@Body params: LoginRequest): Response<AuthResponse>
 
-    @POST("communities")
-    suspend fun postGuilds(
-        @Header("Authorization") token: String,
-        @Body params: GuildRequest
-    ): Response<GuildResponse>
+    @POST("auth/signup")
+    suspend fun postSignUp(@Body params: SignupRequest): Response<AuthResponse>
+
 
     @GET("users/@me")
     suspend fun getMeUser(@Header("Authorization") token: String): Response<UserResponse>
@@ -42,22 +43,44 @@ interface ApiService {
     @GET("users/{userID}")
     suspend fun getIdUser(@Path("userId") userId: Long): Response<UserResponse>
 
-    @POST("auth/login")
-    suspend fun postLogin(@Body params: LoginRequest): Response<AuthResponse>
+    @POST("communities")
+    suspend fun postGuilds(
+        @Header("Authorization") token: String,
+        @Body params: GuildRequest
+    ): Response<GuildResponse>
 
-    @POST("auth/signup")
-    suspend fun postSignUp(@Body params: SignupRequest): Response<AuthResponse>
+    @GET("communities/@my")
+    suspend fun getMyGuilds(@Header("Authorization") token: String): Response<List<GuildResponse>>
 
+    @GET("communities/{communityId}/members")
+    suspend fun getMembersGuild(
+        @Header("Authorization") token: String,
+        @Path("communityId") guildId: Long,
+    ): Response<List<MembersGuildResponse>>
+
+    @POST("communities/{communityId}/invites")
+    suspend fun postInvitation(
+        @Header("Authorization") token: String,
+        @Path("communityId") guildId: Long,
+        @Body params: InvitesRequest
+    ): Response<InvitesResponse>
 
     @POST("communities/{communityId}/channels")
     suspend fun postChannels(
-        @Path("guildId") guildId: Long,
+        @Header("Authorization") token: String,
+        @Path("communityId") guildId: Long,
         @Body params: ChannelRequest
     ):Response<ChannelResponse>
 
-    @POST("communities/{communityId}/channels/{channelId}/join")
-    suspend fun postSessionId(
-        @Path("guildId") guildId: Long,
+    @GET("communities/{communityId}/channels")
+    suspend fun getChannels(
+        @Header("Authorization") token: String,
+        @Path("communityId") guildId: Long
+    ):Response<List<ChannelResponse>>
+
+    @POST("channels/{channelId}/connect")
+    suspend fun postConnect(
+        @Header("Authorization") token: String,
         @Path("channelId") channelId: Long
     ): Response<SessionResponse>
 }
