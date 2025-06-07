@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.example.zov_android.R
 import com.example.zov_android.data.models.response.ChannelResponse
 import com.example.zov_android.databinding.ItemChannelRecyclerViewBinding
 import com.example.zov_android.domain.utils.ChannelType
@@ -11,7 +12,7 @@ import com.example.zov_android.domain.utils.ChannelType
 class ChannelRecyclerViewAdapter(private val listener: Listener)
     :RecyclerView.Adapter<ChannelRecyclerViewAdapter.ChannelRecyclerViewHolder>(){
     interface Listener{
-        fun onChannelClick(channelId: Long, channelType: ChannelType)
+        fun onChannelClick(channelId: Long, channelName:String,channelType: ChannelType)
     }
 
     private var channelList:List<ChannelResponse>? = emptyList()
@@ -40,12 +41,19 @@ class ChannelRecyclerViewAdapter(private val listener: Listener)
             val channel = list[position]
 
             with(holder.binding){
+                when (channel.type) {
+                    ChannelType.VoiceChannel -> icImage.setImageResource(R.drawable.ic_sound)
+                    ChannelType.TextChannel -> icImage.setImageResource(R.drawable.ic_text)
+                    ChannelType.CategoryChannel -> {}
+                    ChannelType.ForkChannel -> {}
+                }
                 nameChannel.text = channel.name
                 typeChannel.text = channel.type.toString()
+
             }
 
             holder.bind {
-                listener.onChannelClick(channel.id.toLong(), channel.type)
+                listener.onChannelClick(channel.id.toLong(),channel.name, channel.type)
             }
 
         }

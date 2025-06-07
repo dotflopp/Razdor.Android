@@ -11,6 +11,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.zov_android.data.models.request.ChannelRequest
+import com.example.zov_android.data.models.response.MembersGuildResponse
 import com.example.zov_android.databinding.FragmentGuildBinding
 import com.example.zov_android.di.qualifiers.Token
 import com.example.zov_android.domain.utils.ChannelType
@@ -37,6 +38,8 @@ class GuildFragment(
 
     private var channelAdapter: ChannelRecyclerViewAdapter? = null
 
+    private var membersGuild: List<MembersGuildResponse>? = null
+
     @Inject
     @Token
     lateinit var token:String
@@ -46,6 +49,7 @@ class GuildFragment(
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         guildViewModel.getChannelList(token, idGuild.toLong())
+        guildViewModel.getMembersGuild(token, idGuild.toLong())
     }
 
     override fun onCreateView(context: Context): View {
@@ -60,27 +64,6 @@ class GuildFragment(
         setupRecyclerView()
         init()
 
-    }
-
-    override fun onChannelClick(channelId: Long, channelType: ChannelType) {
-        when (channelType) {
-            ChannelType.VoiceChannel -> {
-                navigationInside.push(CallFragment(channelId), "CallFragment")
-            }
-            ChannelType.TextChannel -> {
-                navigationInside.push(ChatChannelFragment(channelId), "TextChatFragment")
-            }
-
-            ChannelType.CategoryChannel -> {}
-
-            ChannelType.ForkChannel -> {}
-        }
-    }
-
-    private fun setupMembersGuild() = with(binding){
-        icUsers.setOnClickListener {
-            navigationInside.push(UsersGuildFragment(idGuild.toLong()), "UsersGuildFragment")
-        }
     }
 
 
@@ -157,6 +140,20 @@ class GuildFragment(
         binding.textNameGroup.text = nameGroup
 
         lifecycleScope.launch(Dispatchers.Main) {
+            guildViewModel.guildMembersState.collect{state->
+                when(state){
+                    is BaseViewModel.ViewState.Success -> {
+                        membersGuild = state.data
+                    }
+
+                    is BaseViewModel.ViewState.Error,
+                    BaseViewModel.ViewState.Idle,
+                    BaseViewModel.ViewState.Loading->{}
+                }
+            }
+        }
+
+        lifecycleScope.launch(Dispatchers.Main) {
             guildViewModel.listChannelState.collect{state->
                 when(state){
                     is BaseViewModel.ViewState.Success -> {
@@ -190,6 +187,37 @@ class GuildFragment(
                 }
             }
         }.show()
+    }
+
+    private fun setupMembersGuild() = with(binding){
+        icUsers.setOnClickListener {
+            if(membersGuild!=null) {
+                navigationInside.push(
+                    UsersGuildFragment(idGuild.toLong(), membersGuild!!),
+                    "UsersGuildFragment"
+                )
+            }
+        }
+    }
+
+    override fun onChannelClick(channelId: Long, channelName:String, channelType: ChannelType) {
+        when (channelType) {
+            ChannelType.VoiceChannel -> {
+                navigationInside.push(CallFragment(channelId), "CallFragment")
+            }
+            ChannelType.TextChannel -> {
+                if(membersGuild!=null) {
+                    navigationInside.push(
+                        ChatChannelFragment(channelId, channelName, membersGuild!!),
+                        "TextChatFragment"
+                    )
+                }
+            }
+
+            ChannelType.CategoryChannel -> {}
+
+            ChannelType.ForkChannel -> {}
+        }
     }
 
 }

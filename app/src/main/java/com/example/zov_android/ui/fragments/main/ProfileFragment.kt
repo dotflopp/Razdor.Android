@@ -11,6 +11,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.lifecycleScope
+import coil.load
 import com.example.zov_android.R
 import com.example.zov_android.data.models.request.StatusRequest
 import com.example.zov_android.data.models.response.UserResponse
@@ -89,6 +90,11 @@ class ProfileFragment : NavigableFragment() {
             "Invisible" -> binding.statusIndicator.setBackgroundResource(R.drawable.circle_yellow)
         }
 
+        val url = "https://dotflopp.ru"+user.avatar
+        binding.iconProfile.load(url) {
+            placeholder(R.drawable.mouseicon) // картинка при загрузке
+            error(R.drawable.mouseicon)
+        }
         binding.username.text = user.nickname
         binding.identity.text = "#${user.identityName}"
         user.description?.let { binding.description.text = it }

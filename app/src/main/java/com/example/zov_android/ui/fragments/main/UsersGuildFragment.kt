@@ -12,6 +12,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.zov_android.data.models.request.InvitesRequest
+import com.example.zov_android.data.models.response.MembersGuildResponse
 import com.example.zov_android.databinding.FragmentUsersGuildBinding
 import com.example.zov_android.di.qualifiers.Token
 import com.example.zov_android.ui.adapters.MembersGuildRecyclerViewAdapter
@@ -28,7 +29,8 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class UsersGuildFragment(
-    private val idGuild: Long
+    private val idGuild: Long,
+    private val membersGuild: List<MembersGuildResponse>
 ) : NavigableFragment(), MembersGuildRecyclerViewAdapter.Listener {
     private var _binding: FragmentUsersGuildBinding? = null
     private val binding get() = _binding!!
@@ -55,9 +57,10 @@ class UsersGuildFragment(
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        init()
         setupRecyclerView()
         setupClickNewInvitation()
+
+        init()
     }
 
 
@@ -68,7 +71,8 @@ class UsersGuildFragment(
     }
 
     private fun init(){
-        lifecycleScope.launch(Dispatchers.Main) {
+        (_binding!!.usersList.adapter as? MembersGuildRecyclerViewAdapter)?.updateList(membersGuild)
+        /*lifecycleScope.launch(Dispatchers.Main) {
             guildViewModel.guildMembersState.collect { state ->
                 when (state) {
                     is BaseViewModel.ViewState.Success -> {
@@ -79,7 +83,7 @@ class UsersGuildFragment(
                     else -> {}
                 }
             }
-        }
+        }*/
     }
 
     private fun setupClickNewInvitation(){

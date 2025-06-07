@@ -97,7 +97,8 @@ class BaseMainFragment : NavigableFragment(), MainService.Listener {
                         updateStatusIndicator(state.data)
 
                         if (user.avatar!=null){
-                            binding.iconProfile.load(state.data.avatar) {
+                            val url = "https://dotflopp.ru"+state.data.avatar
+                            binding.iconProfile.load(url) {
                                 placeholder(R.drawable.mouseicon) // картинка при загрузке
                                 error(R.drawable.mouseicon)
                             }

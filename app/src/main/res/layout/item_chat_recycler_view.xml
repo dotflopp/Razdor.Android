@@ -18,66 +18,109 @@
         android:background="@drawable/shape_rounded_background"
         >
 
-        <FrameLayout
+        <LinearLayout
             android:id="@+id/anotherProfileImageView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/borderless_groups"
+            android:orientation="vertical"
             android:visibility="gone"
             tools:visibility="visible"
             >
-
-            <de.hdodenhof.circleimageview.CircleImageView
-                android:layout_width="46dp"
-                android:layout_height="46dp"
-                android:layout_margin="5dp"
-                android:src="@mipmap/ic_launcher"
-                android:scaleType="centerCrop" />
-
-            <FrameLayout
-                android:id="@+id/statusBorderless"
-                android:layout_width="20dp"
+            <TextView
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:id="@+id/otherUsername"
+                android:layout_width="wrap_content"
                 android:layout_height="20dp"
-                android:layout_gravity="bottom|end"
-                android:foreground="@drawable/borderless_black">
+                android:text="Username"
+                android:textColor="#1E1D18"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                />
+            <FrameLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="3dp"
+                android:background="@drawable/borderless_groups"
+                >
 
-                <View
-                    android:id="@+id/statusIndicator"
-                    android:layout_width="14dp"
-                    android:layout_height="14dp"
-                    android:layout_gravity="center"
-                    android:background="@drawable/circle_green" />
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:id="@+id/anotherProfileImage"
+                    android:layout_width="46dp"
+                    android:layout_height="46dp"
+                    android:layout_margin="5dp"
+                    android:src="@mipmap/ic_launcher"
+                    android:scaleType="centerCrop" />
+
+                <FrameLayout
+                    android:id="@+id/statusBorderless"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_gravity="bottom|end"
+                    android:foreground="@drawable/borderless_black">
+
+                    <View
+                        android:id="@+id/statusIndicator"
+                        android:layout_width="14dp"
+                        android:layout_height="14dp"
+                        android:layout_gravity="center"
+                        android:background="@drawable/circle_green" />
+                </FrameLayout>
+
             </FrameLayout>
 
-        </FrameLayout>
+        </LinearLayout>
 
 
-        <TextView
-            android:id="@+id/messageTextView"
+        <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:layout_marginStart="5dp"
-            android:layout_marginEnd="5dp"
-            android:background="@drawable/rounded_message_background"
-            android:text="Текст"
-            android:textColorHint="#CDC6C6"
-            android:textColor="#FFFFFF"
-            android:textSize="16sp"
-            android:maxWidth="200dp"
-            android:minHeight="50dp"
-            android:singleLine="false"
+            android:orientation="vertical"
             android:paddingStart="12dp"
             android:paddingEnd="12dp"
             android:paddingTop="8dp"
-            android:paddingBottom="8dp"
-            android:gravity="center_vertical"
-            android:layout_gravity="center"/>
+            android:paddingBottom="8dp">
+
+            <!-- Новый TextView для имени отправителя -->
+            <TextView
+                android:id="@+id/senderDateTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Date"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp"
+                android:layout_marginStart="10dp"
+                android:textColor="#1E1D18"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                 />
+
+            <!-- Существующий TextView для текста сообщения -->
+            <TextView
+                android:id="@+id/messageTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/rounded_message_background"
+                android:text="Текст"
+                android:textColorHint="#CDC6C6"
+                android:textColor="#FFFFFF"
+                android:textSize="16sp"
+                android:maxWidth="200dp"
+                android:minHeight="50dp"
+                android:singleLine="false"
+                android:gravity="center_vertical"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
+                android:paddingTop="6dp"
+                android:paddingBottom="6dp" />
+        </LinearLayout>
 
         <LinearLayout
             android:id="@+id/profileImageView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
             android:gravity="center_vertical"
             android:background="@drawable/borderless_groups"
             android:visibility="gone"
@@ -85,6 +128,7 @@
             >
 
             <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/profileImage"
                 android:background="@drawable/borderless_groups"
                 android:layout_width="50dp"
                 android:layout_height="50dp"

@@ -39,7 +39,8 @@ class GuildsRecyclerViewAdapter(private val listener:Listener)
 
             with(holder.binding){
                 if (guild.avatar!=null){
-                    profileImageView.load(guild.avatar) {
+                    val url = "https://dotflopp.ru"+guild.avatar
+                    profileImageView.load(url) {
                         placeholder(R.mipmap.ic_launcher) // картинка при загрузке
                         error(R.mipmap.ic_launcher)
                     }

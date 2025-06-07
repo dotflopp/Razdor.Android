@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
+import coil.load
 import com.example.zov_android.R
 import com.example.zov_android.data.models.response.MembersGuildResponse
 import com.example.zov_android.databinding.ItemUsersRecyclerViewBinding
@@ -88,9 +89,19 @@ class MembersGuildRecyclerViewAdapter(private val listener: Listener)
                         statusTv.text = "Не в сети"
                     }
 
-                    UserCommunicationDisplayedStatus.DoNotDisturb -> {}
+                    UserCommunicationDisplayedStatus.DoNotDisturb -> {
+                        videoCallBtn.isVisible = false
+                        audioCallBtn.isVisible = false
+                        statusTv.setTextColor(context.resources.getColor(R.color.yellow, null))
+                        statusTv.text = "Не беспокоить"
+                    }
                 }
                 username.text = user.nickname
+                val url = "https://dotflopp.ru"+user.avatar
+                profileImageView.load(url) {
+                    placeholder(R.mipmap.ic_launcher) // картинка при загрузке
+                    error(R.mipmap.ic_launcher)
+                }
             }
         }
     }

@@ -57,15 +57,19 @@
                 <FrameLayout
                     android:layout_width="120dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="5dp"
+                    android:layout_marginTop="2dp"
                     android:layout_marginBottom="5dp"
                     >
 
-                    <ImageView
+
+
+                    <de.hdodenhof.circleimageview.CircleImageView
                         android:id="@+id/iconProfile"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:src="@drawable/mouseicon" />
+                        android:src="@drawable/mouseicon"
+                        android:scaleType="centerCrop"
+                        />
 
                     <View
                         android:id="@+id/statusIndicator"
@@ -74,6 +78,9 @@
                         android:background="@drawable/circle_green"
                         android:layout_gravity="bottom|end"
                         android:layout_marginEnd="30dp"/>
+
+
+
                 </FrameLayout>
 
             </LinearLayout>

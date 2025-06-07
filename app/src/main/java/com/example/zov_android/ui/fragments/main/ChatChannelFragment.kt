@@ -1,5 +1,6 @@
 package com.example.zov_android.ui.fragments.main
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
 import android.view.View
@@ -7,6 +8,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import asFlow
+import com.example.zov_android.data.models.response.MembersGuildResponse
 import com.example.zov_android.data.models.response.UserResponse
 import com.example.zov_android.data.signalr.SignalR
 import com.example.zov_android.databinding.FragmentChatChannelBinding
@@ -24,7 +26,9 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class ChatChannelFragment(
-    private val channelId: Long
+    private val channelId: Long,
+    private val channelName: String,
+    private val membersGuild: List<MembersGuildResponse>
 ) : NavigableFragment(), ChatRecyclerViewAdapter.Listener {
     private var _binding: FragmentChatChannelBinding? = null
     private val binding get() = _binding!!
@@ -83,8 +87,10 @@ class ChatChannelFragment(
         chatList.adapter = usersAdapter
     }
 
+    @SuppressLint("SetTextI18n")
     private fun init(){
         messagesViewModel.claimMessages(token,channelId)
+        binding.chatChannel.text = "Чат канала $channelName"
 
 
         lifecycleScope.launch(Dispatchers.IO) {
@@ -94,7 +100,7 @@ class ChatChannelFragment(
                         lifecycleScope.launch(Dispatchers.Main) {
                             val sortedList = state.data.reversed()
                             val adapter = binding.chatList.adapter as? ChatRecyclerViewAdapter
-                            adapter?.updateList(sortedList)
+                            adapter?.updateList(sortedList, membersGuild)
 
                             // Прокрутка к последнему элементу
                             if (state.data.isNotEmpty()) {
