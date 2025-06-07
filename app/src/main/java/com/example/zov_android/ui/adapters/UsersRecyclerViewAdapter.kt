@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
+import coil.load
 import com.example.zov_android.R
 import com.example.zov_android.databinding.ItemUsersRecyclerViewBinding
 
@@ -96,6 +97,13 @@ class UsersRecyclerViewAdapter(private val listener: Listener)
                     }
                 }
                 username.text = user.first
+                /*if (user.!=null){
+                    profileImageView.load(guild.avatar) {
+                        placeholder(R.mipmap.ic_launcher) // картинка при загрузке
+                        error(R.mipmap.ic_launcher)
+                    }
+                }*/
+                //profileImageView
             }
         }
     }

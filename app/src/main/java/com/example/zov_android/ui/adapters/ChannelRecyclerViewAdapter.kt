@@ -6,11 +6,12 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.zov_android.data.models.response.ChannelResponse
 import com.example.zov_android.databinding.ItemChannelRecyclerViewBinding
+import com.example.zov_android.domain.utils.ChannelType
 
 class ChannelRecyclerViewAdapter(private val listener: Listener)
     :RecyclerView.Adapter<ChannelRecyclerViewAdapter.ChannelRecyclerViewHolder>(){
     interface Listener{
-        fun onChannelClick(idChannel:Long)
+        fun onChannelClick(channelId: Long, channelType: ChannelType)
     }
 
     private var channelList:List<ChannelResponse>? = emptyList()
@@ -43,7 +44,9 @@ class ChannelRecyclerViewAdapter(private val listener: Listener)
                 typeChannel.text = channel.type.toString()
             }
 
-            holder.bind { listener.onChannelClick(channel.id.toLong()) }
+            holder.bind {
+                listener.onChannelClick(channel.id.toLong(), channel.type)
+            }
 
         }
     }

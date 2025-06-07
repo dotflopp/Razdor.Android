@@ -1,6 +1,7 @@
 package com.example.zov_android.data.repository
 
 
+import android.content.Context
 import com.example.zov_android.data.api.ApiClient
 import com.example.zov_android.data.models.request.ChannelRequest
 import com.example.zov_android.data.models.request.GuildRequest
@@ -14,6 +15,7 @@ import com.example.zov_android.data.models.response.ExceptionResponse
 import com.example.zov_android.data.models.response.GuildResponse
 import com.example.zov_android.data.models.response.InvitesResponse
 import com.example.zov_android.data.models.response.MembersGuildResponse
+import com.example.zov_android.data.models.response.MessagesResponse
 import com.example.zov_android.data.models.response.SessionResponse
 import com.example.zov_android.data.models.response.UserResponse
 import com.example.zov_android.data.utils.TokenData
@@ -24,6 +26,7 @@ import com.example.zov_android.data.webrtc.WebRtcManager
 import com.example.zov_android.domain.service.MainService
 import com.example.zov_android.domain.utils.UserCommunicationSelectedStatus
 import org.webrtc.SurfaceViewRenderer
+import java.io.File
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -82,7 +85,17 @@ class MainRepository @Inject constructor(
         return apiClient.postInvites(token, guildId, invitesRequest)
     }
 
+    suspend fun createMessages(token: String, context:Context, channelId: Long, text:String, files:List<File>?):ApiClient.Result<MessagesResponse>{
+        return apiClient.createMessages(token, context, channelId, text, files)
+    }
 
+    suspend fun claimMessages(token: String, channelId: Long):ApiClient.Result<List<MessagesResponse>>{
+        return apiClient.claimMessages(token, channelId)
+    }
+
+    suspend fun claimAttachment(token: String, channelId: Long, messageId:Long, attachmentId:Long):ApiClient.Result<Unit>{
+        return apiClient.claimAttachment(token, channelId, messageId, attachmentId)
+    }
 
     fun decodingToken(token: String): TokenData {
         return decodeToken(token)

@@ -9,6 +9,7 @@ import androidx.activity.OnBackPressedCallback
 import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
+import coil.load
 import com.example.zov_android.R
 import com.example.zov_android.data.models.request.StatusRequest
 import com.example.zov_android.data.models.response.UserResponse
@@ -21,18 +22,22 @@ import com.example.zov_android.ui.fragments.navigation.NavigableFragment
 import com.example.zov_android.ui.fragments.navigation.NavigationInsideFragment
 import com.example.zov_android.ui.viewmodels.BaseViewModel
 import com.example.zov_android.ui.viewmodels.UserViewModel
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-
+@AndroidEntryPoint
 class BaseMainFragment : NavigableFragment(), MainService.Listener {
     private var _binding: FragmentBaseMainBinding? = null
     val binding get() = _binding!!
 
-    private val userViewModel: UserViewModel by activityViewModels()
+    @Inject
+    @User
+    lateinit var user: UserResponse
 
+    private val userViewModel: UserViewModel by activityViewModels()
 
     override fun onCreateView(context: Context): View {
         _binding = FragmentBaseMainBinding.inflate(layoutInflater)
@@ -64,6 +69,7 @@ class BaseMainFragment : NavigableFragment(), MainService.Listener {
             callback
         )
 
+
         binding.iconProfile.setOnClickListener {
             val tag = "ProfileFragment"
             if (!isFragmentAlreadyAdded(tag)) {
@@ -89,6 +95,13 @@ class BaseMainFragment : NavigableFragment(), MainService.Listener {
                 when(state) {
                     is BaseViewModel.ViewState.Success -> {
                         updateStatusIndicator(state.data)
+
+                        if (user.avatar!=null){
+                            binding.iconProfile.load(state.data.avatar) {
+                                placeholder(R.drawable.mouseicon) // картинка при загрузке
+                                error(R.drawable.mouseicon)
+                            }
+                        }
                     }
                     else -> {}
                 }
@@ -128,7 +141,7 @@ class BaseMainFragment : NavigableFragment(), MainService.Listener {
     //обработка входящего вызова на стороне получателя
     override fun onCallReceived(model: DataModel) {
         // тк это событие приходит из другого потока, то делаем следующее
-        requireActivity().runOnUiThread {
+        /*requireActivity().runOnUiThread {
             //используем его в потокое интерфейса
             val isVideoCall = model.type == DataModelType.StartVideoCall
             val isVideoCallText = if (isVideoCall) "видео-" else "аудио-"
@@ -151,6 +164,6 @@ class BaseMainFragment : NavigableFragment(), MainService.Listener {
             binding.declineButton.setOnClickListener {
                 binding.incomingCallLayout.isVisible = false
             }
-        }
+        }*/
     }
 }

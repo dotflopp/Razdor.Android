@@ -1,5 +1,6 @@
 package com.example.zov_android.data.api
 
+import android.content.Context
 import com.example.zov_android.data.models.request.ChannelRequest
 import com.example.zov_android.data.models.response.ExceptionResponse
 import com.example.zov_android.data.models.request.GuildRequest
@@ -12,11 +13,20 @@ import com.example.zov_android.data.models.response.ChannelResponse
 import com.example.zov_android.data.models.response.GuildResponse
 import com.example.zov_android.data.models.response.InvitesResponse
 import com.example.zov_android.data.models.response.MembersGuildResponse
+import com.example.zov_android.data.models.response.MessagesResponse
 import com.example.zov_android.data.models.response.SessionResponse
 import com.example.zov_android.data.models.response.UserResponse
 import com.example.zov_android.domain.utils.UserCommunicationSelectedStatus
 import com.google.gson.Gson
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.asRequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
+import org.json.JSONObject
 import retrofit2.Response
+import java.io.File
 import java.io.IOException
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -111,6 +121,54 @@ class ApiClient @Inject constructor(
                 message = "Unknown error: ${e.message}"
             )
         }
+    }
+
+    private fun preparePartMap(text: String): Map<String, @JvmSuppressWildcards RequestBody> {
+        val map = mutableMapOf<String, RequestBody>()
+
+        // Добавляем текстовое поле "text"
+        if (text.isNotBlank()) {
+            map["text"] = text.toRequestBody("text/plain".toMediaType())
+        }
+
+        return map
+    }
+
+    suspend fun createMessages(
+        token: String,
+        context: Context,
+        channelId: Long,
+        text: String,
+        files: List<File>?
+    ): Result<MessagesResponse> = safeApiCall {
+
+        val jsonFile = File.createTempFile("message_", ".json", context.cacheDir).apply {
+            deleteOnExit() // Удалим после использования
+        }
+
+        // Записываем JSON с полем "text"
+        val jsonObject = JSONObject().apply {
+            put("text", text)
+        }
+        jsonFile.writeText(jsonObject.toString())
+
+        val jsonRequestBody = jsonFile.asRequestBody("application/json".toMediaTypeOrNull())
+        val jsonPart = MultipartBody.Part.createFormData("json", jsonFile.name, jsonRequestBody)
+
+        val fileParts = files?.map { file ->
+            val fileRequestBody = file.asRequestBody("image/*".toMediaTypeOrNull())
+            MultipartBody.Part.createFormData("file", file.name, fileRequestBody)
+        } ?: emptyList()
+
+        apiService.postMessages("Bearer $token", channelId, jsonPart, fileParts)
+    }
+
+    suspend fun claimMessages(token: String, channelId: Long):Result<List<MessagesResponse>> = safeApiCall{
+        apiService.getMessages("Bearer $token", channelId)
+    }
+
+    suspend fun claimAttachment(token: String, channelId: Long, messageId:Long, attachmentId:Long):Result<Unit> = safeApiCall{
+        apiService.getAttachment("Bearer $token", channelId, messageId, attachmentId)
     }
 
     suspend fun postGuild(token:String, guildRequest: GuildRequest):Result<GuildResponse> = safeApiCall {

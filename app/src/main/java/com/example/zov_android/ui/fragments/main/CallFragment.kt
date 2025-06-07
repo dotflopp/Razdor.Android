@@ -124,7 +124,6 @@ class CallFragment(
     private fun setupSignalRConnection() {
         viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
             try {
-                signalR.startConnection()
                 guildViewModel.loadSessionData(token, idChannel)
 
                 guildViewModel.sessionState.collect { state ->

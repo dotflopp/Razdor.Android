@@ -62,8 +62,19 @@ class GuildFragment(
 
     }
 
-    override fun onChannelClick(idChannel: Long) {
-        navigationInside.push(CallFragment(idChannel),"CallFragment")
+    override fun onChannelClick(channelId: Long, channelType: ChannelType) {
+        when (channelType) {
+            ChannelType.VoiceChannel -> {
+                navigationInside.push(CallFragment(channelId), "CallFragment")
+            }
+            ChannelType.TextChannel -> {
+                navigationInside.push(ChatChannelFragment(channelId), "TextChatFragment")
+            }
+
+            ChannelType.CategoryChannel -> {}
+
+            ChannelType.ForkChannel -> {}
+        }
     }
 
     private fun setupMembersGuild() = with(binding){

@@ -38,7 +38,7 @@ import kotlin.system.exitProcess
 class MainActivity : AppCompatActivity() {
     private lateinit var navigationFragment: NavigationFragment
 
-    val gson = Gson()
+    private val gson = Gson()
 
     private var token: String? = null
     private var authResponse: AuthResponse? = null
@@ -52,6 +52,7 @@ class MainActivity : AppCompatActivity() {
     @Inject lateinit var mainServiceRepository: MainServiceRepository
 
     private var backPressedTime: Long = 0
+
 
     @SuppressLint("CommitPrefEdits")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -94,6 +95,8 @@ class MainActivity : AppCompatActivity() {
 
                         val prefs = getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
                         prefs.edit().putString("user", gson.toJson(state.data)).apply()
+
+                        signalR.startConnection(token!!)
                     }
 
                     is BaseViewModel.ViewState.Error,

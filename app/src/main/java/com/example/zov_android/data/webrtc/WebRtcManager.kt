@@ -321,7 +321,7 @@ class WebRtcManager @Inject constructor(
                 )
 
                 CoroutineScope(Dispatchers.IO).launch {
-                    signalR.sendSafe("Offer", sessionId, offerJson)
+                    //signalR.sendSafe("Offer", sessionId, offerJson)
                     Log.i("WebRTCData", "Offer отправлен через SignalR")
                 }
             }
@@ -345,7 +345,7 @@ class WebRtcManager @Inject constructor(
 
                 Log.d("WebRTCData", "Локальное описание установлено для Answer")
                 CoroutineScope(Dispatchers.IO).launch {
-                    signalR.sendSafe("Answer", sessionId, answerJson)
+                    //signalR.sendSafe("Answer", sessionId, answerJson)
                 }
                 Log.i("WebRTCData", "Answer отправлен через SignalR")
             }
@@ -450,10 +450,10 @@ class WebRtcManager @Inject constructor(
 
 
     suspend fun startCall(nickname: String) {
-        signalR.sendSafe("Connect", sessionId, mapOf(
+        /*signalR.sendSafe("Connect", sessionId, mapOf(
             "nickname" to nickname,
             "avatarUrl" to null
-        ))
+        ))*/
 
         createOffer()
     }

@@ -18,7 +18,7 @@ object SignalRModule {
     fun provideSignalR(
         @ApplicationContext context: Context,
     ): SignalR {
-        val url = "http://26.101.132.34:5154/signaling"
+        val url = "https://dotflopp.ru/api/signalr"
         return SignalR(context, url)
     }
 }

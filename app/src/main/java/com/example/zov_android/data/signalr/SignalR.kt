@@ -3,151 +3,104 @@ package com.example.zov_android.data.signalr
 
 import android.content.Context
 import android.util.Log
+import androidx.core.app.NotificationCompat
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import com.example.zov_android.data.models.response.MessagesResponse
+import com.example.zov_android.di.qualifiers.Token
+import com.microsoft.signalr.Action1
 import com.microsoft.signalr.HubConnection
 import com.microsoft.signalr.HubConnectionBuilder
-import com.microsoft.signalr.HubConnectionState
 import com.microsoft.signalr.TransportEnum
 import dagger.hilt.android.qualifiers.ApplicationContext
-import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-
+import javax.inject.Inject
 
 class SignalR @Inject constructor(
     @ApplicationContext private val context: Context,
     private val url: String
 ) {
+
+    private var currentToken: String? = null
+
     val connection: HubConnection = HubConnectionBuilder.create(url)
         .withTransport(TransportEnum.WEBSOCKETS)
         .shouldSkipNegotiate(true)
         .build()
 
-    private val coroutineScope = CoroutineScope(Dispatchers.IO)
+    // LiveData для отправки новых сообщений во ViewModel
+    private val _newMessageEvent = MutableLiveData<MessagesResponse>()
+    val newMessageEvent: LiveData<MessagesResponse> get() = _newMessageEvent
+
     private var reconnectAttempts = 0
+    private val maxReconnectAttempts = 5
+    private val reconnectDelayMillis = 5000L
 
     init {
-        // Обработчик закрытия соединения
-        connection.onClosed { error ->
-            Log.e("SignalR", "Соединение закрыто: ${error?.message}")
-            startAutoReconnect()
-        }
-
-        // Добавляем обработчик для диагностики
-        connection.on("Diagnostics", { message: String ->
-            Log.d("SignalR-Debug", "Диагностика: $message")
-        }, String::class.java)
+        setupMessageHandlers()
+        setupConnectionHandler()
     }
 
-    suspend fun startConnection() {
+    private fun setupMessageHandlers() {
+        connection.on("MessageCreated") { message: MessagesResponse ->
+            _newMessageEvent.postValue(message)
+        }
+    }
+
+    private fun setupConnectionHandler() {
+        connection.onClosed { error ->
+            Log.d("SignalR", "Соединение закрыто${error?.let { ": ${it.message}" } ?: ""}")
+            if (currentToken != null) {
+                attemptReconnect()
+            }
+        }
+    }
+
+    suspend fun startConnection(token:String) {
+
+        this.currentToken = token
+
+        reconnectAttempts = 0 // Сброс счётчика при новом старте
+
+        connection.setBaseUrl("$url?access-token=$token")
         try {
             Log.d("SignalR", "Подключение к $url...")
-            coroutineScope.launch {
-                connection.start()
-            }
-            reconnectAttempts = 0
+            connection.start()
             Log.d("SignalR", "Успешно подключено. ID соединения: ${connection.connectionId}")
-
-            // Запрос диагностической информации
-            //requestConnectionInfo()
         } catch (e: Exception) {
             Log.e("SignalR", "Ошибка подключения", e)
-            startAutoReconnect()
+            attemptReconnect()
         }
     }
 
-    // Запрос диагностической информации с сервера
-    private suspend fun requestConnectionInfo() {
-        try {
-            withContext(Dispatchers.IO) {
-                connection.invoke("GetConnectionInfo")
-            }
-            Log.d("SignalR-Info", "Запрос информации отправлен")
-        } catch (e: Exception) {
-            Log.w("SignalR", "Не удалось получить диагностику", e)
+    private fun attemptReconnect() {
+        if (reconnectAttempts >= maxReconnectAttempts) {
+            Log.w("SignalR", "Достигнуто максимальное число попыток переподключения")
+            return
         }
-    }
 
-    private fun startAutoReconnect() {
-        coroutineScope.launch {
-            reconnectAttempts++
-            val delayTime = when {
-                reconnectAttempts > 10 -> 60_000L // 1 минута после 10 попыток
-                reconnectAttempts > 5 -> 30_000L  // 30 секунд после 5 попыток
-                else -> 5_000L                    // 5 секунд для первых попыток
-            }
+        reconnectAttempts++
 
-            Log.w("SignalR", "Попытка переподключения #$reconnectAttempts через ${delayTime}ms")
-            delay(delayTime)
+        Log.d("SignalR", "Попытка переподключения №$reconnectAttempts")
 
-            try {
-                if (connection.connectionState != HubConnectionState.CONNECTED) {
-                    startConnection()
-                }
-            } catch (e: Exception) {
-                Log.e("SignalR", "Ошибка при переподключении", e)
-                startAutoReconnect()
+        // Используем coroutineScope для задержки
+        CoroutineScope(Dispatchers.IO).launch {
+            delay(reconnectDelayMillis)
+            currentToken?.let { token ->
+                startConnection(token)
             }
         }
     }
 
-    suspend fun sendSafe(method: String, vararg args: Any) {
-        try {
-            if (connection.connectionState != HubConnectionState.CONNECTED) {
-                Log.w("SignalR", "Соединение не активно. Переподключаемся...")
-                startConnection()
-                delay(500) // Даем время на подключение
-            }
-
-            Log.d("SignalR", "Отправка '$method' с аргументами: ${args.joinToString()}")
-            coroutineScope.launch {
-                connection.send(method, *args)
-            }
-            Log.d("SignalR", "Сообщение '$method' успешно отправлено")
-        } catch (e: Exception) {
-            Log.e("SignalR", "Ошибка отправки '$method'", e)
-        }
-    }
-
-    // Добавляем возможность подписки на события
-    fun <T : Any> on(
-        method: String,
-        callback: (T) -> Unit,
-        clazz: Class<T>
-    ) {
-        connection.on(method, callback, clazz)
-    }
-
-
-    // Проверка состояния соединения
-    fun isConnected(): Boolean {
-        return connection.connectionState == HubConnectionState.CONNECTED
-    }
-
-    // Закрытие соединения
     suspend fun stopConnection() {
-        try {
-            coroutineScope.launch {
-                connection.stop()
-            }
-            Log.d("SignalR", "Соединение остановлено")
-        } catch (e: Exception) {
-            Log.e("SignalR", "Ошибка при остановке соединения", e)
-        }
-    }
-
-    // Тестовый пинг
-    suspend fun ping(): Boolean {
-        return try {
-            coroutineScope.launch {
-                connection.invoke("Ping")
-            }
-            true
-        } catch (e: Exception) {
-            Log.e("SignalR", "Ошибка пинга", e)
-            false
-        }
+        connection.stop()
     }
 }
+
+private inline fun<reified T> HubConnection.on(target: String, callback: Action1<T>) {
+    this.on(target, callback, T::class.java)
+}
+
