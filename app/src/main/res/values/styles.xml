@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="OutlinedBoxStyle" parent="Widget.Material3.TextInputLayout.OutlinedBox">
+        <!-- Цвет границы -->
+        <item name="boxStrokeColor">#FFFFFFFF</item>
+
+        <!-- Цвет подсказки (hint) -->
+        <item name="hintTextColor">#FFFFFFFF</item>
+
+        <!-- Цвет текста подсказки -->
+        <item name="android:textColorHint">#FFFFFFFF</item>
+
+        <!-- Цвет текста -->
+        <item name="android:textColor">#FFFFFFFF</item>
+
+        <!-- Закругления -->
+        <item name="boxCornerRadiusTopStart">8dp</item>
+        <item name="boxCornerRadiusTopEnd">8dp</item>
+        <item name="boxCornerRadiusBottomStart">8dp</item>
+        <item name="boxCornerRadiusBottomEnd">8dp</item>
+    </style>
+</resources>

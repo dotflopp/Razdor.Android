@@ -61,12 +61,17 @@ class ChatChannelFragment(
         init()
         setupRecyclerView()
         setupSendMessages()
+        setupAttachmentMessages()
 
         lifecycleScope.launch {
             messagesViewModel.signalR.newMessageEvent.asFlow().collect { message ->
                 messagesViewModel.addNewMessage(message)
             }
         }
+
+    }
+
+    private fun setupAttachmentMessages(){
 
     }
 

@@ -59,7 +59,6 @@
         <activity
             android:name=".ui.activities.CloseActivity"
             android:exported="true" />
-
         <service
             android:name=".domain.service.MainService"
             android:exported="false"
