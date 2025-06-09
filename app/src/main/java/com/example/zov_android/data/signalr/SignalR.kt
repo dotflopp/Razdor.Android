@@ -6,7 +6,9 @@ import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.example.zov_android.data.models.response.ChannelResponse
 import com.example.zov_android.data.models.response.MessagesResponse
+import com.example.zov_android.data.models.response.UserResponse
 import com.example.zov_android.di.qualifiers.Token
 import com.microsoft.signalr.Action1
 import com.microsoft.signalr.HubConnection
@@ -33,7 +35,15 @@ class SignalR @Inject constructor(
 
     // LiveData для отправки новых сообщений во ViewModel
     private val _newMessageEvent = MutableLiveData<MessagesResponse>()
+
+    private val _newChannelEvent = MutableLiveData<ChannelResponse>()
+
+    private val _newMemberEvent = MutableLiveData<UserResponse>()
+
     val newMessageEvent: LiveData<MessagesResponse> get() = _newMessageEvent
+    val newChannelEvent: LiveData<ChannelResponse> get() = _newChannelEvent
+
+    val newMemberEvent: LiveData<UserResponse> get() = _newMemberEvent
 
     private var reconnectAttempts = 0
     private val maxReconnectAttempts = 5
@@ -42,12 +52,28 @@ class SignalR @Inject constructor(
     init {
         setupMessageHandlers()
         setupConnectionHandler()
+        setupChannelHandlers()
+        setupMemberHandlers()
+    }
+
+    private fun setupMemberHandlers() {
+        connection.on("MemberChanged") { user: UserResponse ->
+            _newMemberEvent.postValue(user)
+        }
     }
 
     private fun setupMessageHandlers() {
         connection.on("MessageCreated") { message: MessagesResponse ->
             _newMessageEvent.postValue(message)
         }
+    }
+
+    private fun setupChannelHandlers(){
+        connection.on("ChannelCreated") { channel: ChannelResponse ->
+            _newChannelEvent.postValue(channel)
+        }
+        connection.stop()
+        connection.start()
     }
 
     private fun setupConnectionHandler() {

@@ -27,6 +27,7 @@ import retrofit2.http.PUT
 import retrofit2.http.Part
 import retrofit2.http.PartMap
 import retrofit2.http.Path
+import retrofit2.http.Query
 import retrofit2.http.Streaming
 import java.io.File
 import java.io.InputStream
@@ -114,6 +115,6 @@ interface ApiService {
         @Header("Authorization") token: String,
         @Path("channelId") channelId: Long,
         @Path("messageId") messageId: Long,
-        @Path("attachmentId") attachmentId: Long
+        @Path("attachmentId") attachmentId: Long,
     ): Response<File>
 }

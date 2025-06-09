@@ -9,8 +9,11 @@ import android.provider.MediaStore
 import android.provider.OpenableColumns
 import android.util.Log
 import android.view.View
+import android.webkit.MimeTypeMap
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.result.contract.ActivityResultContracts.CreateDocument
+import androidx.core.net.toFile
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -35,6 +38,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.io.ByteArrayInputStream
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
@@ -57,7 +61,7 @@ class ChatChannelFragment(
     private val messagesViewModel: MessagesViewModel by viewModels()
     private val attachmentViewModel: AttachmentViewModel by activityViewModels()
 
-    private val files: MutableList<File> = mutableListOf()
+    private val files = mutableListOf<File>()
 
     private var isHandlingAttachment = false
 
@@ -99,11 +103,22 @@ class ChatChannelFragment(
                         state is AttachmentViewState.Success && !isHandlingAttachment -> {
                             isHandlingAttachment = true
                             val mimeType = attachmentViewModel.getLastMimeType()
-                            val filename = when {
-                                mimeType.startsWith("image/jpg") -> "image_${System.currentTimeMillis()}.jpg"
-                                mimeType.startsWith("image/png") -> "image_${System.currentTimeMillis()}.png"
-                                mimeType.contains("openxmlformats") -> "document_${System.currentTimeMillis()}.docx"
-                                else -> "file_${System.currentTimeMillis()}"
+                            Log.d("MimeTypeFile", mimeType)
+                            val filename = when(mimeType) {
+                                "image/jpg" -> "image_${System.currentTimeMillis()}.jpg"
+                                "image/jpeg" -> "image_${System.currentTimeMillis()}.jpeg"
+                                "image/png" -> "image_${System.currentTimeMillis()}.png"
+                                "image/pdf" -> "image_${System.currentTimeMillis()}.pdf"
+                                "text/plain" -> "document_${System.currentTimeMillis()}.txt"
+                                "image/gif" -> "image_${System.currentTimeMillis()}.gif"
+                                "application/pdf" -> "document_${System.currentTimeMillis()}.pdf"
+                                "application/msword" -> "document_${System.currentTimeMillis()}.doc"
+                                "application/vnd.ms-excel" -> "document_${System.currentTimeMillis()}.xls"
+                                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" -> "document_${System.currentTimeMillis()}.xlsx"
+                                "application/vnd.ms-powerpoint" -> "document_${System.currentTimeMillis()}.ppt"
+                                "application/vnd.openxmlformats-officedocument.presentationml.presentation" -> "document_${System.currentTimeMillis()}.pptx"
+                                "application/vnd.openxmlformats-officedocument.wordprocessingml.document" -> "document_${System.currentTimeMillis()}.docx"
+                                else -> "file_${System.currentTimeMillis()}.bin"
                             }
 
                             // Запускаем лаунчер и сбрасываем состояние после завершения
@@ -129,13 +144,15 @@ class ChatChannelFragment(
 
     private fun setupSendMessages(){
         binding.attachButton.setOnClickListener {
-            pickFileLauncher.launch("*/*")
+            pickFileLauncher.launch(arrayOf("*/*"))
         }
 
         binding.sendButton.setOnClickListener {
             val text = binding.editText.text.toString()
             if (text.isNotBlank() || files.isNotEmpty()){
-                messagesViewModel.loadMessages(token, requireContext(), channelId, text, files)
+                val appContext = requireContext().applicationContext
+                messagesViewModel.loadMessages(token, appContext, channelId, text, files.toList())
+
                 binding.editText.text.clear()
                 files.clear()
             }
@@ -147,77 +164,113 @@ class ChatChannelFragment(
     }
 
     private val pickFileLauncher = registerForActivityResult(
-        ActivityResultContracts.GetContent()
-    ) { uri: Uri? ->
-        uri?.let { fileUri ->
-            // Получаем файл
-            val file = fileUri.getFile(requireContext())
+        ActivityResultContracts.OpenMultipleDocuments()
+    ) { uris: List<Uri> ->
+        uris.forEach { uri ->
+            val file = uri.toFile(requireContext())
             file?.let {
                 files.add(it)
-                Log.d("FileAplication", "Добавлен файл: $it")
-            }
-            if (file == null) {
+                Toast.makeText(requireContext(), "Файл добавлен", Toast.LENGTH_SHORT).show()
+            } ?: run {
                 Toast.makeText(requireContext(), "Не удалось прочитать файл", Toast.LENGTH_SHORT).show()
             }
         }
     }
 
-    private fun Uri.getFile(context: Context): File? {
-        val contentResolver = context.contentResolver
-        val displayName = this.getDisplayName(context) ?: "file_${System.currentTimeMillis()}"
-
+    private fun Uri.toFile(context: Context): File? {
         return try {
-            contentResolver.openInputStream(this)?.use { inputStream ->
-                val cacheDir = context.cacheDir
-                val outFile = File(cacheDir, displayName)
+            val contentResolver = context.contentResolver
+            val displayName = getDisplayName(context) ?: "file_${System.currentTimeMillis()}"
 
-                // Копируем InputStream в файл
-                FileOutputStream(outFile).use { outputStream ->
-                    val buffer = ByteArray(1024)
-                    var read: Int
-                    while (inputStream.read(buffer).also { read = it } != -1) {
-                        outputStream.write(buffer, 0, read)
-                    }
-                }
+            val originalExtension = if (displayName.contains('.')) {
+                displayName.substringAfterLast('.', "").takeIf { it.length in 1..5 }?.lowercase()
+            } else null
 
-                outFile
+            // 2. Получим MIME-тип
+            val mimeType = contentResolver.getType(this)?.lowercase() ?: "application/octet-stream"
+
+            // 3. Определим расширение
+            val extension = when {
+                originalExtension != null -> originalExtension
+                else -> MimeTypeMap.getSingleton().getExtensionFromMimeType(mimeType)
+                    ?: mimeTypeToExtension(mimeType) // Наш кастомный маппинг
+                    ?: "bin"
             }
+
+            // 4. Удалим дублирование расширения в имени файла
+            val baseName = if (displayName.contains('.')) {
+                displayName.substringBeforeLast('.')
+            } else displayName
+
+            val safeName = "$baseName.$extension"
+                .replace(Regex("[\\\\/:*?\"<>|]"), "_") // Замена недопустимых символов
+
+            val file = File(context.cacheDir, safeName)
+            contentResolver.openInputStream(this)?.use { input ->
+                FileOutputStream(file).use { output ->
+                    input.copyTo(output)
+                }
+            }
+            file
         } catch (e: Exception) {
             e.printStackTrace()
             null
         }
     }
 
-    private fun Uri.getDisplayName(context: Context): String? {
-        val cursor = context.contentResolver.query(this, null, null, null, null)
-        cursor.use {
-            if (cursor != null && cursor.moveToFirst()) {
-                val nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
-                if (nameIndex >= 0) {
-                    return cursor.getString(nameIndex)
-                }
-            }
+    private fun mimeTypeToExtension(mimeType: String): String? {
+        return when (mimeType) {
+            "image/jpeg" -> "jpg"
+            "image/png" -> "png"
+            "image/gif" -> "gif"
+            "application/pdf" -> "pdf"
+            "application/msword" -> "doc"
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document" -> "docx"
+            "application/vnd.ms-excel" -> "xls"
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" -> "xlsx"
+            "application/vnd.ms-powerpoint" -> "ppt"
+            "application/vnd.openxmlformats-officedocument.presentationml.presentation" -> "pptx"
+            "text/plain" -> "txt"
+            else -> null
         }
-        return null
     }
 
-    private val saveFileLauncher = registerForActivityResult(ActivityResultContracts.CreateDocument()) { uri ->
+    private fun Uri.getDisplayName(context: Context): String? {
+        return context.contentResolver.query(this, null, null, null, null)?.use { cursor ->
+            if (cursor.moveToFirst()) {
+                cursor.getString(cursor.getColumnIndexOrThrow(OpenableColumns.DISPLAY_NAME))
+            } else null
+        }
+    }
+
+    private val saveFileLauncher = registerForActivityResult(CreateDocument("*/*")) { uri ->
         try {
             if (uri != null) {
                 val currentState = attachmentViewModel.attachmentState.value
                 if (currentState is AttachmentViewState.Success) {
+                    // Важно: создаем копию InputStream, так как оригинальный можно использовать только один раз
+                    val inputStreamCopy = currentState.inputStream.copy()
+
                     requireContext().contentResolver.openOutputStream(uri)?.use { output ->
-                        currentState.inputStream.copyTo(output)
+                        inputStreamCopy.use { input ->
+                            input.copyTo(output)
+                        }
                     }
+                    Toast.makeText(requireContext(), "Файл сохранен", Toast.LENGTH_SHORT).show()
                 }
             }
         } catch (e: Exception) {
-            Toast.makeText(requireContext(), "Сохранено.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireContext(), "Ошибка сохранения: ${e.message}", Toast.LENGTH_SHORT).show()
         } finally {
-            // Сбрасываем состояние после завершения операции
             isHandlingAttachment = false
             attachmentViewModel.resetState()
         }
+    }
+
+    // Расширение для копирования InputStream
+    private fun InputStream.copy(): ByteArrayInputStream {
+        val bytes = this.readBytes()
+        return ByteArrayInputStream(bytes)
     }
 
 

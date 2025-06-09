@@ -2,6 +2,7 @@ package com.example.zov_android.data.api
 
 import android.content.Context
 import android.util.Log
+import android.webkit.MimeTypeMap
 import com.example.zov_android.data.models.request.ChannelRequest
 import com.example.zov_android.data.models.response.ExceptionResponse
 import com.example.zov_android.data.models.request.GuildRequest
@@ -173,20 +174,27 @@ class ApiClient @Inject constructor(
         }
 
         // Записываем JSON с полем "text"
-        val jsonObject = JSONObject().apply {
-            put("text", text)
+        JSONObject().apply { put("text", text) }.also {
+            jsonFile.writeText(it.toString())
         }
-        jsonFile.writeText(jsonObject.toString())
 
         val jsonRequestBody = jsonFile.asRequestBody("application/json".toMediaTypeOrNull())
         val jsonPart = MultipartBody.Part.createFormData("json", jsonFile.name, jsonRequestBody)
 
         val fileParts = files?.map { file ->
-            val fileRequestBody = file.asRequestBody("image/*".toMediaTypeOrNull())
-            MultipartBody.Part.createFormData("file", file.name, fileRequestBody)
+            val mimeType = getMimeType(file) ?: "application/octet-stream"
+            val fileRequestBody = file.asRequestBody(mimeType.toMediaTypeOrNull())
+            MultipartBody.Part.createFormData("files", file.name, fileRequestBody)
         } ?: emptyList()
 
+        Log.d("ApiClientFileParts", "$fileParts")
+
         apiService.postMessages("Bearer $token", channelId, jsonPart, fileParts)
+    }
+
+    private fun getMimeType(file: File): String? {
+        val extension = MimeTypeMap.getFileExtensionFromUrl(file.name)
+        return MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension)
     }
 
     suspend fun claimMessages(token: String, channelId: Long):Result<List<MessagesResponse>> = safeApiCall{

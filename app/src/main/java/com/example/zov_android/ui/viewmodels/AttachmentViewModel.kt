@@ -13,7 +13,9 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import java.io.ByteArrayInputStream
 import java.io.File
+import java.io.IOException
 import java.io.InputStream
 import javax.inject.Inject
 
@@ -24,7 +26,6 @@ class AttachmentViewModel @Inject constructor(
 
     private val _attachmentState = MutableStateFlow<AttachmentViewState>(AttachmentViewState.Idle)
     val attachmentState: StateFlow<AttachmentViewState> = _attachmentState
-
 
     private var lastMimeType: String = "application/octet-stream"
 
@@ -42,39 +43,46 @@ class AttachmentViewModel @Inject constructor(
         channelId: Long,
         messageId: Long,
         attachmentId: Long,
-        token:String
+        token: String
     ) {
-        Log.d("AttachmentViewModel", "Запуск загрузки вложения. ChannelId: $channelId, MessageId: $messageId, AttachmentId: $attachmentId")
-
+        // Проверяем, не выполняется ли уже загрузка
         if (_attachmentState.value is AttachmentViewState.Loading) {
-            return // Предотвращаем множественные вызовы
+            return
         }
+
+        Log.d("AttachmentViewModel", "Запуск загрузки вложения. ChannelId: $channelId, MessageId: $messageId, AttachmentId: $attachmentId")
         _attachmentState.value = AttachmentViewState.Loading
-        val request = Request.Builder()
-            .url("https://dotflopp.ru/api/attachments/$channelId/$messageId/$attachmentId?access-token=${token}")
-            .build()
 
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                val response = client.newCall(request).execute()
-                if (response.isSuccessful) {
-                    Log.d("AttachmentViewModel", "Получен ответ: ${response.body}")
-                    response.body?.byteStream()?.let { stream ->
-                        _attachmentState.value = AttachmentViewState.Success(stream) // Прямое обновление
+                val request = Request.Builder()
+                    .url("https://dotflopp.ru/api/attachments/$channelId/$messageId/$attachmentId?access-token=${token}")
+                    .build()
+
+                client.newCall(request).execute().use { response ->
+                    if (!response.isSuccessful) {
+                        throw IOException("Ошибка сервера: ${response.code}")
                     }
-                    response.body?.use { body ->
-                        _attachmentState.value = AttachmentViewState.Success(body.byteStream())
-                    }
+
+                    val body = response.body ?: throw IOException("Пустой ответ")
+
+                    // Копируем содержимое в байтовый буфер
+                    val bytes = body.bytes()
+
+                    // Используем ByteArrayInputStream для безопасной передачи
+                    _attachmentState.value = AttachmentViewState.Success(ByteArrayInputStream(bytes))
                 }
             } catch (e: Exception) {
-                _attachmentState.value = AttachmentViewState.Error(e.message ?: "Ошибка")
+                Log.e("AttachmentViewModel", "Ошибка загрузки файла", e)
+                _attachmentState.value = AttachmentViewState.Error("Ошибка: ${e.message ?: "Неизвестная ошибка"}")
             }
         }
     }
 }
+
 sealed class AttachmentViewState {
-    data object Idle : AttachmentViewState()
-    data object Loading : AttachmentViewState()
+    object Idle : AttachmentViewState()
+    object Loading : AttachmentViewState()
     data class Success(val inputStream: InputStream) : AttachmentViewState()
     data class Error(val message: String) : AttachmentViewState()
 }

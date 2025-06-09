@@ -10,8 +10,10 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import asFlow
 import com.example.zov_android.data.models.request.ChannelRequest
 import com.example.zov_android.data.models.response.MembersGuildResponse
+import com.example.zov_android.data.signalr.SignalR
 import com.example.zov_android.databinding.FragmentGuildBinding
 import com.example.zov_android.di.qualifiers.Token
 import com.example.zov_android.domain.utils.ChannelType
@@ -58,6 +60,12 @@ class GuildFragment(
     }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        lifecycleScope.launch {
+            guildViewModel.signalR.newChannelEvent.asFlow().collect { channel ->
+                guildViewModel.addNewChannel(channel)
+            }
+        }
 
         setupClickNewChannel()
         setupMembersGuild()

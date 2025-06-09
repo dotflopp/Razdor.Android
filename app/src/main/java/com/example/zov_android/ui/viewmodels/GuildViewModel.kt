@@ -10,8 +10,10 @@ import com.example.zov_android.data.models.response.ChannelResponse
 import com.example.zov_android.data.models.response.GuildResponse
 import com.example.zov_android.data.models.response.InvitesResponse
 import com.example.zov_android.data.models.response.MembersGuildResponse
+import com.example.zov_android.data.models.response.MessagesResponse
 import com.example.zov_android.data.models.response.SessionResponse
 import com.example.zov_android.data.repository.MainRepository
+import com.example.zov_android.data.signalr.SignalR
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.StateFlow
 import javax.inject.Inject
@@ -42,6 +44,8 @@ class GuildViewModel @Inject constructor(
     private val sessionViewModel = @SuppressLint("StaticFieldLeak")
     object: BaseViewModel<SessionResponse>(ViewState.Idle) {}
 
+    @Inject lateinit var signalR: SignalR
+
     // Публичные состояния
     val guildState: StateFlow<BaseViewModel.ViewState<GuildResponse>> = guildViewModel.state
     val guildMembersState: StateFlow<BaseViewModel.ViewState<List<MembersGuildResponse>>> = guildMembersViewModel.state
@@ -54,6 +58,16 @@ class GuildViewModel @Inject constructor(
     val listChannelState: StateFlow<BaseViewModel.ViewState<List<ChannelResponse>>> = channelListViewModel.state
 
     val sessionState: StateFlow<BaseViewModel.ViewState<SessionResponse>> = sessionViewModel.state
+
+    fun addNewChannel(channel: ChannelResponse) {
+        val currentState = channelListViewModel.state.value
+        if (currentState is BaseViewModel.ViewState.Success && currentState.data.isNotEmpty()) {
+            val newList = currentState.data.toMutableList().apply {
+                add(channel)
+            }
+            channelListViewModel._state.value = BaseViewModel.ViewState.Success(newList)
+        }
+    }
 
     fun loadGuildData(token:String, guildRequest: GuildRequest){
         guildViewModel.handleRequest(
