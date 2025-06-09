@@ -7,6 +7,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.zov_android.databinding.FragmentChatBinding
+import com.example.zov_android.di.qualifiers.Token
 import com.example.zov_android.ui.adapters.UsersRecyclerViewAdapter
 import com.example.zov_android.ui.fragments.navigation.NavigableFragment
 import com.example.zov_android.ui.viewmodels.BaseViewModel
@@ -15,6 +16,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class ChatFragment : NavigableFragment(), UsersRecyclerViewAdapter.Listener {
@@ -27,6 +29,7 @@ class ChatFragment : NavigableFragment(), UsersRecyclerViewAdapter.Listener {
     private var _binding: FragmentChatBinding? = null
     private val binding get() = _binding!!
 
+
     override fun onCreateView(context: Context): View {
         _binding = FragmentChatBinding.inflate(layoutInflater)
         return binding.root
@@ -34,7 +37,6 @@ class ChatFragment : NavigableFragment(), UsersRecyclerViewAdapter.Listener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        connection()
         init()
         setupRecyclerView()
     }
@@ -68,17 +70,6 @@ class ChatFragment : NavigableFragment(), UsersRecyclerViewAdapter.Listener {
         })*/
     }
 
-    private fun connection() = with(_binding){
-        /*this?.btnConnection?.setOnClickListener {
-            navigation.push(CallFragment().apply {
-                arguments = Bundle().apply {
-                    putString("target", "lukus")
-                    putBoolean("isVideoCall", true)
-                    putBoolean("isCaller", true)
-                }
-            })
-        }*/
-    }
 
     private fun init(){
         lifecycleScope.launch(Dispatchers.Main) {

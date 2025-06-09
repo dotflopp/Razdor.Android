@@ -27,6 +27,9 @@ import retrofit2.http.PUT
 import retrofit2.http.Part
 import retrofit2.http.PartMap
 import retrofit2.http.Path
+import retrofit2.http.Streaming
+import java.io.File
+import java.io.InputStream
 
 interface ApiService {
 
@@ -105,11 +108,12 @@ interface ApiService {
         @Path("channelId") channelId: Long
     ): Response<List<MessagesResponse>>
 
+    @Streaming
     @GET("attachments/{channelId}/{messageId}/{attachmentId}")
     suspend fun getAttachment(
         @Header("Authorization") token: String,
         @Path("channelId") channelId: Long,
         @Path("messageId") messageId: Long,
         @Path("attachmentId") attachmentId: Long
-    ): Response<Unit>
+    ): Response<File>
 }

@@ -12,6 +12,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import java.io.File
+import java.io.InputStream
 import javax.inject.Inject
 
 
@@ -29,13 +30,15 @@ class MessagesViewModel @Inject constructor(
     object: BaseViewModel<List<MessagesResponse>>(ViewState.Idle) {}
 
     private val attachmentViewModel = @SuppressLint("StaticFieldLeak")
-    object: BaseViewModel<Unit>(ViewState.Idle) {}
+    object: BaseViewModel<InputStream>(ViewState.Idle) {}
 
     // Публичные состояния
     val messagesState: StateFlow<BaseViewModel.ViewState<MessagesResponse>> = messagesViewModel.state
     val messagesListState: StateFlow<BaseViewModel.ViewState<List<MessagesResponse>>> = messagesListViewModel.state
 
-    val attachmentViewState: StateFlow<BaseViewModel.ViewState<Unit>> = attachmentViewModel.state
+    val attachmentViewState: StateFlow<BaseViewModel.ViewState<InputStream>> = attachmentViewModel.state
+
+
 
     fun addNewMessage(message: MessagesResponse) {
         val currentState = messagesListViewModel.state.value
@@ -61,12 +64,12 @@ class MessagesViewModel @Inject constructor(
         )
     }
 
-    fun claimAttachment(token: String, channelId: Long, messageId:Long, attachmentId:Long){
+    /*fun claimAttachment(token: String, channelId: Long, messageId:Long, attachmentId:Long){
         attachmentViewModel.handleRequest(
             request = {repository.claimAttachment(token, channelId, messageId, attachmentId)},
-            successHandler = {}
+            successHandler = {it}
         )
-    }
+    }*/
 
 
 }

@@ -1,6 +1,7 @@
 package com.example.zov_android.data.api
 
 import android.content.Context
+import android.util.Log
 import com.example.zov_android.data.models.request.ChannelRequest
 import com.example.zov_android.data.models.response.ExceptionResponse
 import com.example.zov_android.data.models.request.GuildRequest
@@ -28,6 +29,7 @@ import org.json.JSONObject
 import retrofit2.Response
 import java.io.File
 import java.io.IOException
+import java.io.InputStream
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -59,6 +61,13 @@ class ApiClient @Inject constructor(
     ): Result<T> {
         return try {
             val response = call()
+
+            // Пропускаем проверку тела, если это InputStream
+            if (response.body() is File) {
+                @Suppress("UNCHECKED_CAST")
+                return Result.Success(response.body() as T)
+            }
+
             handleResponse(response)
         } catch (e: Exception) {
             handleException(e)
@@ -90,18 +99,35 @@ class ApiClient @Inject constructor(
     private fun <T> handleClientError(response: Response<T>): Result.Error {
         return try {
             val errorBody = response.errorBody()?.string().orEmpty()
-            val exceptionResponse = try {
-                gson.fromJson(errorBody, ExceptionResponse::class.java)
-            } catch (e: Exception) {
-                null
+
+            // Проверяем, является ли тело ошибки JSON
+            if (errorBody.startsWith("{") || errorBody.startsWith("[")) {
+                try {
+                    val exceptionResponse = gson.fromJson(errorBody, ExceptionResponse::class.java)
+                    Result.Error(
+                        type = ErrorType.CLIENT,
+                        statusCode = response.code(),
+                        message = exceptionResponse?.message ?: "Client error",
+                        responseBody = errorBody
+                    )
+                } catch (e: Exception) {
+                    Log.e("ApiClient", "Failed to parse error as JSON", e)
+                    Result.Error(
+                        type = ErrorType.PARSING,
+                        message = "Ошибка парсинга JSON: ${e.message}",
+                        responseBody = errorBody
+                    )
+                }
+            } else {
+                // Не JSON — просто возвращаем текст ошибки
+                Result.Error(
+                    type = ErrorType.CLIENT,
+                    statusCode = response.code(),
+                    message = "Client error: unexpected content type",
+                    responseBody = errorBody
+                )
             }
 
-            Result.Error(
-                type = ErrorType.CLIENT,
-                statusCode = response.code(),
-                message = exceptionResponse?.message ?: "Client error",
-                responseBody = errorBody
-            )
         } catch (e: Exception) {
             Result.Error(
                 type = ErrorType.PARSING,
@@ -167,7 +193,7 @@ class ApiClient @Inject constructor(
         apiService.getMessages("Bearer $token", channelId)
     }
 
-    suspend fun claimAttachment(token: String, channelId: Long, messageId:Long, attachmentId:Long):Result<Unit> = safeApiCall{
+    suspend fun claimAttachment(token: String, channelId: Long, messageId:Long, attachmentId:Long):Result<File> = safeApiCall{
         apiService.getAttachment("Bearer $token", channelId, messageId, attachmentId)
     }
 

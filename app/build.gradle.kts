@@ -63,6 +63,7 @@ dependencies {
     implementation ("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.2")
     implementation ("androidx.activity:activity-ktx:1.7.0")
     implementation ("androidx.fragment:fragment-ktx:1.6.0")
+    implementation ("androidx.lifecycle:lifecycle-runtime-ktx:2.6.2")
 
     implementation ("com.microsoft.signalr:signalr:9.0.5")
     implementation ("com.mesibo.api:webrtc:1.0.5")

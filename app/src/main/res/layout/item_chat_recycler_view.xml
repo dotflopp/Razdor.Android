@@ -80,9 +80,9 @@
             android:paddingStart="12dp"
             android:paddingEnd="12dp"
             android:paddingTop="8dp"
-            android:paddingBottom="8dp">
+            android:paddingBottom="8dp"
+            >
 
-            <!-- Новый TextView для имени отправителя -->
             <TextView
                 android:id="@+id/senderDateTextView"
                 android:layout_width="wrap_content"
@@ -96,24 +96,45 @@
                 android:textStyle="bold"
                  />
 
-            <!-- Существующий TextView для текста сообщения -->
-            <TextView
-                android:id="@+id/messageTextView"
+
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center"
                 android:background="@drawable/rounded_message_background"
-                android:text="Текст"
-                android:textColorHint="#CDC6C6"
-                android:textColor="#FFFFFF"
-                android:textSize="16sp"
-                android:maxWidth="200dp"
-                android:minHeight="50dp"
-                android:singleLine="false"
-                android:gravity="center_vertical"
-                android:paddingStart="10dp"
-                android:paddingEnd="10dp"
-                android:paddingTop="6dp"
-                android:paddingBottom="6dp" />
+                >
+
+                <TextView
+                    android:id="@+id/messageTextView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Текст"
+                    android:textColorHint="#CDC6C6"
+                    android:textColor="#FFFFFF"
+                    android:textSize="16sp"
+                    android:maxWidth="200dp"
+                    android:minHeight="50dp"
+                    android:singleLine="false"
+                    android:gravity="center_vertical"
+                    android:paddingStart="10dp"
+                    android:paddingEnd="10dp"
+                    android:paddingTop="6dp"
+                    android:paddingBottom="6dp" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/fileList"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="5dp"
+                    android:layout_marginVertical="5dp"
+                    android:layout_marginTop="12dp"
+                    android:background="@drawable/shape_rounded_background"
+                    tools:ignore="MissingConstraints"
+                    tools:listitem="@layout/item_file_recycler_view"
+                    />
+            </LinearLayout>
+
         </LinearLayout>
 
         <LinearLayout

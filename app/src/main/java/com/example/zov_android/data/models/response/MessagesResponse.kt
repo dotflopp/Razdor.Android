@@ -41,13 +41,6 @@ data class EmbedFooter(
     val timestamp: String?
 )
 
-data class Attachment(
-    val id: String,
-    val sourceUrl: String,
-    val mediaType: String,
-    val size: Int
-)
-
 data class MentionedUser(val userId: String)
 data class MentionedChannel(val channelId: String)
 data class MentionedRole(val roleId: String)

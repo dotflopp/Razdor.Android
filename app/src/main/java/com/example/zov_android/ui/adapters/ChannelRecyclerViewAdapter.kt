@@ -3,17 +3,21 @@ package com.example.zov_android.ui.adapters
 import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.RecyclerView
 import com.example.zov_android.R
+import com.example.zov_android.data.models.response.Attachment
 import com.example.zov_android.data.models.response.ChannelResponse
 import com.example.zov_android.databinding.ItemChannelRecyclerViewBinding
 import com.example.zov_android.domain.utils.ChannelType
+import com.example.zov_android.ui.viewmodels.MessagesViewModel
 
 class ChannelRecyclerViewAdapter(private val listener: Listener)
     :RecyclerView.Adapter<ChannelRecyclerViewAdapter.ChannelRecyclerViewHolder>(){
     interface Listener{
         fun onChannelClick(channelId: Long, channelName:String,channelType: ChannelType)
     }
+
 
     private var channelList:List<ChannelResponse>? = emptyList()
 

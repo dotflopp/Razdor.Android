@@ -27,6 +27,7 @@ import com.example.zov_android.domain.service.MainService
 import com.example.zov_android.domain.utils.UserCommunicationSelectedStatus
 import org.webrtc.SurfaceViewRenderer
 import java.io.File
+import java.io.InputStream
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -93,7 +94,7 @@ class MainRepository @Inject constructor(
         return apiClient.claimMessages(token, channelId)
     }
 
-    suspend fun claimAttachment(token: String, channelId: Long, messageId:Long, attachmentId:Long):ApiClient.Result<Unit>{
+    suspend fun claimAttachment(token: String, channelId: Long, messageId:Long, attachmentId:Long):ApiClient.Result<File>{
         return apiClient.claimAttachment(token, channelId, messageId, attachmentId)
     }
 
