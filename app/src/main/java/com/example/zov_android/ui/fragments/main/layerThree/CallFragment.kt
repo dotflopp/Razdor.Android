@@ -139,7 +139,9 @@ class CallFragment(
                                 prefs.edit().putString("session_id", state.data.sessionId).apply()
 
                                 Log.d("WebRTCData", "Установка связи")
-                               // webRtcManager.startCall(target!!)
+
+                                webRtcManager.startCall(target!!)
+
                                 Log.d("WebRTCData", "Связь установлена")
 
                                 showToast("Успешное подключение к звонку")

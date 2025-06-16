@@ -4,11 +4,16 @@ import android.content.Context
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
+import android.widget.Toast
 import com.example.zov_android.data.signalr.SignalR
+import com.example.zov_android.data.websocket.WebSocketClient
 import com.example.zov_android.di.qualifiers.SessionId
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import org.json.JSONException
+import org.json.JSONObject
 import org.webrtc.AudioTrack
 import org.webrtc.Camera2Enumerator
 import org.webrtc.CameraVideoCapturer
@@ -25,6 +30,7 @@ import org.webrtc.SessionDescription
 import org.webrtc.SurfaceTextureHelper
 import org.webrtc.SurfaceViewRenderer
 import org.webrtc.VideoTrack
+import java.net.URI
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -35,7 +41,11 @@ class WebRtcManager @Inject constructor(
     private val context: Context,
 ) {
     private lateinit var peerConnection: PeerConnection
-    private val coroutineScope = CoroutineScope(Dispatchers.IO)
+
+    private lateinit var webSocketClient: WebSocketClient
+
+    private var isWebSocketReady = false
+    private var isWebSocketConnected = false
 
     private lateinit var username: String
 
@@ -69,14 +79,35 @@ class WebRtcManager @Inject constructor(
     private val mediaConstraint = MediaConstraints().apply {
         mandatory.add(MediaConstraints.KeyValuePair("OfferToReceiveVideo","true"))
         mandatory.add(MediaConstraints.KeyValuePair("OfferToReceiveAudio","true"))
-        mandatory.add(MediaConstraints.KeyValuePair("googPreferredVideoCodec", "H264"))
     }
 
+
+    private var isInitiator = false
+    private var roomState: RoomState = RoomState.IDLE
+    private val pendingLocalIceCandidates = mutableListOf<IceCandidate>()
+
+    sealed class RoomState {
+        object IDLE : RoomState()
+        object JOINING : RoomState()
+        object READY : RoomState()
+        object ERROR : RoomState()
+    }
 
     init{
         Log.d("WebRTCData", "Инициализация PeerConnectionFactory...")
         initPeerConnectionFactory()
         Log.d("WebRTCData", "PeerConnectionFactory инициализирована")
+        connectToWebSocket()
+    }
+
+    private fun connectToWebSocket() {
+        if (isWebSocketConnected) return
+        val uri = URI("ws://10.0.2.2:8080")
+        webSocketClient = WebSocketClient(uri) { message ->
+            handleWebSocketMessage(message)
+        }
+        webSocketClient.connect()
+        isWebSocketConnected = true
     }
 
     fun initializeWebrtcClient(
@@ -89,7 +120,7 @@ class WebRtcManager @Inject constructor(
         localTrackId = "${username}_track"
         localStreamId = "${username}_stream"
 
-        setupSignalRHandlers()
+        //setupSignalRHandlers()
         Log.d("WebRTCData", "Обработчики SignalR зарегистрированы")
 
         peerConnection = createPeerConnection()?.also {
@@ -99,19 +130,83 @@ class WebRtcManager @Inject constructor(
             throw IllegalStateException("Не удалось создать PeerConnection")
         }
 
-        signalR.connection.on("TestMessage", { message: String ->
-            Log.d("SignalR-Test", "Received test: $message")
-        }, String::class.java)
-
     }
 
-    //// Инициализация SignalR для сигналинга
-    val handler = Handler(Looper.getMainLooper())
-    private fun setupSignalRHandlers() {
-        Log.d("WebRTC-SignalR", "Настройка обработчиков SignalR")
+    private fun handleWebSocketMessage(message: String) {
+        try {
+            val json = JSONObject(message)
+            val type = json.optString("type") ?: return
+
+            Log.d("WebSocket", "Получено сообщение: $message")
+
+            when (type) {
+                "error" -> {
+                    val errorMessage = json.optString("message", "Неизвестная ошибка")
+                    Log.e("WebSocket", "Ошибка от сервера: $errorMessage")
+                    if (errorMessage == "Room is full") {
+                        Handler(Looper.getMainLooper()).post {
+                            Toast.makeText(context, "Комната заполнена", Toast.LENGTH_LONG).show()
+                        }
+                        roomState = RoomState.ERROR
+                    }
+                }
+                "room-ready" -> {
+                    val clientIndex = json.optInt("clientIndex", -1)
+                    isInitiator = (clientIndex == 0)
+                    roomState = RoomState.READY
+                    Log.d("WebRTCData", "Комната готова. Инициатор: $isInitiator")
+
+                    if (isInitiator) {
+                        createOffer()
+                    }
+                    sendPendingLocalCandidates()
+                }
+                "peer-disconnected" -> {
+                    Handler(Looper.getMainLooper()).post {
+                        Toast.makeText(context, "Участник отключился", Toast.LENGTH_LONG).show()
+                    }
+                    closeConnection()
+                }
+                "offer" -> {
+                    val payload = json.getString("payload")
+                    Log.d("WebSocket", "Получен Offer: $payload")
+                    onRemoteSessionReceived(SessionDescription(SessionDescription.Type.OFFER, payload))
+                    createAnswer()
+                }
+                "answer" -> {
+                    val payload = json.getString("payload")
+                    Log.d("WebSocket", "Получен Answer: $payload")
+                    onRemoteSessionReceived(SessionDescription(SessionDescription.Type.ANSWER, payload))
+                    pendingCandidates.forEach { addIceCandidateToPeer(it) }
+                    pendingCandidates.clear()
+                }
+                "ice-candidate" -> {
+                    val candidateObj = json.getJSONObject("payload")
+                    val sdpMid = candidateObj.optString("sdpMid") ?: run {
+                        Log.e("WebSocket", "Отсутствует поле sdpMid в ICE-кандидате")
+                        return
+                    }
+                    val sdpMLineIndex = candidateObj.optInt("sdpMLineIndex", -1)
+                    val candidateSdp = candidateObj.optString("candidate") ?: run {
+                        Log.e("WebSocket", "Отсутствует поле candidate в ICE-кандидате")
+                        return
+                    }
+
+                    val iceCandidate = IceCandidate(sdpMid, sdpMLineIndex, candidateSdp)
+                    if (peerConnection.remoteDescription == null) {
+                        pendingCandidates.add(iceCandidate)
+                    } else {
+                        addIceCandidateToPeer(iceCandidate)
+                    }
+                }
+                else -> Log.w("WebSocket", "Неизвестный тип сообщения: $type")
+            }
+        } catch (e: JSONException) {
+            Log.e("WebSocket", "Ошибка парсинга JSON: $message", e)
+        }
 
         // Обработчик Offer
-        signalR.connection.on("Offer", { desc ->
+        /**signalR.connection.on("Offer", { desc ->
             Log.d("WebRTC-SignalR", "Получен Offer: ${desc.description}")
             coroutineScope.launch {
                 try {
@@ -121,10 +216,10 @@ class WebRtcManager @Inject constructor(
                     Log.e("WebRTCData", "Ошибка обработки Offer", e)
                 }
             }
-        }, SessionDescription::class.java)
+        }, SessionDescription::class.java)*/
 
         // Обработчик Answer
-        signalR.connection.on("Answer", { desc ->
+        /*signalR.connection.on("Answer", { desc ->
             Log.d("WebRTC-SignalR", "Получен Answer: ${desc.description}")
             coroutineScope.launch {
                 try {
@@ -141,10 +236,10 @@ class WebRtcManager @Inject constructor(
                     Log.e("WebRTCData", "Ошибка обработки Answer", e)
                 }
             }
-        }, SessionDescription::class.java)
+        }, SessionDescription::class.java)*/
 
         // Обработчик IceCandidate
-        signalR.connection.on("Icecandidate", { candidate: IceCandidate ->
+        /*signalR.connection.on("Icecandidate", { candidate: IceCandidate ->
             Log.d("WebRTC-SignalR", "Получен ICE-кандидат: ${candidate.sdpMid}")
             try {
                 if(peerConnection.remoteDescription == null){
@@ -157,7 +252,7 @@ class WebRtcManager @Inject constructor(
             } catch (e: Exception) {
                 Log.e("WebRTCData", "Ошибка обработки ICE-кандидата", e)
             }
-        }, IceCandidate::class.java)
+        }, IceCandidate::class.java)*/
     }
 
     //// создание фабрики одноранговых сетей
@@ -272,12 +367,8 @@ class WebRtcManager @Inject constructor(
         Log.d("WebRTCData", "Создание PeerConnection...")
         return peerConnectionFactory.createPeerConnection(rtcConfig, object: MyPeerObserver(){
             override fun onIceCandidate(candidate: IceCandidate) {
-                val candidateJson = mapOf(
-                    "sdpMid" to candidate.sdpMid,
-                    "sdpMLineIndex" to candidate.sdpMLineIndex,
-                    "candidate" to candidate.sdp
-                )
-                signalR.connection.invoke("Icecandidate", sessionId, candidateJson)
+                pendingLocalIceCandidates.add(candidate)
+                sendPendingLocalCandidates()
             }
 
             override fun onAddStream(stream: MediaStream) {
@@ -304,10 +395,26 @@ class WebRtcManager @Inject constructor(
         }
     }
 
+    private fun sendPendingLocalCandidates() {
+        if (roomState != RoomState.READY) {
+            Log.d("WebRTC", "Комната не готова, кандидат сохранен в буфер")
+            return
+        }
+
+        pendingLocalIceCandidates.forEach { candidate ->
+            webSocketClient.sendIceCandidate(sessionId, candidate)
+        }
+        pendingLocalIceCandidates.clear()
+    }
+
 
     //// Установка соединения
 
-    private suspend fun createOffer() {
+    private fun createOffer() {
+        if (!isWebSocketReady) {
+            Log.w("WebRTCData", "WebSocket не подключен. Offer не создан")
+            return
+        }
         Log.d("WebRTCData", "Создание Offer...")
         peerConnection.createOffer(object : MySdpObserver() {
             override fun onCreateSuccess(desc: SessionDescription?) {
@@ -318,20 +425,13 @@ class WebRtcManager @Inject constructor(
                 peerConnection.setLocalDescription(object : MySdpObserver() {}, desc)
                 Log.d("WebRTCData", "Локальное описание установлено для Offer")
 
-                val offerJson = mapOf(
-                    "type" to desc.type.canonicalForm(),
-                    "sdp" to desc.description
-                )
-
-                CoroutineScope(Dispatchers.IO).launch {
-                    //signalR.sendSafe("Offer", sessionId, offerJson)
-                    Log.i("WebRTCData", "Offer отправлен через SignalR")
-                }
+                webSocketClient.sendOffer(sessionId, desc.description)
+                Log.i("WebRTCData", "Offer отправлен через WebSocket")
             }
         }, mediaConstraint)
     }
 
-    private suspend fun createAnswer() {
+    private fun createAnswer() {
         Log.d("WebRTCData", "Создание Answer...")
         peerConnection.createAnswer(object : MySdpObserver() {
             override fun onCreateSuccess(desc: SessionDescription?) {
@@ -341,16 +441,8 @@ class WebRtcManager @Inject constructor(
 
                 peerConnection.setLocalDescription(object : MySdpObserver() {}, desc)
 
-                val answerJson = mapOf(
-                    "type" to desc.type.canonicalForm(),
-                    "sdp" to desc.description
-                )
-
-                Log.d("WebRTCData", "Локальное описание установлено для Answer")
-                CoroutineScope(Dispatchers.IO).launch {
-                    //signalR.sendSafe("Answer", sessionId, answerJson)
-                }
-                Log.i("WebRTCData", "Answer отправлен через SignalR")
+                webSocketClient.sendAnswer(sessionId, desc.description)
+                Log.i("WebRTCData", "Answer отправлен через WebSocket")
             }
 
         }, mediaConstraint)
@@ -371,6 +463,11 @@ class WebRtcManager @Inject constructor(
     private fun onRemoteSessionReceived(sessionDescription: SessionDescription) {
         Log.d("WebRTCData", "Установка удаленного описания...")
         peerConnection.setRemoteDescription(MySdpObserver(), sessionDescription)
+        // Добавляем накопленные кандидаты
+        for (candidate in pendingCandidates) {
+            addIceCandidateToPeer(candidate)
+        }
+        pendingCandidates.clear()
     }
 
     ////  Отображение видео
@@ -460,6 +557,11 @@ class WebRtcManager @Inject constructor(
             localStream = null
             Log.d("WebRTC-Media", "Локальный медиапоток освобожден")
 
+            webSocketClient.close()
+            roomState = RoomState.IDLE
+            pendingLocalIceCandidates.clear()
+            webSocketClient.close()
+
         } catch (e: Exception) {
             Log.e("WebRTCData", "Ошибка при закрытии соединения", e)
         }
@@ -500,12 +602,32 @@ class WebRtcManager @Inject constructor(
 
 
     suspend fun startCall(nickname: String) {
-        /*signalR.sendSafe("Connect", sessionId, mapOf(
-            "nickname" to nickname,
-            "avatarUrl" to null
-        ))*/
+        if (!webSocketClient.isOpen) {
+            webSocketClient.reconnectBlocking()
+        }
+        isWebSocketReady = true
 
-        createOffer()
+        // Отправляем сообщение о присоединении к комнате
+        val joinMessage = JSONObject().apply {
+            put("type", "join")
+            put("sessionId", sessionId)
+        }
+        webSocketClient.send(joinMessage.toString())
+        roomState = RoomState.JOINING
+        Log.d("WebRTCData", "Отправлен join-запрос для комнаты $sessionId")
+    }
+
+    private suspend fun reconnectAndRetry(nickname: String, attempts: Int = 3) {
+        for (i in 1..attempts) {
+            delay(2000) // Задержка перед повторной попыткой
+            if (webSocketClient.isOpen) {
+                Log.d("WebRTCData", "Повторная попытка $i: WebSocket подключен")
+                isWebSocketReady = true
+                createOffer()
+                return
+            }
+        }
+        Log.e("WebRTCData", "Не удалось установить WebSocket-соединение")
     }
 
     val MediaStreamTrack.isDisposed: Boolean
