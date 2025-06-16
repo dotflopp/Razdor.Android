@@ -67,6 +67,7 @@ dependencies {
 
     implementation ("com.microsoft.signalr:signalr:9.0.5")
     implementation ("com.mesibo.api:webrtc:1.0.5")
+    implementation ("org.java-websocket:Java-WebSocket:1.6.0")
 
     testImplementation ("junit:junit:4.13.2") {
         exclude(group = "org.hamcrest", module = "hamcrest-core")

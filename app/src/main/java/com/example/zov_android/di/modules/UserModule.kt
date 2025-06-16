@@ -16,7 +16,6 @@ import javax.inject.Singleton
 object UserModule {
     @Provides
     @User
-    @Singleton
     fun provideUsername(@ApplicationContext context: Context): UserResponse{
         val prefs = context.getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
         val json = prefs.getString("user",null)

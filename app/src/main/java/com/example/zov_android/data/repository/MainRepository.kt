@@ -132,6 +132,11 @@ class MainRepository @Inject constructor(
         clientWebRTC.initRemoteSurfaceView(view)
         this.remoteView = view
     }
+    fun endCall() {
+        clientWebRTC.closeConnection()
+        //changeMyStatus(UserStatus.ONLINE)
+    }
+
 
     fun sendEndCall() {
         /*onTransferEventToSocket(
@@ -165,8 +170,8 @@ class MainRepository @Inject constructor(
         fun endCall()
     }
 
-    fun startCall() {
-        //clientWebRTC.startCall("Lukus")
+    fun startCall(target: String) {
+        //clientWebRTC.startCall(target)
     }
 
 

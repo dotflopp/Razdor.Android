@@ -5,7 +5,9 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.Service
 import android.content.Intent
+import android.os.Handler
 import android.os.IBinder
+import android.os.Looper
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import com.example.zov_android.R
@@ -88,7 +90,10 @@ class MainService: Service(), MainRepository.Listener { //реализация �
             // Инициализация с проверкой
             mainRepository.initLocalSurfaceView(localSurfaceView!!, isVideoCall)
             mainRepository.initRemoteSurfaceView(remoteSurfaceView!!)
-            //mainRepository.startCall()
+            /*if (isCaller) {
+                mainRepository.startCall(target!!)
+
+            }*/
 
         } catch (e: Exception) {
             Log.e("MainService", "Error initializing views: ${e.message}")
@@ -175,10 +180,19 @@ class MainService: Service(), MainRepository.Listener { //реализация �
     }
 
     private fun handleEndCall() {
-        // сигнал другому участнику, что созвон завершён
-        mainRepository.sendEndCall()
-        // завершаем звонок и перезапускаем клент webRTC
-        endCallAndRestartRepository()
+        // Гарантируем выполнение в главном потоке
+        Handler(Looper.getMainLooper()).post {
+            // 1. Завершаем текущее соединение
+            mainRepository.endCall()
+
+            // 2. Оповещаем фрагмент о завершении
+            endCallListener?.onCallEnded()
+
+            // 3. Переинициализируем клиент с задержкой
+            Handler(Looper.getMainLooper()).postDelayed({
+                mainRepository.initWebRtcClient(username!!)
+            }, 500) // 500ms задержка для гарантии освобождения ресурсов
+        }
     }
 
     private fun handleStopService(){
@@ -190,10 +204,17 @@ class MainService: Service(), MainRepository.Listener { //реализация �
     }
 
     private fun endCallAndRestartRepository(){
-       /* mainRepository.endCall()
+       // Завершаем текущее соединение
+        mainRepository.endCall()
+
+        // Оповещаем фрагмент о завершении
         endCallListener?.onCallEnded()
-        mainRepository.initWebRtcClient(username!!)*/
+
+        //Переинициализируем клиент
+        mainRepository.initWebRtcClient(username!!)
     }
+
+
 
     override fun endCall() {
         // получени сигнал о завершении вызова от собеседника

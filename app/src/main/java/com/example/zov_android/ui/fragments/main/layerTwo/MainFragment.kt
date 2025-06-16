@@ -1,4 +1,4 @@
-package com.example.zov_android.ui.fragments.main
+package com.example.zov_android.ui.fragments.main.layerTwo
 
 import android.content.Context
 import android.os.Bundle
@@ -11,6 +11,8 @@ import com.example.zov_android.data.models.request.GuildRequest
 import com.example.zov_android.databinding.FragmentMainBinding
 import com.example.zov_android.di.qualifiers.Token
 import com.example.zov_android.ui.adapters.GuildsRecyclerViewAdapter
+import com.example.zov_android.ui.fragments.main.layerThree.GuildFragment
+import com.example.zov_android.ui.fragments.main.layerThree.ChatFragment
 import com.example.zov_android.ui.fragments.navigation.NavigableFragment
 import com.example.zov_android.ui.fragments.navigation.NavigationInsideFragment
 import com.example.zov_android.ui.viewmodels.BaseViewModel

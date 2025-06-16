@@ -18,21 +18,16 @@ import com.example.zov_android.data.repository.MainRepository
 import com.example.zov_android.data.repository.MainServiceRepository
 import com.example.zov_android.data.signalr.SignalR
 import com.example.zov_android.data.webrtc.WebRtcManager
-import com.example.zov_android.ui.fragments.main.BaseMainFragment
-import com.example.zov_android.ui.fragments.main.MainFragment
+import com.example.zov_android.ui.fragments.main.layerOne.BaseMainFragment
 import com.example.zov_android.ui.fragments.navigation.NavigableFragment
 import com.example.zov_android.ui.fragments.navigation.NavigationFragment
-import com.example.zov_android.ui.fragments.navigation.NavigationInsideFragment
 import com.example.zov_android.ui.viewmodels.BaseViewModel
-import com.example.zov_android.ui.viewmodels.GuildViewModel
 import com.example.zov_android.ui.viewmodels.UserViewModel
 import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import kotlin.system.exitProcess
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
@@ -156,17 +151,3 @@ class MainActivity : AppCompatActivity() {
         backPressedTime = currentTime
     }
 }
-
-/*
-        Декодировка токена
-
-        val decodedToken = mainRepository.decodingToken(token!!)
-        val (timestamp, workerId, sequence) = mainRepository.parseSnowflakeMr(decodedToken.userId)
-
-        /*Log.d("Token", "User ID (Snowflake) token: ${decodedToken.userId}")
-        Log.d("Token", "Creation Time token: ${decodedToken.creationTime}")
-        Log.d("Token", "Signature token: ${decodedToken.signature}")
-
-        Log.d("Token","Timestamp: $timestamp ms (${Instant.ofEpochMilli(timestamp)})")
-        Log.d("Token","Worker ID: $workerId")
-        Log.d("Token","Sequence: $sequence")*/*/

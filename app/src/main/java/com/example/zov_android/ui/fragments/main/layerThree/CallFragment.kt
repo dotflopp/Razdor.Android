@@ -1,9 +1,11 @@
-package com.example.zov_android.ui.fragments.main
+package com.example.zov_android.ui.fragments.main.layerThree
 
 import android.annotation.SuppressLint
 import android.content.Context
 import androidx.lifecycle.lifecycleScope
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.View
 import android.widget.Toast
@@ -20,13 +22,15 @@ import com.example.zov_android.di.qualifiers.User
 import com.example.zov_android.domain.service.MainService
 import com.example.zov_android.domain.utils.convertToHumanTime
 import com.example.zov_android.ui.fragments.navigation.NavigableFragment
-import com.example.zov_android.ui.fragments.navigation.NavigationInsideFragment
 import com.example.zov_android.ui.viewmodels.BaseViewModel
 import com.example.zov_android.ui.viewmodels.GuildViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 
@@ -87,14 +91,15 @@ class CallFragment(
 
             // Таймер звонка
             var callDuration = 0
-            val timerRunnable = object : Runnable {
-                override fun run() {
-                    callTimerTv.text = callDuration.convertToHumanTime()
-                    callDuration++
-                    binding.root.postDelayed(this, 1000)
+            viewLifecycleOwner.lifecycleScope.launch {
+                while (isActive) {
+                    delay(1000)
+                    if (isAdded && !isRemoving) {
+                        binding.callTimerTv.text = callDuration.convertToHumanTime()
+                        callDuration++
+                    }
                 }
             }
-            binding.root.postDelayed(timerRunnable, 1000)
 
             // Видимость элементов для аудиозвонка
             if (!isVideoCall) {
@@ -129,17 +134,21 @@ class CallFragment(
                 guildViewModel.sessionState.collect { state ->
                     when (state) {
                         is BaseViewModel.ViewState.Success -> {
-                            val prefs = requireContext().getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
-                            prefs.edit().putString("session_id", state.data.sessionId).apply()
+                            withContext(Dispatchers.Main) {
+                                val prefs = requireContext().getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
+                                prefs.edit().putString("session_id", state.data.sessionId).apply()
 
-                            Log.d("WebRTCData", "Установка связи")
-                            webRtcManager.startCall(target!!)
-                            Log.d("WebRTCData", "Связь установлена")
+                                Log.d("WebRTCData", "Установка связи")
+                               // webRtcManager.startCall(target!!)
+                                Log.d("WebRTCData", "Связь установлена")
 
-                            showToast("Успешное подключение к звонку")
+                                showToast("Успешное подключение к звонку")
+                            }
                         }
                         is BaseViewModel.ViewState.Error -> {
-                            showToast("Ошибка: ${state.message}")
+                            withContext(Dispatchers.Main) {
+                                showToast("Ошибка: ${state.message}")
+                            }
                         }
                         is BaseViewModel.ViewState.Loading,
                         is BaseViewModel.ViewState.Idle -> {
@@ -148,7 +157,9 @@ class CallFragment(
                     }
                 }
             } catch (e: Exception) {
-                showToast("Ошибка подключения: ${e.message}")
+                withContext(Dispatchers.Main) {
+                    showToast("Ошибка подключения: ${e.message}")
+                }
                 Log.e("CallFragment", "Connection error", e)
             }
         }
@@ -172,24 +183,25 @@ class CallFragment(
     }
 
     private fun showToast(message: String) {
-        Toast.makeText(requireContext(), message, Toast.LENGTH_LONG).show()
+        activity?.runOnUiThread {
+            Toast.makeText(requireContext(), message, Toast.LENGTH_LONG).show()
+        }
     }
 
     override fun onCallEnded() {
-        requireActivity().finish()
+        Log.d("WebRTCData", "Возврат из звонка")
+        // Добавляем небольшую задержку перед навигацией
+        Handler(Looper.getMainLooper()).postDelayed({
+            if (isAdded && !isRemoving) {
+                navigationInside.pop()
+            }
+        }, 300)
     }
 
     override fun onDestroyView() {
-        super.onDestroyView()
-        // Освобождаем ресурсы
-        webRtcManager.closeConnection()
-        MainService.remoteSurfaceView?.release()
-        MainService.localSurfaceView?.release()
-
         MainService.localSurfaceView = null
         MainService.remoteSurfaceView = null
         _binding = null
-
-        lifecycleScope.cancel()
+        super.onDestroyView()
     }
 }

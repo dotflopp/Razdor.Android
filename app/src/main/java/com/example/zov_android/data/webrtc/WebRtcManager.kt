@@ -18,6 +18,7 @@ import org.webrtc.EglBase
 import org.webrtc.IceCandidate
 import org.webrtc.MediaConstraints
 import org.webrtc.MediaStream
+import org.webrtc.MediaStreamTrack
 import org.webrtc.PeerConnection
 import org.webrtc.PeerConnectionFactory
 import org.webrtc.SessionDescription
@@ -217,6 +218,7 @@ class WebRtcManager @Inject constructor(
     private fun startCapturingCamera(localView: SurfaceViewRenderer) {
         Log.d("WebRTC-Media", "Запуск захвата камеры...")
         try {
+
             surfaceTextureHelper = SurfaceTextureHelper.create(
                 Thread.currentThread().name, eglBaseContext
             )
@@ -233,6 +235,7 @@ class WebRtcManager @Inject constructor(
             localVideoTrack = peerConnectionFactory.createVideoTrack("${localTrackId}_video", localVideoSource)
             localVideoTrack?.addSink(localView) // отображение видео на экране
             localStream?.addTrack(localVideoTrack)
+
 
         } catch (e: Exception) {
             Log.e("WebRTC-Media", "Ошибка захвата камеры", e)
@@ -397,13 +400,66 @@ class WebRtcManager @Inject constructor(
     fun closeConnection() {
         Log.d("WebRTCData", "Закрытие соединения...")
         try {
+            // 1. Остановить захват видео
+            try {
+                videoCapturer.stopCapture()
+            } catch (e: Exception) {
+                Log.e("WebRTC-Media", "Ошибка остановки видеозахвата", e)
+            }
+
+            // 2. Освободить видеозахватчик
+            try {
+                videoCapturer.dispose()
+                Log.d("WebRTC-Media", "Видеозахватчик освобожден")
+            } catch (e: Exception) {
+                Log.e("WebRTC-Media", "Ошибка освобождения видеозахватчика", e)
+            }
+
+            // 3. Освободить SurfaceTextureHelper
             surfaceTextureHelper?.dispose()
-            videoCapturer.dispose()
-            Log.d("WebRTC-Media", "Видеозахватчик освобожден")
-            localStream?.dispose()
-            Log.d("WebRTC-Media", "Локальный медиапоток освобожден")
+            surfaceTextureHelper = null
+
+            // 4. Удалить треки из потока перед освобождением
+            localStream?.videoTracks?.forEach { track ->
+                track.removeSink(localSurfaceView)
+                localStream?.removeTrack(track)
+            }
+            localStream?.audioTracks?.forEach { track ->
+                localStream?.removeTrack(track)
+            }
+
+            // 5. Закрыть PeerConnection
             peerConnection.close()
             Log.i("WebRTCData", "Соединение закрыто")
+
+            // 6. Освободить ресурсы в правильном порядке
+            CoroutineScope(Dispatchers.Main).launch {
+                localSurfaceView.clearImage()
+                remoteSurfaceView.clearImage()
+                localSurfaceView.release()
+                remoteSurfaceView.release()
+            }
+
+            // 7. Освободить треки (только если они еще не освобождены)
+            localVideoTrack?.let {
+                if (!it.isDisposed) {
+                    it.dispose()
+                }
+                localVideoTrack = null
+            }
+
+            remoteVideoTrack?.let {
+                if (!it.isDisposed) {
+                    it.dispose()
+                }
+                remoteVideoTrack = null
+            }
+
+            // 8. Освободить медиапоток
+            localStream?.dispose()
+            localStream = null
+            Log.d("WebRTC-Media", "Локальный медиапоток освобожден")
+
         } catch (e: Exception) {
             Log.e("WebRTCData", "Ошибка при закрытии соединения", e)
         }
@@ -423,29 +479,23 @@ class WebRtcManager @Inject constructor(
         localAudioTrack?.setEnabled(!shouldBeMuted)
     }
 
-    fun toggleVideo(shouldBeMuted: Boolean){
-        try {
-            if (shouldBeMuted){
-                stopCapturingCamera()
-            }else{
-                startCapturingCamera(localSurfaceView)
-            }
-        }catch (e:Exception){
-            e.printStackTrace()
+    fun toggleVideo(shouldBeMuted: Boolean) {
+        if (shouldBeMuted) {
+            stopCapturingCamera()
+        } else {
+            startCapturingCamera(localSurfaceView)
         }
     }
 
 
-    private fun stopCapturingCamera(){
-        videoCapturer.dispose() // удаление видеозахвата
-        //удаляем соединение между источником видеопотока (например, видеозахватом) и отображением на экране (SurfaceView)
-        localVideoTrack?.removeSink(localSurfaceView)
-        //очищаем текущее изображение, отображаемое на SurfaceView
-        localSurfaceView.clearImage()
-        //удаляем видеотрек из потока
-        localStream?.removeTrack(localVideoTrack)
-        // освобождаем ресурсы, связанные с видеотреком
-        localVideoTrack?.dispose()
+    private fun stopCapturingCamera() {
+        try {
+            videoCapturer.stopCapture()
+            localVideoTrack?.removeSink(localSurfaceView)
+            localSurfaceView.clearImage()
+        } catch (e: Exception) {
+            Log.e("WebRTC-Media", "Ошибка остановки камеры", e)
+        }
     }
 
 
@@ -457,6 +507,12 @@ class WebRtcManager @Inject constructor(
 
         createOffer()
     }
+
+    val MediaStreamTrack.isDisposed: Boolean
+        get() = try {
+            this.id() // Простая проверка состояния
+            false
+        } catch (e: IllegalStateException) {
+            true
+        }
 }
-
-

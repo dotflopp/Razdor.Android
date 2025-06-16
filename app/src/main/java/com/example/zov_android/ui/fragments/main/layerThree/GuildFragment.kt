@@ -1,4 +1,4 @@
-package com.example.zov_android.ui.fragments.main
+package com.example.zov_android.ui.fragments.main.layerThree
 
 import android.app.AlertDialog
 import android.content.Context
@@ -13,20 +13,18 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import asFlow
 import com.example.zov_android.data.models.request.ChannelRequest
 import com.example.zov_android.data.models.response.MembersGuildResponse
-import com.example.zov_android.data.signalr.SignalR
 import com.example.zov_android.databinding.FragmentGuildBinding
 import com.example.zov_android.di.qualifiers.Token
 import com.example.zov_android.domain.utils.ChannelType
 import com.example.zov_android.ui.adapters.ChannelRecyclerViewAdapter
+import com.example.zov_android.ui.fragments.main.layerOne.BaseMainFragment
 import com.example.zov_android.ui.fragments.navigation.NavigableFragment
 import com.example.zov_android.ui.viewmodels.BaseViewModel
 import com.example.zov_android.ui.viewmodels.GuildViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.suspendCancellableCoroutine
 import javax.inject.Inject
-import kotlin.coroutines.resume
 
 @AndroidEntryPoint
 class GuildFragment(
@@ -177,7 +175,7 @@ class GuildFragment(
     }
 
     private fun showTypeSelectionDialog(onTypeSelected: (ChannelType) -> Unit) {
-        val types = arrayOf("Категория", "Текстовый", "Голосовой", "Ветвь")
+        val types = arrayOf("Категория", "Текстовый", "Голосовой")
 
         AlertDialog.Builder(requireContext()).apply {
             setTitle("Выберите тип канала")
@@ -186,7 +184,6 @@ class GuildFragment(
                     0 -> ChannelType.CategoryChannel
                     1 -> ChannelType.TextChannel
                     2 -> ChannelType.VoiceChannel
-                    3 -> ChannelType.ForkChannel
                     else -> null
                 }
 
@@ -211,7 +208,16 @@ class GuildFragment(
     override fun onChannelClick(channelId: Long, channelName:String, channelType: ChannelType) {
         when (channelType) {
             ChannelType.VoiceChannel -> {
-                navigationInside.push(CallFragment(channelId), "CallFragment")
+                val bundle = Bundle().apply {
+                    putString("target", channelName)
+                    putBoolean("isVideoCall", true)
+                    putBoolean("isCaller", true)
+                }
+
+                navigationInside.push(
+                    CallFragment(channelId).apply { arguments = bundle },
+                    "CallFragment"
+                )
             }
             ChannelType.TextChannel -> {
                 if(membersGuild!=null) {

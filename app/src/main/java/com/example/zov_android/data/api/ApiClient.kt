@@ -63,7 +63,6 @@ class ApiClient @Inject constructor(
         return try {
             val response = call()
 
-            // Пропускаем проверку тела, если это InputStream
             if (response.body() is File) {
                 @Suppress("UNCHECKED_CAST")
                 return Result.Success(response.body() as T)

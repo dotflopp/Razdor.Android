@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="#808185"
-    tools:context=".ui.fragments.main.ChatFragment">
+    tools:context=".ui.fragments.main.layerThree.ChatFragment">
 
 
     <LinearLayout

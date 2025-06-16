@@ -1,4 +1,4 @@
-package com.example.zov_android.ui.fragments.main
+package com.example.zov_android.ui.fragments.main.layerOne
 
 import android.content.Context
 import android.os.Bundle
@@ -6,18 +6,18 @@ import android.util.Log
 import android.view.View
 import android.widget.FrameLayout
 import androidx.activity.OnBackPressedCallback
-import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import coil.load
 import com.example.zov_android.R
-import com.example.zov_android.data.models.request.StatusRequest
 import com.example.zov_android.data.models.response.UserResponse
 import com.example.zov_android.databinding.FragmentBaseMainBinding
 import com.example.zov_android.di.qualifiers.User
 import com.example.zov_android.domain.service.MainService
 import com.example.zov_android.domain.utils.DataModel
-import com.example.zov_android.domain.utils.DataModelType
+import com.example.zov_android.ui.fragments.main.layerTwo.MainFragment
+import com.example.zov_android.ui.fragments.main.layerTwo.ProfileFragment
+import com.example.zov_android.ui.fragments.main.layerThree.UsersGuildFragment
 import com.example.zov_android.ui.fragments.navigation.NavigableFragment
 import com.example.zov_android.ui.fragments.navigation.NavigationInsideFragment
 import com.example.zov_android.ui.viewmodels.BaseViewModel

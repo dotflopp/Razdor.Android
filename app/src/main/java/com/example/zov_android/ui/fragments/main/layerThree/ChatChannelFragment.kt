@@ -1,11 +1,9 @@
-package com.example.zov_android.ui.fragments.main
+package com.example.zov_android.ui.fragments.main.layerThree
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.provider.MediaStore
 import android.provider.OpenableColumns
 import android.util.Log
 import android.view.View
@@ -13,7 +11,6 @@ import android.webkit.MimeTypeMap
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.result.contract.ActivityResultContracts.CreateDocument
-import androidx.core.net.toFile
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -23,7 +20,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import asFlow
 import com.example.zov_android.data.models.response.MembersGuildResponse
 import com.example.zov_android.data.models.response.UserResponse
-import com.example.zov_android.data.signalr.SignalR
 import com.example.zov_android.databinding.FragmentChatChannelBinding
 import com.example.zov_android.di.qualifiers.Token
 import com.example.zov_android.di.qualifiers.User
@@ -35,15 +31,11 @@ import com.example.zov_android.ui.viewmodels.BaseViewModel
 import com.example.zov_android.ui.viewmodels.MessagesViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.io.ByteArrayInputStream
 import java.io.File
 import java.io.FileOutputStream
-import java.io.IOException
 import java.io.InputStream
-import java.io.OutputStream
 import javax.inject.Inject
 
 

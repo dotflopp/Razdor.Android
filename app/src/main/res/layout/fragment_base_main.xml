@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:ignore="InvalidId"
-    tools:context=".ui.fragments.main.BaseMainFragment">
+    tools:context=".ui.fragments.main.layerOne.BaseMainFragment">
 
     <FrameLayout
         android:id="@+id/container"

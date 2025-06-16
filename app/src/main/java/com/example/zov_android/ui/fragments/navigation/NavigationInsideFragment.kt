@@ -16,7 +16,7 @@ class NavigationInsideFragment(
         fragment.navigationInside = this
         childFragmentManager.beginTransaction().apply{
             replace(container.id, fragment, tag)
-            //addToBackStack(tag)
+            addToBackStack(tag)
         }.commit()
     }
 
@@ -35,6 +35,10 @@ class NavigationInsideFragment(
             add(container.id, fragment, tag)
             addToBackStack(tag)
         }.commit()
+    }
+
+    fun pop() {
+        childFragmentManager.popBackStack()
     }
 
 }

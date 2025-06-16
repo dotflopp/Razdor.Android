@@ -28,7 +28,6 @@ class LoginFragment : NavigableFragment() {
 
     private val authViewModel: AuthViewModel by viewModels()
 
-    @Inject lateinit var mainRepository: MainRepository
 
     override fun onCreateView(context: Context): View {
         _binding = FragmentLoginBinding.inflate(layoutInflater)

@@ -1,15 +1,12 @@
-package com.example.zov_android.ui.fragments.main
+package com.example.zov_android.ui.fragments.main.layerTwo
 
 import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.lifecycleScope
 import coil.load
 import com.example.zov_android.R
@@ -20,7 +17,6 @@ import com.example.zov_android.di.qualifiers.Token
 import com.example.zov_android.di.qualifiers.User
 import com.example.zov_android.domain.utils.UserCommunicationSelectedStatus
 import com.example.zov_android.ui.fragments.navigation.NavigableFragment
-import com.example.zov_android.ui.fragments.navigation.NavigationInsideFragment
 import com.example.zov_android.ui.viewmodels.BaseViewModel
 import com.example.zov_android.ui.viewmodels.UserViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -97,7 +93,7 @@ class ProfileFragment : NavigableFragment() {
         }
         binding.username.text = user.nickname
         binding.identity.text = "#${user.identityName}"
-        user.description?.let { binding.description.text = it }
+        binding.description.setText(user.description ?: "Описание")
     }
 
     private fun setupStatusButton() {

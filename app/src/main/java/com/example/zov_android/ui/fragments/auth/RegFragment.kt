@@ -27,7 +27,6 @@ class RegFragment : NavigableFragment() {
 
     private val authViewModel: AuthViewModel by viewModels()
 
-    @Inject lateinit var mainRepository: MainRepository
 
     override fun onCreateView(context: Context): View {
         _binding = FragmentRegBinding.inflate(layoutInflater)
