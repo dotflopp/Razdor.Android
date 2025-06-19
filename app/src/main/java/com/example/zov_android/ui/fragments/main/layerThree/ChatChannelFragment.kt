@@ -126,6 +126,10 @@ class ChatChannelFragment(
             }
         }
 
+        binding.icBack.setOnClickListener {
+            navigationInside.pop()
+        }
+
     }
 
     private fun setupRecyclerView() = with(binding){

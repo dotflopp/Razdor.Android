@@ -10,12 +10,12 @@
     tools:context=".ui.fragments.main.layerThree.ChatFragment">
 
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/topChatChannel"
         android:layout_width="match_parent"
         android:layout_height="48dp"
         android:background="#343438"
-        android:gravity="center"
+        android:gravity="end"
         tools:ignore="MissingConstraints"
         >
 
@@ -23,12 +23,26 @@
             android:id="@+id/chatChannel"
             android:layout_width="wrap_content"
             android:layout_height="48dp"
-            android:layout_marginTop="10dp"
             android:text="Чат канала"
-            android:textSize="20sp"
             android:textColor="@color/white"
-            />
-    </LinearLayout>
+            android:textSize="20sp"
+            android:layout_marginTop="15dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/ic_back"
+            android:layout_width="40dp"
+            android:layout_height="33dp"
+            android:layout_gravity="center"
+            android:layout_marginEnd="16dp"
+            android:src="@drawable/ic_left"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <LinearLayout
         android:id="@+id/middleChatChannel"

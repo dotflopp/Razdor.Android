@@ -25,10 +25,11 @@ class UserViewModel @Inject constructor(
     val userState: StateFlow<BaseViewModel.ViewState<UserResponse>> = userViewModel.state
     val statusState: StateFlow<BaseViewModel.ViewState<Unit>> = statusViewModel.state
 
+
     fun loadUserData(token: String?) {
         userViewModel.handleRequest(
             request = { repository.getYourself(token!!) },
-            successHandler = { it }
+            successHandler = {  it }
         )
     }
 

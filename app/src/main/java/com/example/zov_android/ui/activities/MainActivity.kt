@@ -9,6 +9,7 @@ import android.widget.FrameLayout
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.lifecycleScope
 import com.example.zov_android.R
 import com.example.zov_android.data.models.request.StatusRequest
@@ -83,13 +84,12 @@ class MainActivity : AppCompatActivity() {
             userViewModel.userState.collect{ state->
                 when(state){
                     is BaseViewModel.ViewState.Success -> {
+                        val prefs = getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
+                        prefs.edit().putString("user", gson.toJson(state.data)).apply()
 
                         if(state.data.selectedStatus == null){
                             userViewModel.loadUserSelectedStatus(token!!, StatusRequest(status = "Online"))
                         }
-
-                        val prefs = getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
-                        prefs.edit().putString("user", gson.toJson(state.data)).apply()
 
                         signalR.startConnection(token!!)
                     }

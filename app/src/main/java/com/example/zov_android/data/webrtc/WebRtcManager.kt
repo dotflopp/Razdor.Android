@@ -561,6 +561,7 @@ class WebRtcManager @Inject constructor(
             roomState = RoomState.IDLE
             pendingLocalIceCandidates.clear()
             webSocketClient.close()
+            webSocketClient.connect()
 
         } catch (e: Exception) {
             Log.e("WebRTCData", "Ошибка при закрытии соединения", e)

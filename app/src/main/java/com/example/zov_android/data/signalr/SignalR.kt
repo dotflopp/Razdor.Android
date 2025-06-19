@@ -13,6 +13,7 @@ import com.example.zov_android.di.qualifiers.Token
 import com.microsoft.signalr.Action1
 import com.microsoft.signalr.HubConnection
 import com.microsoft.signalr.HubConnectionBuilder
+import com.microsoft.signalr.HubConnectionState
 import com.microsoft.signalr.TransportEnum
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
@@ -26,9 +27,12 @@ class SignalR @Inject constructor(
     private val url: String
 ) {
 
+    private var hubConnection: HubConnection? = null
     private var currentToken: String? = null
 
-    val connection: HubConnection = HubConnectionBuilder.create(url)
+    private var isReconnecting = false
+
+    private var connection: HubConnection = HubConnectionBuilder.create(url)
         .withTransport(TransportEnum.WEBSOCKETS)
         .shouldSkipNegotiate(true)
         .build()
@@ -72,8 +76,6 @@ class SignalR @Inject constructor(
         connection.on("ChannelCreated") { channel: ChannelResponse ->
             _newChannelEvent.postValue(channel)
         }
-        connection.stop()
-        connection.start()
     }
 
     private fun setupConnectionHandler() {
@@ -86,15 +88,25 @@ class SignalR @Inject constructor(
     }
 
     suspend fun startConnection(token:String) {
-
         this.currentToken = token
 
+        // Проверяем необходимость переподключения
+        if (currentToken == token && isConnected()) {
+            Log.d("SignalR", "Already connected with same token")
+            return
+        }
+
         reconnectAttempts = 0 // Сброс счётчика при новом старте
+
+        stopConnection()
+        currentToken = token
+        createNewConnection()
 
         connection.setBaseUrl("$url?access-token=$token")
         try {
             Log.d("SignalR", "Подключение к $url...")
-            connection.start()
+            connection.start()?.blockingAwait()
+            isReconnecting = false
             Log.d("SignalR", "Успешно подключено. ID соединения: ${connection.connectionId}")
         } catch (e: Exception) {
             Log.e("SignalR", "Ошибка подключения", e)
@@ -102,12 +114,24 @@ class SignalR @Inject constructor(
         }
     }
 
+    private fun createNewConnection() {
+         connection = HubConnectionBuilder.create(url)
+            .withTransport(TransportEnum.WEBSOCKETS)
+            .shouldSkipNegotiate(true)
+            .build()
+
+        setupMessageHandlers()
+        setupConnectionHandler()
+        setupChannelHandlers()
+        setupMemberHandlers()
+    }
+
     private fun attemptReconnect() {
         if (reconnectAttempts >= maxReconnectAttempts) {
             Log.w("SignalR", "Достигнуто максимальное число попыток переподключения")
             return
         }
-
+        isReconnecting = true
         reconnectAttempts++
 
         Log.d("SignalR", "Попытка переподключения №$reconnectAttempts")
@@ -121,8 +145,12 @@ class SignalR @Inject constructor(
         }
     }
 
-    suspend fun stopConnection() {
+    private suspend fun stopConnection() {
         connection.stop()
+    }
+
+    private fun isConnected(): Boolean {
+        return hubConnection?.connectionState == HubConnectionState.CONNECTED
     }
 }
 

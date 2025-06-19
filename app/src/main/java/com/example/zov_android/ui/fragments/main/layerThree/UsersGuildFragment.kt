@@ -84,6 +84,10 @@ class UsersGuildFragment(
                 }
             }
         }*/
+
+        binding.icBack.setOnClickListener {
+            navigationInside.pop()
+        }
     }
 
     private fun setupClickNewInvitation(){

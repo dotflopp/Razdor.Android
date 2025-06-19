@@ -125,14 +125,6 @@ class MainFragment : NavigableFragment(), GuildsRecyclerViewAdapter.Listener {
         }
     }
 
-    fun handleBackPress(): Boolean {
-        if (childFragmentManager.backStackEntryCount > 0) {
-            childFragmentManager.popBackStack()
-            return true
-        }
-        return false
-    }
-
     override fun onGuildClick(id:String, nameGuild:String) {
         navigationInsideFragment.push(GuildFragment(id, nameGuild))
     }

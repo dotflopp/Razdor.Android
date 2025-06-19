@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.widget.FrameLayout
 import androidx.appcompat.app.AppCompatActivity
 import com.example.zov_android.R
+import com.example.zov_android.domain.utils.getCameraAndMicPermission
 import com.example.zov_android.ui.fragments.auth.LoginFragment
 import com.example.zov_android.ui.fragments.navigation.NavigationFragment
 import com.example.zov_android.ui.fragments.navigation.NavigableFragment
@@ -25,7 +26,16 @@ class AuthActivity : AppCompatActivity() {
         if (savedInstanceState == null) {
             navigateTo(LoginFragment())
         }
+
+
+        checkPermissionsAndStartService()
+
     }
+
+    private fun checkPermissionsAndStartService() {
+        getCameraAndMicPermission {}
+    }
+
 
     private fun navigateTo(fragment: NavigableFragment) {
         navigationFragment.push(fragment)

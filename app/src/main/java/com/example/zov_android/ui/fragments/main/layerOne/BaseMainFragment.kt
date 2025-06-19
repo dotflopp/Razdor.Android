@@ -33,10 +33,6 @@ class BaseMainFragment : NavigableFragment(), MainService.Listener {
     private var _binding: FragmentBaseMainBinding? = null
     val binding get() = _binding!!
 
-    @Inject
-    @User
-    lateinit var user: UserResponse
-
     private val userViewModel: UserViewModel by activityViewModels()
 
     override fun onCreateView(context: Context): View {
@@ -96,7 +92,7 @@ class BaseMainFragment : NavigableFragment(), MainService.Listener {
                     is BaseViewModel.ViewState.Success -> {
                         updateStatusIndicator(state.data)
 
-                        if (user.avatar!=null){
+                        if (state.data.avatar != null){
                             val url = "https://dotflopp.ru"+state.data.avatar
                             binding.iconProfile.load(url) {
                                 placeholder(R.drawable.mouseicon) // картинка при загрузке
